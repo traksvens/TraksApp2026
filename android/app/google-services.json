@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1072346412512",
+    "project_id": "traks-63695",
+    "storage_bucket": "traks-63695.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072346412512:android:558a0367277fe57d9ca785",
+        "android_client_info": {
+          "package_name": "com.example.tracks_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072346412512-6rl855rbikk6te01q2hj8vugt03jhcka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBi4AXqVSak8DTPgvYUjU4Nd0VCmXrKc7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072346412512-6rl855rbikk6te01q2hj8vugt03jhcka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
