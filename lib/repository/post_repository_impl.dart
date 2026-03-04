@@ -152,6 +152,17 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<List<SosModel>> getSosByReporter(String userId) async {
+    try {
+      return await _postService.getSosByReporter(userId);
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } catch (e) {
+      throw ServerFailure('Unexpected error fetching SOS by reporter: $e');
+    }
+  }
+
+  @override
   Future<Map<String, dynamic>> queryVectors(QueryRequest request) async {
     try {
       return await _postService.queryVectors(request);

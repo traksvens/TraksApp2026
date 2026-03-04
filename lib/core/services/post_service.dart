@@ -309,6 +309,26 @@ class PostService {
     }
   }
 
+  Future<List<SosModel>> getSosByReporter(String userId) async {
+    try {
+      final response = await _dio.get('$_baseUrl/users/$userId/sos');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((e) => SosModel.fromJson(e)).toList();
+      } else {
+        throw ServerException(
+          message: 'Failed to fetch SOS by reporter',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      throw ServerException(
+        message: e.message ?? 'Error fetching SOS by reporter',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
   // --- Search ---
 
   Future<Map<String, dynamic>> queryVectors(QueryRequest request) async {

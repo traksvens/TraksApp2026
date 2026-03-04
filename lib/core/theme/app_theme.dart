@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'theme_controller.dart';
 
@@ -48,37 +49,45 @@ class AppTheme {
         ),
       ),
 
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          color: AppColors.darkTextPrimary,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -1.0,
-        ),
-        headlineMedium: TextStyle(
-          color: AppColors.darkTextPrimary,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -0.5,
-        ),
-        titleLarge: TextStyle(
-          color: AppColors.darkTextPrimary,
-          fontWeight: FontWeight.w900,
-          fontSize: 22,
-        ),
-        titleMedium: TextStyle(
+      textTheme: TextTheme(
+        headlineLarge: GoogleFonts.plusJakartaSans(
           color: AppColors.darkTextPrimary,
           fontWeight: FontWeight.w800,
-          fontSize: 18,
+          letterSpacing: -1.0,
         ),
-        bodyLarge: TextStyle(
+        headlineMedium: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
+        ),
+        titleLarge: GoogleFonts.plusJakartaSans(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 22,
+        ),
+        titleMedium: GoogleFonts.plusJakartaSans(
           color: AppColors.darkTextPrimary,
           fontWeight: FontWeight.w600,
+          fontSize: 18,
+          letterSpacing: -0.3,
+        ),
+        bodyLarge: GoogleFonts.inter(
+          color: AppColors.darkTextPrimary,
+          fontWeight: FontWeight.w500,
           fontSize: 16,
+          height: 1.5,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          color: AppColors.darkTextSecondary,
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
           height: 1.4,
         ),
-        bodyMedium: TextStyle(
+        bodySmall: GoogleFonts.inter(
           color: AppColors.darkTextSecondary,
           fontWeight: FontWeight.w500,
-          fontSize: 14,
+          fontSize: 12,
+          letterSpacing: 0.2,
         ),
       ),
 
@@ -127,12 +136,45 @@ class AppTheme {
         ),
       ),
 
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: AppColors.lightTextPrimary),
-        bodyMedium: TextStyle(color: AppColors.lightTextSecondary),
-        titleLarge: TextStyle(
+      textTheme: TextTheme(
+        headlineLarge: GoogleFonts.plusJakartaSans(
           color: AppColors.lightTextPrimary,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -1.0,
+        ),
+        headlineMedium: GoogleFonts.plusJakartaSans(
+          color: AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
+        ),
+        titleLarge: GoogleFonts.plusJakartaSans(
+          color: AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 22,
+        ),
+        titleMedium: GoogleFonts.plusJakartaSans(
+          color: AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          letterSpacing: -0.3,
+        ),
+        bodyLarge: GoogleFonts.inter(
+          color: AppColors.lightTextPrimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          height: 1.5,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          color: AppColors.lightTextSecondary,
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          height: 1.4,
+        ),
+        bodySmall: GoogleFonts.inter(
+          color: AppColors.lightTextSecondary,
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+          letterSpacing: 0.2,
         ),
       ),
 

@@ -6,6 +6,7 @@ import 'package:tracks_app/presentation/blocs/auth/auth_event.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
 import 'package:tracks_app/core/theme/theme_controller.dart';
 import 'package:tracks_app/core/theme/app_colors.dart';
+import 'package:tracks_app/presentation/sos/sos_customization_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -33,43 +34,52 @@ class ProfilePage extends StatelessWidget {
             slivers: [
               // 1. Immersive Header
               SliverAppBar(
-                expandedHeight: 280,
+                expandedHeight: 320,
                 pinned: true,
-                backgroundColor: theme.scaffoldBackgroundColor,
+                backgroundColor: Colors.transparent,
                 elevation: 0,
+                stretch: true,
                 flexibleSpace: FlexibleSpaceBar(
+                  stretchModes: const [
+                    StretchMode.zoomBackground,
+                    StretchMode.blurBackground,
+                  ],
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Blurred Background Container (Fallback for hero image)
+                      // Subdued Immersive Background Gradient
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              theme.primaryColor.withValues(alpha: 0.8),
+                              theme.primaryColor.withValues(alpha: 0.15),
                               theme.colorScheme.secondary.withValues(
-                                alpha: 0.4,
+                                alpha: 0.05,
                               ),
                               theme.scaffoldBackgroundColor,
                             ],
+                            stops: const [0.0, 0.5, 1.0],
                           ),
                         ),
                       ),
-                      BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                        child: Container(
-                          color: theme.scaffoldBackgroundColor.withValues(
-                            alpha: 0.7,
+                      // Glassmorphism Blur Layer
+                      ClipRect(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                          child: Container(
+                            color: theme.scaffoldBackgroundColor.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       ),
-                      // Content
+                      // User Info Layer
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 24.0),
+                          padding: const EdgeInsets.only(bottom: 32.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -77,56 +87,69 @@ class ProfilePage extends StatelessWidget {
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: theme.primaryColor,
-                                    width: 2,
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      theme.primaryColor.withValues(alpha: 0.8),
+                                      theme.primaryColor.withValues(alpha: 0.2),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: theme.primaryColor.withValues(
-                                        alpha: 0.3,
+                                        alpha: 0.2,
                                       ),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 4),
+                                      blurRadius: 24,
+                                      spreadRadius: 4,
+                                      offset: const Offset(0, 8),
                                     ),
                                   ],
                                 ),
-                                child: CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor:
-                                      theme.colorScheme.primaryContainer,
-                                  backgroundImage: photoUrl != null
-                                      ? NetworkImage(photoUrl)
-                                      : null,
-                                  child: photoUrl == null
-                                      ? Text(
-                                          displayName
-                                              .substring(0, 1)
-                                              .toUpperCase(),
-                                          style: theme.textTheme.headlineMedium
-                                              ?.copyWith(
-                                                color:
-                                                    theme.colorScheme.primary,
-                                              ),
-                                        )
-                                      : null,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: theme.scaffoldBackgroundColor,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 54,
+                                    backgroundColor: theme.colorScheme.surface,
+                                    backgroundImage: photoUrl != null
+                                        ? NetworkImage(photoUrl)
+                                        : null,
+                                    child: photoUrl == null
+                                        ? Text(
+                                            displayName
+                                                .substring(0, 1)
+                                                .toUpperCase(),
+                                            style: theme
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.copyWith(
+                                                  color: theme.primaryColor,
+                                                ),
+                                          )
+                                        : null,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 16),
                               Text(
                                 displayName,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
+                                style: theme.textTheme.headlineMedium?.copyWith(
                                   letterSpacing: -0.5,
                                 ),
                               ),
+                              const SizedBox(height: 8),
                               if (email.isNotEmpty)
                                 Text(
                                   email,
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: theme.textTheme.bodyMedium?.color
-                                        ?.withOpacity(0.7),
+                                        ?.withValues(alpha: 0.6),
                                   ),
                                 ),
                             ],
@@ -138,38 +161,54 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
 
-              // 2. SOS Button Section
+              // 2. SOS Button Section (Premium Action Pattern)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 18,
+                    horizontal: 24,
+                    vertical: 8,
                   ),
-                  child: SizedBox(
+                  child: Container(
                     width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(
+                            0xFFDC2626,
+                          ).withValues(alpha: 0.25),
+                          blurRadius: 24,
+                          spreadRadius: -4,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
                     child: ElevatedButton(
                       onPressed: () {
                         // TODO: Implement SOS action
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8A0303),
+                        backgroundColor: const Color(
+                          0xFFDC2626,
+                        ), // Premium Red 600
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         elevation: 0,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          const Icon(Icons.warning_amber_rounded, size: 28),
+                          const SizedBox(width: 12),
                           Text(
-                            "SOS",
-                            style: theme.textTheme.titleLarge?.copyWith(
+                            "Emergency SOS",
+                            style: theme.textTheme.titleMedium?.copyWith(
                               color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
@@ -185,58 +224,69 @@ class ProfilePage extends StatelessWidget {
                   valueListenable: ThemeController.instance,
                   builder: (context, themeState, child) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 24),
                           _buildSectionTitle(theme, "APPEARANCE"),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                           _buildThemeModeSegmentedControl(
                             theme,
                             themeState.mode,
                           ),
                           const SizedBox(height: 32),
                           _buildSectionTitle(theme, "COLOR THEME"),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                           _buildColorSwatchList(theme, themeState),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 48),
                           _buildSectionTitle(theme, "ACCOUNT"),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                           _buildSettingTile(
                             theme: theme,
                             icon: Icons.emergency_share_outlined,
                             title: "SOS Customization",
                             subtitle:
                                 "Configure emergency contacts and message",
-                            iconColor: const Color(0xFF8B0000),
+                            iconColor: const Color(0xFFDC2626),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SosCustomizationPage(),
+                                ),
+                              );
+                            },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           _buildSettingTile(
                             theme: theme,
-                            icon: Icons.notifications_none,
+                            icon: Icons.notifications_none_rounded,
                             title: "Notifications",
-                            subtitle: "Manage alerts",
+                            subtitle: "Manage alerts & push configurations",
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           _buildSettingTile(
                             theme: theme,
                             icon: Icons.shield_outlined,
                             title: "Privacy & Security",
-                            subtitle: "Biometrics, Password",
+                            subtitle: "Biometrics, Password, Sessions",
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           _buildSettingTile(
                             theme: theme,
-                            icon: Icons.logout,
+                            icon: Icons.logout_rounded,
                             title: "Log Out",
-                            iconColor: Colors.redAccent,
-                            textColor: Colors.redAccent,
+                            iconColor: const Color(0xFFEF4444),
+                            textColor: const Color(0xFFEF4444),
                             showChevron: false,
                             onTap: () {
                               context.read<AuthBloc>().add(SignOutRequested());
                             },
                           ),
-                          const SizedBox(height: 100), // Spacing for Navbar
+                          const SizedBox(
+                            height: 120,
+                          ), // Spacing for Navbar + Floating Button
                         ],
                       ),
                     );
@@ -252,13 +302,13 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildSectionTitle(ThemeData theme, String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.only(left: 8),
       child: Text(
         title,
         style: theme.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w700,
           color: theme.disabledColor,
-          letterSpacing: 1.5,
+          letterSpacing: 1.0,
         ),
       ),
     );
@@ -281,28 +331,31 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 24,
+              spreadRadius: -4,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: (iconColor ?? theme.primaryColor).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: (iconColor ?? theme.primaryColor).withValues(
+                  alpha: 0.08,
+                ),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 icon,
                 color: iconColor ?? theme.primaryColor,
-                size: 20,
+                size: 24,
               ),
             ),
             const SizedBox(width: 16),
@@ -314,7 +367,7 @@ class ProfilePage extends StatelessWidget {
                     title,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      fontSize: 15,
+                      fontSize: 16,
                       color: textColor,
                     ),
                   ),
@@ -322,7 +375,12 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(fontSize: 12),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 13,
+                        color: theme.textTheme.bodyMedium?.color?.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
                     ),
                   ],
                 ],
@@ -331,7 +389,11 @@ class ProfilePage extends StatelessWidget {
             if (trailing != null)
               trailing
             else if (showChevron)
-              Icon(Icons.chevron_right, color: theme.dividerColor, size: 20),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.dividerColor.withValues(alpha: 0.5),
+                size: 24,
+              ),
           ],
         ),
       ),
@@ -340,16 +402,17 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildColorSwatchList(ThemeData theme, ThemeState themeState) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 24,
+            spreadRadius: -4,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -412,7 +475,7 @@ class ProfilePage extends StatelessWidget {
               : null,
           boxShadow: [
             BoxShadow(
-              color: displayColor.withOpacity(0.4),
+              color: displayColor.withValues(alpha: 0.4),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -433,17 +496,18 @@ class ProfilePage extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.05)),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 24,
+            spreadRadius: -4,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: SegmentedButton<ThemeMode>(
         segments: const [
           ButtonSegment(
@@ -486,7 +550,7 @@ class ProfilePage extends StatelessWidget {
           }),
           side: const WidgetStatePropertyAll(BorderSide.none),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
         ),
       ),

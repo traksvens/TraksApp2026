@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Pure Black Theme (Dark)
   static const Color darkBackground = Color(0xFF000000);
-  static const Color darkSurface = Color(0xFF0A0A0A);
-  static const Color darkPrimary = Color(0xFFFFFFFF); // High Contrast White
+  static const Color darkSurface = Color(
+    0xFF141414,
+  ); // Slightly elevated from pure black
+  static const Color darkPrimary = Color(
+    0xFFE5E5E5,
+  ); // Softer white for easier reading
   static const Color darkAccent = Color(0xFF2DD4BF); // Teal 400
-  static const Color darkTextPrimary = Colors.white;
-  static const Color darkTextSecondary = Color(0xFF9CA3AF); // Gray 400
-  static const Color darkDivider = Color(0xFF1F2937); // Gray 800
+  static const Color darkTextPrimary = Color(0xFFF9FAFB); // Gray 50
+  static const Color darkTextSecondary = Color(0xFFA1A1AA); // Zinc 400
+  static const Color darkDivider = Color(0xFF27272A); // Zinc 800
 
   // Pure White Theme (Light)
   static const Color lightBackground = Color(0xFFFFFFFF);

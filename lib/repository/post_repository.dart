@@ -33,6 +33,7 @@ abstract class PostRepository {
   // SOS
   Future<void> createSos(SosModel sosData);
   Future<List<SosModel>> getAllSos();
+  Future<List<SosModel>> getSosByReporter(String userId);
 
   // Vectors
   Future<Map<String, dynamic>> queryVectors(QueryRequest request);

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import '../data/models/sos_contact_model.dart';
 
 abstract class AuthRepository {
   Stream<User?> get user;
@@ -13,4 +14,6 @@ abstract class AuthRepository {
   );
   Future<UserCredential> signInWithGoogle();
   Future<void> signOut();
+  Future<List<SosContactModel>> getEmergencyContacts(String userId);
+  Future<void> createEmergencyContact(String userId, SosContactModel contact);
 }

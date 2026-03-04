@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'auth_repository.dart';
 import '../core/services/user_service.dart';
 import '../data/models/user_model.dart';
+import '../data/models/sos_contact_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
@@ -99,5 +100,18 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signOut() async {
     await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
+  }
+
+  @override
+  Future<List<SosContactModel>> getEmergencyContacts(String userId) async {
+    return await _userService.getEmergencyContacts(userId);
+  }
+
+  @override
+  Future<void> createEmergencyContact(
+    String userId,
+    SosContactModel contact,
+  ) async {
+    await _userService.createEmergencyContact(userId, contact);
   }
 }

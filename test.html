@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Ekene Webpay test</title>
+</head>
+<body>
+<div class="checkout-container">
+<form id="submit-form">
+   <button type="submit">Pay</button>
+</form>
+<script type="text/javascript" src="https://newwebpay.qa.interswitchng.com/inline-checkout.js"></script>
+</div>
+</body>
+</html>
+<script>
+ var submitForm = document.getElementById("submit-form");
+     submitForm.addEventListener("submit", submitHandler);
+
+      function submitHandler(event) {
+	   event.preventDefault();
+     var redirectUrl = location.href;
+
+        var paymentRequest = {
+          merchant_code: "MX6072",
+          pay_item_id: "9405967",
+          txn_ref: "MX-TRN-" + Math.random() * 2.5, 
+          amount: "3000",
+          currency: 566,
+          site_redirect_url: "location.href",
+          onComplete: paymentCallback,
+          mode: "TEST"
+          };
+
+          
+        window.webpayCheckout(paymentRequest);}
+
+      function paymentCallback(response) {
+        console.log(response);
+      }
+</script>
