@@ -1,4 +1,6 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiKeys {
-  static const String googleMapsApiKey =
-      'AIzaSyB4JC9DV84f5zmeKqKONNkb6T_P4HYozX0';
+  static String get googleMapsApiKey =>
+      dotenv.get('GOOGLE_MAPS_API_KEY', fallback: '');
 }

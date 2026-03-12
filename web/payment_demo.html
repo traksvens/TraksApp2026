@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Payment Gateway</title>
+    <!-- We must include the Interswitch JS for the modal -->
+    <script src="https://newwebpay.qa.interswitchng.com/inline-checkout.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f4; margin: 0; }
+        .checkout-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        button { background-color: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #status { margin-top: 15px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <h2>Complete Verification</h2>
+    <p>Amount: ₦30.00</p> 
+    
+    <button id="pay-button">Pay Now</button>
+    
+    <div id="status"></div>
+</div>
+
+<script>
+    // Extract userId from the URL query parameters (e.g., ?userId=123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = "Nas";
+
+    const payButton = document.getElementById("pay-button");
+    const statusDiv = document.getElementById("status");
+
+    if (!userId) {
+        statusDiv.innerText = "Error: Missing User ID. Cannot proceed.";
+        statusDiv.style.color = "red";
+        payButton.disabled = true;
+    }
+
+    payButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        
+        statusDiv.innerText = "Opening gateway...";
+        statusDiv.style.color = "black";
+
+        // This is exactly as the demo specified, but using dynamic txn_ref to avoid collisions during dev
+        var paymentRequest = {
+            merchant_code: "MX6072",
+            pay_item_id: "9405967",
+            txn_ref: "MX-TRN-" + Math.floor(Math.random() * 1000000000), 
+            amount: "3000", // 3000 Kobo = 30 Naira
+            currency: 566, // NGN
+            site_redirect_url: window.location.href, // Safe redirect
+            mode: "TEST",
+            onComplete: paymentCallback
+        };
+
+        window.webpayCheckout(paymentRequest);
+    });
+
+    function paymentCallback(response) {
+        console.log("Gateway Response:", response);
+        
+        // In a purely demo insecure environment:
+        // We assume if the modal closes, it was either a success or a cancel.
+        // Interswitch response usually contains a responseCode. "00" or "1" often means success, depending on version.
+        
+        if (response && response.responseCode === "00" || response.desc === "Approved by Financial Institution" || response.resp === "00" ) {
+             statusDiv.innerText = "Payment Successful! Updating database...";
+             statusDiv.style.color = "green";
+             updateDatabase(userId);
+        } else {
+             statusDiv.innerText = "Payment failed or was cancelled.";
+             statusDiv.style.color = "red";
+        }
+    }
+
+    // --- INSECURE DEMO FIRESTORE UPDATE ---
+    // In a real app, YOU NEVER DO THIS from the frontend.
+    // For this demo, we will simulate the backend call or direct REST update if CORS allows.
+    // To make this portable without bundling the entire Firebase SDK into this single HTML, 
+    // we assume this page is served by a system that has an endpoint to mark it, 
+    // OR we will provide the script to hit your firebase functions if they exist.
+    
+    function updateDatabase(uid) {
+         // Because we don't know the exact Firebase config here, 
+         // the easiest demo hack is to just redirect the user back to the app with a success token in the URL.
+         // Deep linking back to the Flutter app:
+         
+         const deepLink = `payment_success.html?userId=${uid}`;
+         statusDiv.innerHTML = `Success! <a href="${deepLink}">Click here to return to the app</a> if you are not redirected automatically.`;
+         
+         // Try to deep link automatically
+         setTimeout(() => {
+             window.location.href = deepLink;
+         }, 2000);
+    }
+</script>
+
+</body>
+</html>

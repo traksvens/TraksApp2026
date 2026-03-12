@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'address_model.dart';
 
 @immutable
 class PostModel {
   /// Base URL for the API service, used to construct absolute image URLs.
-  static const String _baseUrl =
-      'https://traks-api-945904604038.us-central1.run.app';
+  static String get _baseUrl => dotenv.get('API_BASE_URL', fallback: '');
 
   final String id;
   final String userId;

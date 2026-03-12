@@ -14,6 +14,8 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -52,11 +54,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBi4AXqVSak8DTPgvYUjU4Nd0VCmXrKc7w',
-    appId: '1:1072346412512:android:558a0367277fe57d9ca785',
-    messagingSenderId: '1072346412512',
-    projectId: 'traks-63695',
-    storageBucket: 'traks-63695.firebasestorage.app',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.get('FIREBASE_API_KEY', fallback: ''),
+    appId: dotenv.get('FIREBASE_APP_ID', fallback: ''),
+    messagingSenderId: dotenv.get('FIREBASE_MESSAGING_SENDER_ID', fallback: ''),
+    projectId: dotenv.get('FIREBASE_PROJECT_ID', fallback: ''),
+    storageBucket: dotenv.get('FIREBASE_STORAGE_BUCKET', fallback: ''),
   );
 }

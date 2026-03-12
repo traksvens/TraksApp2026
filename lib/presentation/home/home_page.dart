@@ -16,6 +16,9 @@ import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
 import 'package:tracks_app/presentation/post/create_post_page.dart';
 import 'package:tracks_app/presentation/profile/profile_page.dart';
 import 'package:tracks_app/presentation/widgets/post_loading_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tracks_app/presentation/subscription/subscription_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,12 +33,51 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final user = FirebaseAuth.instance.currentUser;
 
+    if (user == null) {
+      // If no user is logged in, fallback to a basic unverified layout.
+      return _buildScaffold(context, theme, false);
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        bool isVerified = false;
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data();
+          isVerified =
+              data?['isVerified'] == true || data?['verified'] == 'True';
+        }
+
+        // Safety check: if currently on the premium tab but just got verified, jump to home
+        if (isVerified && _currentIndex > 2) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() => _currentIndex = 0);
+            }
+          });
+        }
+
+        return _buildScaffold(context, theme, isVerified);
+      },
+    );
+  }
+
+  Widget _buildScaffold(
+    BuildContext context,
+    ThemeData theme,
+    bool isVerified,
+  ) {
     // Pages defined here to access context/setState
     final List<Widget> pages = [
       _HomeFeed(onProfileTap: () => setState(() => _currentIndex = 2)),
       const MapPage(),
       const ProfilePage(),
+      if (!isVerified) const SubscriptionPage(),
     ];
 
     return MultiBlocListener(
@@ -61,13 +103,16 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         extendBody: false,
-        body: IndexedStack(index: _currentIndex, children: pages),
-        bottomNavigationBar: _buildModernNavbar(theme),
+        body: IndexedStack(
+          index: _currentIndex >= pages.length ? 0 : _currentIndex,
+          children: pages,
+        ),
+        bottomNavigationBar: _buildModernNavbar(theme, isVerified),
       ),
     );
   }
 
-  Widget _buildModernNavbar(ThemeData theme) {
+  Widget _buildModernNavbar(ThemeData theme, bool isVerified) {
     return Container(
       padding: EdgeInsets.only(
         bottom: MediaQuery.paddingOf(context).bottom, // SafeArea handling
@@ -104,6 +149,13 @@ class _HomePageState extends State<HomePage> {
               index: 2,
               theme: theme,
             ),
+            if (!isVerified)
+              _buildNavItem(
+                icon: Icons.workspace_premium_rounded,
+                label: 'Premium',
+                index: 3,
+                theme: theme,
+              ),
           ],
         ),
       ),

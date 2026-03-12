@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
 import '../../data/models/post_model.dart';
 import '../../data/models/replies_model.dart';
@@ -11,7 +12,7 @@ import '../error/exceptions.dart';
 
 class PostService {
   final Dio _dio;
-  final String _baseUrl = 'https://traks-api-945904604038.us-central1.run.app';
+  final String _baseUrl = dotenv.get('API_BASE_URL', fallback: '');
 
   PostService({Dio? dio}) : _dio = dio ?? Dio();
 

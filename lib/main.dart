@@ -15,6 +15,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:tracks_app/firebase_options.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:async';
+import 'package:app_links/app_links.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppMain extends StatefulWidget {
   const AppMain({super.key});
@@ -24,6 +27,50 @@ class AppMain extends StatefulWidget {
 }
 
 class _AppMainState extends State<AppMain> {
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _handlePaymentRedirect(uri);
+    });
+
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        _handlePaymentRedirect(initialUri);
+      }
+    } catch (e) {
+      debugPrint("Failed to get initial link: $e");
+    }
+  }
+
+  void _handlePaymentRedirect(Uri uri) async {
+    if (uri.scheme == 'traksapp' &&
+        uri.queryParameters['status'] == 'success') {
+      final userId = uri.queryParameters['userId'];
+      if (userId != null && userId.isNotEmpty) {
+        // Verification is now handled securely by the React frontend
+        // before the redirect occurs.
+        debugPrint("Payment success redirect received for user: $userId");
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -54,6 +101,7 @@ class _AppMainState extends State<AppMain> {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
 

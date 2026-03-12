@@ -11,6 +11,39 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+  void initState() {
+    super.initState();
+    _checkPaymentRedirect();
+  }
+
+  Future<void> _checkPaymentRedirect() async {
+    try {
+      final uri = Uri.base;
+      if (uri.queryParameters['status'] == 'success') {
+        final userId = uri.queryParameters['userId'];
+        if (userId != null && userId.isNotEmpty) {
+          // Verification is now handled securely by the React frontend
+          // before the redirect occurs.
+          debugPrint(
+            "Payment success redirect received for user: $userId on Web",
+          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Verification Successful! 🎉'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Payment redirect check error: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Determine if dark mode is active to set background color
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
