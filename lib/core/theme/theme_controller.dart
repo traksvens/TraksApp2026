@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppColorTheme { teal, red, brown, pink }
+enum AppColorTheme { navy, blue, red, slate }
 
 class ThemeState {
   final ThemeMode mode;
@@ -26,7 +26,7 @@ class ThemeController extends ValueNotifier<ThemeState> {
     : super(
         const ThemeState(
           mode: ThemeMode.system,
-          colorTheme: AppColorTheme.teal,
+          colorTheme: AppColorTheme.navy,
         ),
       );
 

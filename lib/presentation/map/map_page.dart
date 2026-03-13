@@ -673,15 +673,20 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
               padding: EdgeInsets.only(bottom: keyboardInset),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (showAiPanel) _buildAiPanel(theme, isDark, aiPanelHeight),
-                  if (showAiLocationCard)
-                    _buildAiLocationContext(theme, isDark, embedded: false),
-                  if (showSuggestions) _buildSuggestionsList(theme, isDark),
-                  _buildBottomComposer(theme),
-                ],
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showAiPanel) _buildAiPanel(theme, isDark, aiPanelHeight),
+                    if (showAiLocationCard)
+                      _buildAiLocationContext(theme, isDark, embedded: false),
+                    if (showSuggestions) _buildSuggestionsList(theme, isDark),
+                    _buildBottomComposer(theme),
+                  ],
+                ),
               ),
             ),
           ),
@@ -693,31 +698,45 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildBottomComposer(ThemeData theme) {
     final isAiMode = _mode == _MapInputMode.ai;
     final controller = isAiMode ? _aiController : _locationSearchController;
+    final primaryColor = isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
 
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 30,
+            color: primaryColor.withValues(alpha: 0.15),
+            blurRadius: 36,
             offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(36),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Container(
-            height: 64,
+            height: 68,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
-              borderRadius: BorderRadius.circular(32),
+              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(36),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withValues(alpha: 0.2),
                 width: 0.5,
               ),
+              gradient: isAiMode ? LinearGradient(
+                colors: [
+                  theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
+                  primaryColor.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ) : null,
             ),
             child: Row(
               children: [
@@ -736,17 +755,17 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                     textInputAction: isAiMode
                         ? TextInputAction.send
                         : TextInputAction.search,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                       letterSpacing: -0.2,
                     ),
                     decoration: InputDecoration(
                       hintText: isAiMode
                           ? 'Ask AI about incidents...'
                           : 'Search location...',
-                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.hintColor.withValues(alpha: 0.5),
-                        fontWeight: FontWeight.w400,
+                      hintStyle: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.hintColor.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w500,
                       ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -768,38 +787,48 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildSendButton(ThemeData theme) {
     final isAiMode = _mode == _MapInputMode.ai;
     final isLoading = isAiMode ? _isAiLoading : _isSearching;
+    final primaryColor = isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
 
     return GestureDetector(
       onTap: isLoading
           ? null
-          : (isAiMode
-                ? _sendAiPrompt
-                : null), // Search happens auto on change, but button can trigger if needed
-      child: Container(
-        width: 40,
-        height: 40,
+          : (isAiMode ? _sendAiPrompt : null), 
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(
-            alpha: 0.8,
+          gradient: LinearGradient(
+            colors: [
+              primaryColor.withValues(alpha: 0.8),
+              primaryColor.withValues(alpha: 1.0),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
           shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: primaryColor.withValues(alpha: 0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Center(
           child: isLoading
-              ? SizedBox(
-                  width: 18,
-                  height: 18,
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
                   child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: theme.colorScheme.primary,
+                    strokeWidth: 2.5,
+                    color: Colors.white,
                   ),
                 )
               : Icon(
                   isAiMode ? Icons.arrow_upward_rounded : Icons.search_rounded,
-                  size: 20,
-                  color: isAiMode
-                      ? const Color(0xFFE87722)
-                      : const Color(0xFF12786F),
+                  size: 22,
+                  color: Colors.white,
                 ),
         ),
       ),
@@ -809,7 +838,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildModeToggle() {
     final theme = Theme.of(context);
     final isSearch = _mode == _MapInputMode.search;
-    final color = isSearch ? const Color(0xFF12786F) : const Color(0xFFE87722);
+    final color = isSearch ? theme.colorScheme.secondary : theme.colorScheme.primary;
 
     return PopupMenuButton<_MapInputMode>(
       initialValue: _mode,
@@ -821,17 +850,17 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           value: _MapInputMode.search,
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.map_outlined,
                 size: 18,
-                color: Color(0xFF12786F),
+                color: theme.colorScheme.secondary,
               ),
               const SizedBox(width: 10),
               Text(
                 'Map',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF12786F),
+                  color: theme.colorScheme.secondary,
                 ),
               ),
             ],
@@ -841,17 +870,17 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           value: _MapInputMode.ai,
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.auto_awesome_rounded,
                 size: 18,
-                color: Color(0xFFE87722),
+                color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 10),
               Text(
                 'AI',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFFE87722),
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
@@ -962,99 +991,129 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       constraints: BoxConstraints(maxHeight: panelHeight),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark
-            ? theme.colorScheme.surface.withValues(alpha: 0.96)
-            : Colors.white.withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(24),
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.13),
-            blurRadius: 30,
-            offset: const Offset(0, 14),
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 0),
           ),
         ],
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+          width: 0.5,
+        ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            constraints: BoxConstraints(maxHeight: panelHeight),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
+        borderRadius: BorderRadius.circular(32),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          constraints: BoxConstraints(maxHeight: panelHeight),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                theme.colorScheme.primary.withValues(alpha: 0.05),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.2],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
                         Icons.auto_awesome_rounded,
-                        color: Color(0xFFE87722),
+                        color: theme.colorScheme.primary,
+                        size: 20,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Map AI',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Map AI',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () => setState(
-                          () => _isAiPanelExpanded = !_isAiPanelExpanded,
-                        ),
-                        tooltip: _isAiPanelExpanded
-                            ? 'Collapse chat'
-                            : 'Expand chat',
-                        icon: Icon(
-                          _isAiPanelExpanded
-                              ? Icons.fullscreen_exit_rounded
-                              : Icons.open_in_full_rounded,
-                          color: const Color(0xFFE87722),
-                        ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => setState(
+                        () => _isAiPanelExpanded = !_isAiPanelExpanded,
                       ),
-                      TextButton(
-                        onPressed: _resetAiConversation,
-                        child: const Text('Clear'),
+                      tooltip: _isAiPanelExpanded
+                          ? 'Collapse chat'
+                          : 'Expand chat',
+                      icon: Icon(
+                        _isAiPanelExpanded
+                            ? Icons.fullscreen_exit_rounded
+                            : Icons.open_in_full_rounded,
+                        color: theme.iconTheme.color,
+                        size: 22,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _resetAiConversation,
+                      style: TextButton.styleFrom(
+                        foregroundColor: theme.hintColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                      child: const Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildAiLocationContext(theme, isDark, embedded: true),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      for (final entry in _chatEntries)
+                        _buildChatBubble(theme, entry),
+                      if (_isAiLoading) _buildTypingBubble(theme),
+                      ValueListenableBuilder<UiDefinition?>(
+                        valueListenable: _a2uiProcessor.getSurfaceNotifier(
+                          _assistantSurfaceId,
+                        ),
+                        builder: (context, definition, child) {
+                          if (definition == null ||
+                              definition.rootComponentId == null) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8, bottom: 8),
+                            child: GenUiSurface(
+                              host: _a2uiProcessor,
+                              surfaceId: _assistantSurfaceId,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  _buildAiLocationContext(theme, isDark, embedded: true),
-                  const SizedBox(height: 8),
-                  Flexible(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        for (final entry in _chatEntries)
-                          _buildChatBubble(theme, entry),
-                        if (_isAiLoading) _buildTypingBubble(theme),
-                        ValueListenableBuilder<UiDefinition?>(
-                          valueListenable: _a2uiProcessor.getSurfaceNotifier(
-                            _assistantSurfaceId,
-                          ),
-                          builder: (context, definition, child) {
-                            if (definition == null ||
-                                definition.rootComponentId == null) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: GenUiSurface(
-                                host: _a2uiProcessor,
-                                surfaceId: _assistantSurfaceId,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -1081,51 +1140,52 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
 
     return Container(
       margin: EdgeInsets.only(bottom: embedded ? 0 : 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark
-            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.48)
-            : const Color(0xFFFFF4EB).withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(18),
+        color: theme.colorScheme.primary.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFE87722).withValues(alpha: 0.18),
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+          width: 0.5,
         ),
       ),
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFFE87722).withValues(alpha: 0.14),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.my_location_rounded,
-              color: Color(0xFFE87722),
-              size: 18,
+              color: theme.colorScheme.primary,
+              size: 20,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Current Location for AI',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFE87722),
+                  'AI Context Location',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.primary,
+                    letterSpacing: 0.2,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   locationText,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    height: 1.2,
                   ),
                 ),
               ],
@@ -1135,13 +1195,16 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             onPressed: _isRefreshingCurrentLocation
                 ? null
                 : () => _ensureCurrentLocationContext(forceRefresh: true),
+            style: IconButton.styleFrom(
+              backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            ),
             icon: _isRefreshingCurrentLocation
                 ? const SizedBox(
                     width: 18,
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.refresh_rounded),
+                : const Icon(Icons.refresh_rounded, size: 20),
             tooltip: 'Refresh current location',
           ),
         ],
@@ -1153,9 +1216,37 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     final alignment = entry.isUser
         ? Alignment.centerRight
         : Alignment.centerLeft;
-    final bubbleColor = entry.isUser
-        ? theme.colorScheme.primary
-        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.85);
+    final bubbleDecoration = entry.isUser
+        ? BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primary.withValues(alpha: 0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20).copyWith(
+              bottomRight: const Radius.circular(4),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          )
+        : BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(20).copyWith(
+              bottomLeft: const Radius.circular(4),
+            ),
+            border: Border.all(
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
+          );
+
     final textColor = entry.isUser
         ? Colors.white
         : theme.textTheme.bodyMedium?.color;
@@ -1163,19 +1254,17 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     return Align(
       alignment: alignment,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        constraints: const BoxConstraints(maxWidth: 280),
-        decoration: BoxDecoration(
-          color: bubbleColor,
-          borderRadius: BorderRadius.circular(18),
-        ),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        constraints: const BoxConstraints(maxWidth: 290),
+        decoration: bubbleDecoration,
         child: Text(
           entry.text,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: textColor,
-            fontWeight: FontWeight.w600,
-            height: 1.35,
+            fontWeight: entry.isUser ? FontWeight.w600 : FontWeight.w500,
+            height: 1.4,
+            fontSize: 15,
           ),
         ),
       ),
@@ -1186,18 +1275,39 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withValues(
-            alpha: 0.85,
+            alpha: 0.4,
           ),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20).copyWith(
+            bottomLeft: const Radius.circular(4),
+          ),
+          border: Border.all(
+            color: theme.dividerColor.withValues(alpha: 0.1),
+          ),
         ),
-        child: const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.colorScheme.primary.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Thinking...',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.hintColor,
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -1324,17 +1434,38 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     Color? color,
     VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            width: 52,
-            height: 52,
-            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.86),
-            child: Icon(icon, color: color ?? theme.iconTheme.color),
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    width: 0.5,
+                  ),
+                ),
+                child: Icon(icon, color: color ?? theme.iconTheme.color),
+              ),
+            ),
           ),
         ),
       ),

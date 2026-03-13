@@ -28,6 +28,8 @@ abstract class PostRepository {
     required double lat,
     required double lng,
     int radius = 1000,
+    String? severity,
+    String? incidentType,
   });
 
   // Replies

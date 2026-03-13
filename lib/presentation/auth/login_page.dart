@@ -2,10 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tracks_app/core/theme/app_colors.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
-import '../widgets/traks_logo.dart';
 
 class LoginPage extends StatefulWidget {
   final bool isSignUp;
@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                 state.message,
                 style: GoogleFonts.inter(color: Colors.white),
               ),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.alertHigh,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black, // AMOLED True Black
+        backgroundColor: const Color(0xFF0C100D), // Very dark, slightly greenish background
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -96,19 +96,36 @@ class _LoginPageState extends State<LoginPage> {
         ),
         body: Stack(
           children: [
-            // Ambient subtle blurred background elements
+            // Background ambient gradient 1
             Positioned(
-              top: -100,
+              top: MediaQuery.of(context).size.height * 0.1,
               right: -100,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF1E3A2F).withOpacity(0.5), // Greenish glow
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+                  child: Container(color: Colors.transparent),
+                ),
+              ),
+            ),
+            // Background ambient gradient 2
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.2,
+              left: -100,
               child: Container(
                 width: 300,
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.03),
+                  color: const Color(0xFF2C3E20).withOpacity(0.4), // Yellow-green glow
                 ),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                  filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
                   child: Container(color: Colors.transparent),
                 ),
               ),
@@ -124,26 +141,40 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const TraksLogo(fontSize: 48),
-                      const SizedBox(height: 32),
-                      Text(
-                        _isSignUp ? 'CREATE ACCOUNT' : 'WELCOME BACK',
-                        style: GoogleFonts.plusJakartaSans(
+                      // Logo mimicking the small 'cp' logo
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.0),
+                        ),
+                        padding: const EdgeInsets.only(top: 12, bottom: 12),
+                        child: const Icon(
+                          Icons.cloud_circle_outlined,
                           color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -1,
+                          size: 40,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 24),
+                      Text(
+                        _isSignUp ? 'Create\nAccount' : 'Welcome\nBack',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -2.0,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       Text(
                         _isSignUp
-                            ? 'Sign up to start reporting incidents.'
-                            : 'Log in to continue your journey.',
+                            ? 'Get started by creating your account below.'
+                            : 'Log in to continue sharing and discovering.',
                         style: GoogleFonts.inter(
-                          color: const Color(0xFF888888),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF88888E),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: -0.2,
+                          height: 1.4,
                         ),
                       ),
                       const SizedBox(height: 48),
@@ -194,13 +225,15 @@ class _LoginPageState extends State<LoginPage> {
                               _PrimaryButton(
                                 text: _isSignUp ? 'SIGN UP' : 'LOG IN',
                                 onPressed: _submit,
+                                backgroundColor: Colors.white,
+                                textColor: Colors.black,
                               ),
                               const SizedBox(height: 24),
                               Row(
                                 children: [
-                                  const Expanded(
+                                  Expanded(
                                     child: Divider(
-                                      color: Colors.white12,
+                                      color: Colors.white.withOpacity(0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -211,16 +244,16 @@ class _LoginPageState extends State<LoginPage> {
                                     child: Text(
                                       'OR',
                                       style: GoogleFonts.inter(
-                                        color: const Color(0xFF888888),
+                                        color: const Color(0xFF88888E),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                         letterSpacing: 1,
                                       ),
                                     ),
                                   ),
-                                  const Expanded(
+                                  Expanded(
                                     child: Divider(
-                                      color: Colors.white12,
+                                      color: Colors.white.withOpacity(0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -228,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 24),
                               _SecondaryButton(
-                                text: 'CONTINUE WITH GOOGLE',
+                                text: 'Continue with Google',
                                 icon: Icons.g_mobiledata,
                                 onPressed: () {
                                   context.read<AuthBloc>().add(
@@ -264,8 +297,10 @@ class _LoginPageState extends State<LoginPage> {
                                   ? "Already have an account? "
                                   : "Don't have an account? ",
                               style: GoogleFonts.inter(
-                                color: const Color(0xFF888888),
-                                fontSize: 14,
+                                color: const Color(0xFF88888E),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: -0.2,
                               ),
                               children: [
                                 TextSpan(
@@ -306,32 +341,32 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           label,
           style: GoogleFonts.inter(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.5,
+            color: const Color(0xFF88888E),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         TextFormField(
           controller: controller,
           obscureText: isPassword ? _obscurePassword : false,
           keyboardType: keyboardType,
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 16),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
           cursorColor: Colors.white,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: Colors.white24, fontSize: 16),
+            hintStyle: GoogleFonts.inter(color: Colors.white.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.w500),
             filled: true,
-            fillColor: const Color(0xFF121212), // Surface color
-            prefixIcon: Icon(icon, color: Colors.white54, size: 20),
+            fillColor: const Color(0xFF232325).withOpacity(0.6), // Dark squircle specific to the canopi card
+            prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.6), size: 22),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.white54,
+                      color: Colors.white.withOpacity(0.6),
                     ),
                     onPressed: () {
                       setState(() {
@@ -341,24 +376,28 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 : null,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(24),
               borderSide: BorderSide.none,
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+            ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.white38, width: 1.5),
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+              borderRadius: BorderRadius.circular(24),
+              borderSide: const BorderSide(color: AppColors.alertHigh, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+              borderRadius: BorderRadius.circular(24),
+              borderSide: const BorderSide(color: AppColors.alertHigh, width: 1.5),
             ),
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 20,
+              horizontal: 20,
+              vertical: 22, // Thick padding for tall inputs
             ),
           ),
           validator: (value) {
@@ -376,8 +415,15 @@ class _LoginPageState extends State<LoginPage> {
 class _PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
+  final Color backgroundColor;
+  final Color textColor;
 
-  const _PrimaryButton({required this.text, required this.onPressed});
+  const _PrimaryButton({
+    required this.text, 
+    required this.onPressed,
+    required this.backgroundColor,
+    required this.textColor,
+  });
 
   @override
   State<_PrimaryButton> createState() => _PrimaryButtonState();
@@ -420,13 +466,13 @@ class _PrimaryButtonState extends State<_PrimaryButton>
         scale: _scaleAnimation,
         child: Container(
           width: double.infinity,
-          height: 56,
+          height: 64, // Exact height to match the thick pill shape
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: widget.backgroundColor,
+            borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: widget.backgroundColor.withOpacity(0.15),
                 blurRadius: 20,
                 spreadRadius: -5,
                 offset: const Offset(0, 8),
@@ -437,10 +483,10 @@ class _PrimaryButtonState extends State<_PrimaryButton>
             child: Text(
               widget.text,
               style: GoogleFonts.inter(
-                color: Colors.black,
-                fontSize: 16,
+                color: widget.textColor,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
+                letterSpacing: -0.5,
               ),
             ),
           ),
@@ -502,11 +548,10 @@ class _SecondaryButtonState extends State<_SecondaryButton>
         scale: _scaleAnimation,
         child: Container(
           width: double.infinity,
-          height: 56,
+          height: 64, // Exact height to match the thick pill shape
           decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(color: Colors.white12, width: 1.5),
-            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFF090909), // True black button
+            borderRadius: BorderRadius.circular(32),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -517,9 +562,9 @@ class _SecondaryButtonState extends State<_SecondaryButton>
                 widget.text,
                 style: GoogleFonts.inter(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  letterSpacing: 1,
+                  letterSpacing: -0.5,
                 ),
               ),
             ],
@@ -529,3 +574,4 @@ class _SecondaryButtonState extends State<_SecondaryButton>
     );
   }
 }
+

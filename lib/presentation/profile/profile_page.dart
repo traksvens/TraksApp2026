@@ -464,8 +464,14 @@ class ProfilePage extends StatelessWidget {
         children: [
           _buildColorSwatch(
             theme,
-            AppColorTheme.teal,
-            AppColors.themeTeal,
+            AppColorTheme.navy,
+            AppColors.themeNavy,
+            themeState,
+          ),
+          _buildColorSwatch(
+            theme,
+            AppColorTheme.blue,
+            AppColors.themeBlue,
             themeState,
           ),
           _buildColorSwatch(
@@ -476,14 +482,8 @@ class ProfilePage extends StatelessWidget {
           ),
           _buildColorSwatch(
             theme,
-            AppColorTheme.brown,
-            AppColors.themeBrown,
-            themeState,
-          ),
-          _buildColorSwatch(
-            theme,
-            AppColorTheme.pink,
-            AppColors.themePink,
+            AppColorTheme.slate,
+            AppColors.themeSlate,
             themeState,
           ),
         ],

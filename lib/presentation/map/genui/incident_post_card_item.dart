@@ -17,6 +17,9 @@ final incidentPostCardItem = CatalogItem(
       'imageUrl': S.string(),
       'confirmCount': S.integer(),
       'replyCount': S.integer(),
+      'userName': S.string(),
+      'userAvatarUrl': S.string(),
+      'isAnonymous': S.boolean(),
     },
     required: ['incidentType', 'content', 'severity', 'timestamp', 'address'],
   ),
@@ -27,7 +30,7 @@ final incidentPostCardItem = CatalogItem(
     final color = switch (severity) {
       'high' => const Color(0xFFD84315),
       'low' => const Color(0xFF2E7D32),
-      _ => const Color(0xFFEF6C00),
+      _ => theme.colorScheme.primary,
     };
 
     DateTime? timestamp;
@@ -37,100 +40,39 @@ final incidentPostCardItem = CatalogItem(
     }
 
     return Container(
-      margin: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(top: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
+            color: color.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(
+          color: color.withValues(alpha: 0.15),
+          width: 0.5,
+        ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         child: Material(
           color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if ((data['imageUrl'] as String?)?.isNotEmpty ?? false)
+                Stack(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        severity.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: color,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        (data['incidentType'] as String? ?? 'Incident')
-                            .toUpperCase(),
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                    if (timestamp != null)
-                      Text(
-                        timeago.format(timestamp),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.hintColor,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  data['content'] as String? ?? '',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.location_on_rounded,
-                      size: 18,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        data['address'] as String? ?? '',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.hintColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                if ((data['imageUrl'] as String?)?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: 14),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: AspectRatio(
+                    AspectRatio(
                       aspectRatio: 16 / 9,
                       child: CachedNetworkImage(
                         imageUrl: data['imageUrl'] as String,
@@ -148,26 +90,160 @@ final incidentPostCardItem = CatalogItem(
                         ),
                       ),
                     ),
-                  ),
-                ],
-                const SizedBox(height: 14),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    _MetaChip(
-                      icon: Icons.verified_rounded,
-                      label:
-                          '${data['confirmCount'] as int? ?? 0} confirmations',
-                    ),
-                    _MetaChip(
-                      icon: Icons.forum_rounded,
-                      label: '${data['replyCount'] as int? ?? 0} replies',
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.6),
+                            ],
+                            stops: const [0.6, 1.0],
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          backgroundImage: (data['userAvatarUrl'] as String?)?.isNotEmpty == true
+                              ? CachedNetworkImageProvider(data['userAvatarUrl'] as String)
+                              : null,
+                          child: (data['userAvatarUrl'] as String?)?.isEmpty ?? true
+                              ? Icon(
+                                  data['isAnonymous'] == true
+                                      ? Icons.visibility_off_rounded
+                                      : Icons.person_rounded,
+                                  size: 16,
+                                  color: theme.colorScheme.primary,
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data['userName'] as String? ?? 'User',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              if (timestamp != null)
+                                Text(
+                                  timeago.format(timestamp),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.hintColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: color.withValues(alpha: 0.2),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Text(
+                            severity.toUpperCase(),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                              fontSize: 9,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      (data['incidentType'] as String? ?? 'Incident').toUpperCase(),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.hintColor.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.0,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      data['content'] as String? ?? '',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.location_on_rounded,
+                          size: 18,
+                          color: color,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            data['address'] as String? ?? '',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.hintColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Divider(
+                      height: 1,
+                      color: theme.dividerColor.withValues(alpha: 0.08),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _MetaIndicator(
+                          icon: Icons.verified_rounded,
+                          count: data['confirmCount'] as int? ?? 0,
+                          label: 'Verifications',
+                          color: theme.colorScheme.secondary,
+                        ),
+                        const SizedBox(width: 24),
+                        _MetaIndicator(
+                          icon: Icons.forum_rounded,
+                          count: data['replyCount'] as int? ?? 0,
+                          label: 'Replies',
+                          color: theme.colorScheme.primary,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -175,34 +251,56 @@ final incidentPostCardItem = CatalogItem(
   },
 );
 
-class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.label});
+class _MetaIndicator extends StatelessWidget {
+  const _MetaIndicator({
+    required this.icon,
+    required this.count,
+    required this.label,
+    required this.color,
+  });
 
   final IconData icon;
+  final int count;
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: theme.colorScheme.primary),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
           ),
-        ],
-      ),
+          child: Icon(icon, size: 14, color: color),
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              count.toString(),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                height: 1.0,
+              ),
+            ),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.hintColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

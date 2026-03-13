@@ -45,7 +45,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       return;
     }
 
-    // Get current user details to pass
     final authState = context.read<AuthBloc>().state;
     String uid = 'unknown';
     if (authState is Authenticated) {
@@ -64,35 +63,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    // Modern Deep Black/Dark Mode aesthetics backbone
-    final backgroundColor = theme.brightness == Brightness.dark
-        ? const Color(0xFF0F0F13) // Deep AMOLED style background
-        : const Color(0xFFF7F7F9);
-
-    final textMain = theme.brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black87;
+    // Premium Navy & White Theme Colors
+    const Color navyPrimary = Color(0xFF002147);
+    const Color slate900 = Color(0xFF0F172A);
+    const Color slate600 = Color(0xFF475569);
+    const Color bgSlate = Color(0xFFF1F5F9);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bgSlate,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: textMain,
+            color: navyPrimary,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: const Text(
           "Plans & Upgrades",
           style: TextStyle(
-            color: textMain,
+            color: navyPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 18,
             letterSpacing: -0.5,
@@ -104,15 +98,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           children: [
             const SizedBox(height: 20),
             // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
                   Text(
                     "Choose Your Experience",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: textMain,
+                      color: navyPrimary,
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -1.2,
@@ -121,10 +115,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "Unlock premium features, exclusive identity marks, and priority tools tailored for you.",
+                    "Unlock premium features and professional reporting tools built for clarity and impact.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: textMain.withValues(alpha: 0.6),
+                      color: slate600,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       height: 1.4,
@@ -168,12 +162,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  height: 8,
-                  width: isActive ? 24 : 8,
+                  height: 6,
+                  width: isActive ? 24 : 6,
                   decoration: BoxDecoration(
                     color: isActive
-                        ? _subscriptionTiers[index].primaryColor
-                        : Colors.grey.withValues(alpha: 0.3),
+                        ? navyPrimary
+                        : navyPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 );
@@ -191,20 +185,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     required _TierModel tier,
     required bool isActive,
   }) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    const Color navyPrimary = Color(0xFF002147);
+    const Color slate600 = Color(0xFF475569);
+    const Color accentBlue = Color(0xFF3B82F6);
 
     final scale = isActive ? 1.0 : 0.92;
     final opacity = isActive ? 1.0 : 0.6;
-
-    // Glassmorphism card background
-    final cardBgColor = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.black.withValues(alpha: 0.03);
-
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.black.withValues(alpha: 0.05);
 
     return AnimatedScale(
       scale: scale,
@@ -217,212 +203,194 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [cardBgColor, cardBgColor.withValues(alpha: 0.01)],
-            ),
-            border: Border.all(color: borderColor, width: 1.5),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
             boxShadow: isActive
                 ? [
                     BoxShadow(
-                      color: tier.primaryColor.withValues(alpha: 0.15),
-                      blurRadius: 30,
+                      color: navyPrimary.withValues(alpha: 0.08),
+                      blurRadius: 25,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
+                    ),
+                    BoxShadow(
+                      color: navyPrimary.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 4),
                     ),
                   ]
                 : [],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(32),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Stack(
-                children: [
-                  // Abstract decorative gradient orb
-                  Positioned(
-                    top: -50,
-                    right: -50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
+          child: Stack(
+            children: [
+              // Top Accent Line
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                    gradient: LinearGradient(
+                      colors: tier.gradientColors,
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(28.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    // Icon and Name
+                    Container(
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            tier.primaryColor.withValues(alpha: 0.3),
-                            Colors.transparent,
-                          ],
+                        color: bgSlate,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        tier.icon,
+                        color: navyPrimary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      tier.name,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                        color: navyPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          tier.price == 0 ? "Free" : "₦${tier.price}",
+                          style: const TextStyle(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w900,
+                            color: navyPrimary,
+                            letterSpacing: -1.0,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        if (tier.price > 0)
+                          const Text(
+                            " / lifetime",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: slate600,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Features List
+                    Expanded(
+                      child: ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: tier.features.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 2),
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  size: 14,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  tier.features[index],
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.4,
+                                    color: slate600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                    // Action Button
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: isActive ? navyPrimary : const Color(0xFFCBD5E1),
+                        boxShadow: isActive
+                            ? [
+                                BoxShadow(
+                                  color: navyPrimary.withValues(alpha: 0.2),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ]
+                            : [],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => _onTierSelected(tier.id, context),
+                          child: Center(
+                            child: Text(
+                              tier.buttonText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(28.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Icon and Name
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: tier.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Icon(
-                            tier.icon,
-                            color: tier.primaryColor,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          tier.name,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                            foreground: Paint()
-                              ..shader =
-                                  LinearGradient(
-                                    colors: tier.gradientColors,
-                                  ).createShader(
-                                    const Rect.fromLTWH(0, 0, 200, 70),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
-                            Text(
-                              tier.price == 0 ? "Free" : "₦${tier.price}",
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w900,
-                                color: isDark ? Colors.white : Colors.black87,
-                                letterSpacing: -1.0,
-                              ),
-                            ),
-                            if (tier.price > 0)
-                              Text(
-                                " / lifetime",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      (isDark ? Colors.white : Colors.black87)
-                                          .withValues(alpha: 0.5),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Features List
-                        Expanded(
-                          child: ListView.separated(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: tier.features.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 16),
-                            itemBuilder: (context, index) {
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 2),
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: tier.primaryColor.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.check_rounded,
-                                      size: 14,
-                                      color: tier.primaryColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      tier.features[index],
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.4,
-                                        color: isDark
-                                            ? Colors.white70
-                                            : Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-                        // Action Button
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            gradient: LinearGradient(
-                              colors: tier.gradientColors,
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            boxShadow: isActive
-                                ? [
-                                    BoxShadow(
-                                      color: tier.primaryColor.withValues(
-                                        alpha: 0.3,
-                                      ),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ]
-                                : [],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: () => _onTierSelected(tier.id, context),
-                              child: Center(
-                                child: Text(
-                                  tier.buttonText,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
+
+  static const Color bgSlate = Color(0xFFF1F5F9);
 }
 
 class _TierModel {
@@ -431,7 +399,6 @@ class _TierModel {
   final int price;
   final String buttonText;
   final List<String> features;
-  final Color primaryColor;
   final List<Color> gradientColors;
   final IconData icon;
 
@@ -441,7 +408,6 @@ class _TierModel {
     required this.price,
     required this.buttonText,
     required this.features,
-    required this.primaryColor,
     required this.gradientColors,
     required this.icon,
   });
@@ -453,8 +419,7 @@ final List<_TierModel> _subscriptionTiers = [
     name: 'Freemium',
     price: 0,
     buttonText: 'Current Plan',
-    primaryColor: Colors.grey.shade500,
-    gradientColors: [Colors.grey.shade400, Colors.grey.shade600],
+    gradientColors: [const Color(0xFF94A3B8), const Color(0xFF64748B)],
     icon: Icons.person_outline_rounded,
     features: [
       'Basic profile features',
@@ -468,8 +433,7 @@ final List<_TierModel> _subscriptionTiers = [
     name: 'Premium',
     price: 3000,
     buttonText: 'Get Premium',
-    primaryColor: const Color(0xFFFFB300), // Amber/Gold
-    gradientColors: [const Color(0xFFFFD54F), const Color(0xFFFF8F00)],
+    gradientColors: [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)],
     icon: Icons.workspace_premium_rounded,
     features: [
       'Blue Verified Checkmark',
@@ -484,8 +448,7 @@ final List<_TierModel> _subscriptionTiers = [
     name: 'Reporter',
     price: 7000,
     buttonText: 'Become a Reporter',
-    primaryColor: const Color(0xFF6C63FF), // Indigo/Purple
-    gradientColors: [const Color(0xFF8C9EFF), const Color(0xFF3D5AFE)],
+    gradientColors: [const Color(0xFF002147), const Color(0xFF1E3A8A)],
     icon: Icons.campaign_rounded,
     features: [
       'Everything in Premium',

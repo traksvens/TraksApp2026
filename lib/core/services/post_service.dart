@@ -158,6 +158,8 @@ class PostService {
     required double lat,
     required double lng,
     int radius = 1000,
+    String? severity,
+    String? incidentType,
   }) async {
     try {
       final response = await _dio.get(
@@ -166,6 +168,8 @@ class PostService {
           'lat': lat.toString(),
           'long': lng.toString(),
           'radius': radius,
+          if (severity != null) 'severity': severity,
+          if (incidentType != null) 'incident_type': incidentType,
         },
       );
 

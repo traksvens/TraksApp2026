@@ -57,7 +57,7 @@ class PostModel {
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
       id: json['id'] as String? ?? '',
-      userId: json['userId'] as String? ?? '',
+      userId: json['userId'] as String? ?? json['user_id'] as String? ?? '',
       severity: json['severity'] as String? ?? 'low',
       isAnonymous: json['isAnonymous'] as bool? ?? false,
       timestamp: json['timestamp'] as String? ?? '',
@@ -78,8 +78,8 @@ class PostModel {
       location: json['location'] != null
           ? Map<String, dynamic>.from(json['location'] as Map)
           : null,
-      userName: json['userName'] as String?,
-      userAvatarUrl: json['userAvatarUrl'] as String?,
+      userName: json['userName'] as String? ?? json['user_name'] as String?,
+      userAvatarUrl: json['userAvatarUrl'] as String? ?? json['user_avatar_url'] as String?,
       geohash: json['geohash'] as String?,
     );
   }

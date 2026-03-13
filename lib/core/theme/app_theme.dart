@@ -7,14 +7,14 @@ import 'theme_controller.dart';
 class AppTheme {
   static Color _getPrimaryColor(AppColorTheme theme) {
     switch (theme) {
+      case AppColorTheme.navy:
+        return AppColors.themeNavy;
+      case AppColorTheme.blue:
+        return AppColors.themeBlue;
       case AppColorTheme.red:
         return AppColors.themeRed;
-      case AppColorTheme.brown:
-        return AppColors.themeBrown;
-      case AppColorTheme.pink:
-        return AppColors.themePink;
-      case AppColorTheme.teal:
-        return AppColors.themeTeal;
+      case AppColorTheme.slate:
+        return AppColors.themeSlate;
     }
   }
 
@@ -30,8 +30,8 @@ class AppTheme {
         primary: primaryColor,
         secondary: primaryColor,
         surface: AppColors.darkSurface,
-        background: AppColors.darkBackground,
-        onBackground: AppColors.darkTextPrimary,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
         onSurface: AppColors.darkTextPrimary,
       ),
 
@@ -117,8 +117,8 @@ class AppTheme {
         primary: primaryColor,
         secondary: primaryColor,
         surface: AppColors.lightSurface,
-        background: AppColors.lightBackground,
-        onBackground: AppColors.lightTextPrimary,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
         onSurface: AppColors.lightTextPrimary,
       ),
 

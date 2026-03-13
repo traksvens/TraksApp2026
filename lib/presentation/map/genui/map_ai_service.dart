@@ -155,17 +155,25 @@ class MapAiService {
                 properties: {
                   'locationQuery': genai.Schema.string(
                     description:
-                        'A user-supplied place name, address, or area. Leave empty when the user asks for nearby results around their current location.',
+                        'A user-supplied place name, address, city, or area if the user explicitly specifies a remote location. Leave empty only when the user explicitly asks for nearby results relative to their current location (e.g., "near me", "here"). Do NOT use "your current location" as a string here.',
                     nullable: true,
                   ),
                   'useCurrentLocation': genai.Schema.boolean(
                     description:
-                        'Set to true when the user says "near me", "around me", or asks to use their current location.',
+                        'Set to true ONLY when the user asks for incidents "near me", "around me", "my location", "here", or asks something without specifying a distinct city/place. Default to false if a specific place is mentioned.',
                     nullable: true,
                   ),
                   'radiusMeters': genai.Schema.integer(
                     description:
-                        'Search radius in meters. Use a number between 300 and 10000.',
+                        'Search radius in meters. Use a number between 300 and 20000. Default 10000. If the user asks for a large city, use a larger radius (like 15000 or 20000).',
+                    nullable: true,
+                  ),
+                  'incidentType': genai.Schema.string(
+                    description: 'Optional. Filter by type (e.g., "Fire", "Flood", "Accident").',
+                    nullable: true,
+                  ),
+                  'severity': genai.Schema.string(
+                    description: 'Optional. Filter by severity level (e.g., "low", "medium", "high", "critical").',
                     nullable: true,
                   ),
                 },
@@ -244,8 +252,10 @@ Current user location context:
 - latitude: ${currentLocationContext.lat}
 - longitude: ${currentLocationContext.lng}
 
-Use this location context only when it is relevant to the request.
-If the user refers to "my location", "near me", or "around me", use this current location.
+Use this location context ONLY when it is relevant to the request.
+If the user refers to "my location", "near me", "here", or does not specify a location, use `useCurrentLocation`: true.
+If the user specifies a distinct city, neighborhood, or landmark (e.g., "in New York", "around Central Park"), extract THAT location into `locationQuery` and set `useCurrentLocation`: false.
+Do not map distinct locations to the current location coordinates.
 ''';
   }
 
@@ -285,14 +295,8 @@ Do not invent details that are not present in the tool result.
 
   bool _shouldUseNearbyTool(String prompt) {
     final normalized = prompt.toLowerCase();
-    final hasNearbyPhrase =
-        normalized.contains('near me') ||
-        normalized.contains('around me') ||
-        normalized.contains('current location') ||
-        normalized.contains('nearby') ||
-        normalized.contains('near ') ||
-        normalized.contains('around ') ||
-        RegExp(r'\b(?:in|at)\s+[a-z]').hasMatch(normalized);
+    
+    // Looser matching strategy - if they ask for something in a specific area, or locally, we use the tool.
     final hasSearchIntent =
         normalized.contains('incident') ||
         normalized.contains('post') ||
@@ -300,14 +304,22 @@ Do not invent details that are not present in the tool result.
         normalized.contains('crime') ||
         normalized.contains('accident') ||
         normalized.contains('safety') ||
+        normalized.contains('happening') ||
         normalized.startsWith('show me') ||
         normalized.startsWith('find') ||
         normalized.startsWith('search') ||
         normalized.startsWith('look up') ||
-        normalized.startsWith('are there') ||
-        normalized.startsWith('what happened');
+        normalized.startsWith('what happened') ||
+        normalized.startsWith('are there');
 
-    return hasNearbyPhrase && hasSearchIntent;
+    // To prevent the tool from being completely ignored on short queries like "crimes in New York"
+    final hasLocationPreposition = RegExp(r'\b(?:in|at|near|around|for)\s+[a-z]+').hasMatch(normalized);
+    final hasCurrentLocationIntent = normalized.contains('near me') || 
+                                     normalized.contains('around me') || 
+                                     normalized.contains('here') ||
+                                     normalized.contains('current location');
+
+    return hasSearchIntent && (hasLocationPreposition || hasCurrentLocationIntent);
   }
 
   genai.FunctionCall? _buildFallbackFunctionCall(String prompt) {
@@ -343,13 +355,16 @@ Do not invent details that are not present in the tool result.
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
 
+    // Look for prepositional phrases targeting a place
     final anchoredMatch = RegExp(
-      r'\b(?:near|around|in|at)\b\s+(.+)$',
+      r'\b(?:near|around|in|at|for)\b\s+(.+)$',
       caseSensitive: false,
     ).firstMatch(cleanedPrompt);
+    
     if (anchoredMatch != null) {
       final candidate = anchoredMatch.group(1)?.trim() ?? '';
       if (candidate.isNotEmpty) {
+        // Strip out trailing stuff we don't need
         return candidate
             .replaceAll(
               RegExp(
@@ -362,10 +377,11 @@ Do not invent details that are not present in the tool result.
       }
     }
 
+    // Ultimate fallback: strip common intent verbs
     return cleanedPrompt
         .replaceAll(
           RegExp(
-            r'\b(?:show me|find|search|look up|lookup|get|are there|what happened|incidents|incident|posts|post|reports|report|around|near|in|at|for|please)\b',
+            r'\b(?:show me|find|search|look up|lookup|get|are there|what happened|whats happening|incidents|incident|posts|post|reports|report|around|near|in|at|for|please)\b',
             caseSensitive: false,
           ),
           ' ',
@@ -408,6 +424,8 @@ Do not invent details that are not present in the tool result.
     final query = (args['locationQuery'] as String? ?? '').trim();
     final useCurrentLocation = args['useCurrentLocation'] == true;
     final radiusMeters = _sanitizeRadius(args['radiusMeters']);
+    final incidentType = args['incidentType'] as String?;
+    final severity = args['severity'] as String?;
 
     double? lat;
     double? lng;
@@ -441,6 +459,8 @@ Do not invent details that are not present in the tool result.
       lat: lat,
       lng: lng,
       radius: radiusMeters,
+      incidentType: incidentType,
+      severity: severity,
     );
 
     return _ToolExecutionResult(
@@ -460,7 +480,7 @@ Do not invent details that are not present in the tool result.
       _ => null,
     };
 
-    return (parsed ?? 1500).clamp(300, 10000);
+    return (parsed ?? 10000).clamp(300, 20000);
   }
 
   String _fallbackSummary(List<PostModel> posts, String label) {
@@ -475,16 +495,17 @@ Do not invent details that are not present in the tool result.
     return 'I found ${posts.length} nearby posts around $label.';
   }
 
-  static const String _systemInstruction = '''
+static const String _systemInstruction = '''
 You are the map assistant for a safety incident app.
 
 Your job:
-- Help the user find safety posts for a place or nearby area.
-- When the user asks about incidents in a place, near a place, or near their current location, call the tool `findPostsNearLocation`.
+- Help the user find safety posts for a place, a city, or nearby area.
+- CRITICAL: When the user asks about incidents in a SPECIFIC CITY or PLACE (e.g. "crimes in New York", "posts in Chicago"), ALWAYS call the tool `findPostsNearLocation` and place that city/place name in the `locationQuery` argument. Do NOT use their current location if they ask for somewhere else.
+- When the user asks about incidents near their current location (e.g. "near me", "here"), call the tool with `useCurrentLocation`: true.
 - After receiving tool results, answer briefly and clearly.
-- Keep answers mobile-friendly and concise.
+- Keep answers mobile-friendly, engaging, and concise (under 3 sentences).
 - Do not invent incidents, counts, or places. Only use tool output.
-- If the user asks a general conversational question, answer briefly without the tool.
+- If the user asks a general conversational question not related to searching posts, answer briefly without the tool.
 ''';
 
   static final genai.ToolConfig _defaultToolConfig = genai.ToolConfig(
@@ -532,6 +553,18 @@ class _ToolExecutionResult {
   };
 
   static Map<String, Object?> _serializePost(PostModel post) {
+    // Robust lat/lng extraction
+    double? lat;
+    double? lng;
+
+    if (post.location != null) {
+      lat = (post.location!['lat'] as num?)?.toDouble() ??
+          (post.location!['latitude'] as num?)?.toDouble();
+      lng = (post.location!['lng'] as num?)?.toDouble() ??
+          (post.location!['long'] as num?)?.toDouble() ??
+          (post.location!['longitude'] as num?)?.toDouble();
+    }
+
     return {
       'id': post.id,
       'incidentType': post.incidentType,
@@ -541,9 +574,12 @@ class _ToolExecutionResult {
       'address': post.address.formattedAddress ?? '',
       'imageUrl': post.absoluteImageUrl,
       'confirmCount': post.confirmCount,
+      'refuteCount': post.refuteCount,
       'replyCount': post.replyCount,
-      'lat': post.location?['lat'],
-      'lng': post.location?['lng'],
+      'userName': post.isAnonymous ? 'Anonymous' : (post.userName ?? 'User'),
+      'userAvatarUrl': post.isAnonymous ? null : post.userAvatarUrl,
+      'isAnonymous': post.isAnonymous,
+      if (lat != null && lng != null) 'location': {'lat': lat, 'lng': lng},
     };
   }
 }

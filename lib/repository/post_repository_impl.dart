@@ -86,12 +86,16 @@ class PostRepositoryImpl implements PostRepository {
     required double lat,
     required double lng,
     int radius = 1000,
+    String? severity,
+    String? incidentType,
   }) async {
     try {
       return await _postService.getPostsByProximity(
         lat: lat,
         lng: lng,
         radius: radius,
+        severity: severity,
+        incidentType: incidentType,
       );
     } on ServerException catch (e) {
       throw ServerFailure(e.message);
