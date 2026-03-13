@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppColorTheme { navy, blue, red, slate }
+enum AppColorTheme { navy, blue, red, slate, green }
 
 class ThemeState {
   final ThemeMode mode;

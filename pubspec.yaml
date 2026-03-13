@@ -66,6 +66,7 @@ dependencies:
   genui: ^0.7.0
   google_generative_ai: ^0.4.7
   json_schema_builder: ^0.1.3
+  calendar_date_picker2: ^2.0.1
 
 dev_dependencies:
   flutter_test:

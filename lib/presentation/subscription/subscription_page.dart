@@ -53,24 +53,28 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
     final returnUri = kIsWeb ? Uri.base.origin : 'traksapp://payment';
     final tierParam = tierName == 'premium' ? 'premium' : 'reporter';
-    final baseUrl = dotenv.get('PAYMENT_UI_BASE_URL', fallback: 'https://traks-payment-ui.vercel.app/');
+    final baseUrl = dotenv.get(
+      'PAYMENT_UI_BASE_URL',
+      fallback: 'https://traks-payment-ui.vercel.app/',
+    );
 
     final paymentUrl =
-        '${baseUrl}?userId=$uid&return_url=$returnUri&tier=$tierParam';
+        '$baseUrl?userId=$uid&return_url=$returnUri&tier=$tierParam';
 
     _launchPaymentUrl(paymentUrl);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Premium Navy & White Theme Colors
-    const Color navyPrimary = Color(0xFF002147);
-    const Color slate900 = Color(0xFF0F172A);
-    const Color slate600 = Color(0xFF475569);
-    const Color bgSlate = Color(0xFFF1F5F9);
+    // Premium Navy & White Theme Colors replaced with Canopi Dark Theme
+    const Color canopiBg = Color(0xFF0D110F);
+    const Color canopiText = Colors.white;
+    const Color canopiSubtitle = Color(0xFFA0A0A0);
+    const Color canopiGreen = Color(0xFF22C55E);
 
     return Scaffold(
-      backgroundColor: bgSlate,
+      backgroundColor: canopiBg,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -78,7 +82,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: navyPrimary,
+            color: canopiText,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -86,96 +90,122 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         title: const Text(
           "Plans & Upgrades",
           style: TextStyle(
-            color: navyPrimary,
+            fontFamily: 'Inter',
+            color: canopiText,
             fontWeight: FontWeight.w700,
             fontSize: 18,
             letterSpacing: -0.5,
           ),
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Header
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  Text(
-                    "Choose Your Experience",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: navyPrimary,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -1.2,
-                      height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Unlock premium features and professional reporting tools built for clarity and impact.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: slate600,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
+      body: Stack(
+        children: [
+          // Ambient Radial Glow Backdrop Settings
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    canopiGreen.withValues(alpha: 0.15),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 1.0],
+                ),
               ),
             ),
-            const SizedBox(height: 40),
-
-            // Carousel
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                physics: const BouncingScrollPhysics(),
-                onPageChanged: (int page) {
-                  setState(() {
-                    _currentPage = page;
-                  });
-                },
-                itemCount: _subscriptionTiers.length,
-                itemBuilder: (context, index) {
-                  final tier = _subscriptionTiers[index];
-                  final isActive = _currentPage == index;
-
-                  return _buildTierCard(
-                    context: context,
-                    tier: tier,
-                    isActive: isActive,
-                  );
-                },
-              ),
-            ),
-
-            // Indicators
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_subscriptionTiers.length, (index) {
-                final isActive = _currentPage == index;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  height: 6,
-                  width: isActive ? 24 : 6,
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? navyPrimary
-                        : navyPrimary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                // Header
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Choose Your Experience",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: canopiText,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1.2,
+                          height: 1.1,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        "Unlock premium features and professional reporting tools built for clarity and impact.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: canopiSubtitle,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              }),
+                ),
+                const SizedBox(height: 40),
+
+                // Carousel
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    physics: const BouncingScrollPhysics(),
+                    onPageChanged: (int page) {
+                      setState(() {
+                        _currentPage = page;
+                      });
+                    },
+                    itemCount: _subscriptionTiers.length,
+                    itemBuilder: (context, index) {
+                      final tier = _subscriptionTiers[index];
+                      final isActive = _currentPage == index;
+
+                      return _buildTierCard(
+                        context: context,
+                        tier: tier,
+                        isActive: isActive,
+                      );
+                    },
+                  ),
+                ),
+
+                // Indicators
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_subscriptionTiers.length, (index) {
+                    final isActive = _currentPage == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      height: 6,
+                      width: isActive ? 24 : 6,
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? canopiGreen
+                            : Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -185,9 +215,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     required _TierModel tier,
     required bool isActive,
   }) {
-    const Color navyPrimary = Color(0xFF002147);
-    const Color slate600 = Color(0xFF475569);
-    const Color accentBlue = Color(0xFF3B82F6);
+    const Color canopiText = Colors.white;
+    const Color canopiSubtitle = Color(0xFFA0A0A0);
 
     final scale = isActive ? 1.0 : 0.92;
     final opacity = isActive ? 1.0 : 0.6;
@@ -200,197 +229,218 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         opacity: opacity,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutQuart,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: navyPrimary.withValues(alpha: 0.08),
-                      blurRadius: 25,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 10),
-                    ),
-                    BoxShadow(
-                      color: navyPrimary.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Stack(
-            children: [
-              // Top Accent Line
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 4,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                    gradient: LinearGradient(
-                      colors: tier.gradientColors,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32), // Squircle matching home
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(
+                  0xFF1A1D1C,
+                ).withValues(alpha: 0.6), // Frosted glass dark
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: isActive
+                      ? tier.gradientColors.last.withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.08),
+                  width: 1,
+                ),
+                boxShadow: isActive
+                    ? [
+                        BoxShadow(
+                          color: tier.gradientColors.first.withValues(
+                            alpha: 0.15,
+                          ),
+                          blurRadius: 25,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 10),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Stack(
+                children: [
+                  // Top Accent Line
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        ),
+                        gradient: LinearGradient(colors: tier.gradientColors),
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-              Padding(
-                padding: const EdgeInsets.all(28.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    // Icon and Name
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: bgSlate,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        tier.icon,
-                        color: navyPrimary,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      tier.name,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                        color: navyPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
+                  Padding(
+                    padding: const EdgeInsets.all(28.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 10),
+                        // Icon and Name
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF232325),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(tier.icon, color: canopiText, size: 28),
+                        ),
+                        const SizedBox(height: 24),
                         Text(
-                          tier.price == 0 ? "Free" : "₦${tier.price}",
+                          tier.name,
                           style: const TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.w900,
-                            color: navyPrimary,
-                            letterSpacing: -1.0,
-                            fontFeatures: [FontFeature.tabularFigures()],
+                            fontFamily: 'Inter',
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            color: canopiText,
                           ),
                         ),
-                        if (tier.price > 0)
-                          const Text(
-                            " / lifetime",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: slate600,
+                        const SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              tier.price == 0 ? "Free" : "₦${tier.price}",
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 38,
+                                fontWeight: FontWeight.w900,
+                                color: canopiText,
+                                letterSpacing: -1.0,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
                             ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Features List
-                    Expanded(
-                      child: ListView.separated(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: tier.features.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 2),
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check_rounded,
-                                  size: 14,
-                                  color: Colors.green,
+                            if (tier.price > 0)
+                              const Text(
+                                " / lifetime",
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: canopiSubtitle,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Features List
+                        Expanded(
+                          child: ListView.separated(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: tier.features.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 2),
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFF22C55E,
+                                      ).withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.check_rounded,
+                                      size: 14,
+                                      color: Color(0xFF22C55E),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      tier.features[index],
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.4,
+                                        color: canopiSubtitle,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+                        // Action Button
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: double.infinity,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              32,
+                            ), // Pill shape 32px
+                            color: isActive
+                                ? (tier.id == 'freemium'
+                                      ? const Color(0xFF232325)
+                                      : const Color(0xFF22C55E))
+                                : const Color(
+                                    0xFF232325,
+                                  ).withValues(alpha: 0.5),
+                            boxShadow: isActive && tier.id != 'freemium'
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF22C55E,
+                                      ).withValues(alpha: 0.2),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(32),
+                              onTap: () => _onTierSelected(tier.id, context),
+                              child: Center(
                                 child: Text(
-                                  tier.features[index],
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.4,
-                                    color: slate600,
+                                  tier.buttonText,
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    color: isActive && tier.id != 'freemium'
+                                        ? const Color(0xFF0D110F)
+                                        : Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.2,
                                   ),
                                 ),
                               ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    // Action Button
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: isActive ? navyPrimary : const Color(0xFFCBD5E1),
-                        boxShadow: isActive
-                            ? [
-                                BoxShadow(
-                                  color: navyPrimary.withValues(alpha: 0.2),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => _onTierSelected(tier.id, context),
-                          child: Center(
-                            child: Text(
-                              tier.buttonText,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-
-  static const Color bgSlate = Color(0xFFF1F5F9);
 }
 
 class _TierModel {
@@ -433,7 +483,7 @@ final List<_TierModel> _subscriptionTiers = [
     name: 'Premium',
     price: 3000,
     buttonText: 'Get Premium',
-    gradientColors: [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)],
+    gradientColors: [const Color(0xFF22C55E), const Color(0xFF16A34A)],
     icon: Icons.workspace_premium_rounded,
     features: [
       'Blue Verified Checkmark',
@@ -448,7 +498,7 @@ final List<_TierModel> _subscriptionTiers = [
     name: 'Reporter',
     price: 7000,
     buttonText: 'Become a Reporter',
-    gradientColors: [const Color(0xFF002147), const Color(0xFF1E3A8A)],
+    gradientColors: [const Color(0xFFEAB308), const Color(0xFFCA8A04)],
     icon: Icons.campaign_rounded,
     features: [
       'Everything in Premium',

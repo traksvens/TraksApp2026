@@ -58,25 +58,16 @@ class PostWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(20),
+          color: const Color(0xFF1A1D1C).withValues(alpha: 0.6), // Glassmorphism container
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: theme.dividerColor.withValues(alpha: 0.15),
+            color: Colors.white.withValues(alpha: 0.08),
             width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: theme.brightness == Brightness.dark
-                  ? Colors.black.withValues(alpha: 0.3)
-                  : Colors.black.withValues(alpha: 0.05),
-              blurRadius: 16,
-              spreadRadius: -2,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          // Removing heavy shadows for a flatter, more modern look
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -86,8 +77,8 @@ class PostWidget extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => PostDetailPage(post: post)),
                 );
               },
-              splashColor: theme.primaryColor.withValues(alpha: 0.05),
-              highlightColor: theme.primaryColor.withValues(alpha: 0.02),
+              splashColor: const Color(0xFF22C55E).withValues(alpha: 0.05),
+              highlightColor: const Color(0xFF22C55E).withValues(alpha: 0.02),
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
@@ -99,7 +90,7 @@ class PostWidget extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: theme.colorScheme.primaryContainer,
+                          backgroundColor: const Color(0xFF232325),
                           backgroundImage: post.userAvatarUrl != null
                               ? CachedNetworkImageProvider(post.userAvatarUrl!)
                               : null,
@@ -112,8 +103,9 @@ class PostWidget extends StatelessWidget {
                                           : "U")
                                       .substring(0, 1)
                                       .toUpperCase(),
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
+                                  style: const TextStyle(
+                                    fontFamily: 'Inter',
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 )
@@ -133,29 +125,31 @@ class PostWidget extends StatelessWidget {
                                           : (post.userId.length > 5
                                                 ? post.userId.substring(0, 5)
                                                 : post.userId),
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                          ),
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   if (post.confirmCount > 5)
-                                    Icon(
+                                    const Icon(
                                       Icons.verified,
                                       size: 14,
-                                      color: theme.primaryColor,
+                                      color: Color(0xFF22C55E), // Canopi Green
                                     ),
                                 ],
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 "· ${_formatDate(post.timestamp)}",
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
                                   fontSize: 12,
-                                  color: theme.colorScheme.onSurface.withValues(
+                                  color: Colors.white.withValues(
                                     alpha: 0.6,
                                   ),
                                   fontWeight: FontWeight.w500,
@@ -178,11 +172,12 @@ class PostWidget extends StatelessWidget {
                     // TEXT CONTENT
                     Text(
                       post.content,
-                      style: theme.textTheme.bodyLarge?.copyWith(
+                      style: TextStyle(
+                        fontFamily: 'Inter',
                         fontSize: 15,
                         height: 1.5,
                         fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.onSurface.withValues(
+                        color: Colors.white.withValues(
                           alpha: 0.95,
                         ),
                       ),
@@ -204,7 +199,7 @@ class PostWidget extends StatelessWidget {
                           if (post.incidentType.isNotEmpty)
                             _buildTag(
                               label: post.incidentType,
-                              color: theme.colorScheme.secondary,
+                              color: Colors.white,
                               theme: theme,
                               isOutline: true,
                             ),
@@ -276,7 +271,7 @@ class PostWidget extends StatelessWidget {
                         _buildAction(
                           icon: Icons.chat_bubble_outline,
                           label: "${post.replyCount}",
-                          color: theme.colorScheme.onSurface,
+                          color: Colors.white,
                           theme: theme,
                           isActive: false,
                           onTap: () {
@@ -357,7 +352,7 @@ class PostWidget extends StatelessWidget {
                         _buildAction(
                           icon: Icons.share_outlined,
                           label: "",
-                          color: theme.colorScheme.onSurface,
+                          color: Colors.white,
                           theme: theme,
                           isActive: false,
                           onTap: () {},
@@ -384,19 +379,19 @@ class PostWidget extends StatelessWidget {
   }) {
     final activeColor = isActive
         ? color
-        : theme.iconTheme.color?.withValues(alpha: 0.6);
+        : Colors.white.withValues(alpha: 0.6);
 
     return Material(
       color: isActive ? color.withValues(alpha: 0.1) : Colors.transparent,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(32), // More pill-shaped
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(32),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(32),
             border: Border.all(
               color: isActive
                   ? color.withValues(alpha: 0.3)
@@ -413,9 +408,10 @@ class PostWidget extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
+                    fontFamily: 'Inter',
                     color: isActive
                         ? color
-                        : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        : Colors.white.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
                   ),
@@ -435,20 +431,21 @@ class PostWidget extends StatelessWidget {
     bool isOutline = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isOutline ? null : color.withValues(alpha: 0.1),
+        color: isOutline ? Colors.transparent : color.withValues(alpha: 0.12),
         border: isOutline
-            ? Border.all(color: color.withValues(alpha: 0.5))
-            : null,
-        borderRadius: BorderRadius.circular(12),
+            ? Border.all(color: Colors.white.withValues(alpha: 0.2))
+            : Border.all(color: color.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
         label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: isOutline ? color : color,
+        style: TextStyle(
+          fontFamily: 'Inter',
+          color: color,
           fontSize: 10,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
         ),
       ),

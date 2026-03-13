@@ -45,7 +45,7 @@ class ProfilePage extends StatelessWidget {
             }
 
             return Scaffold(
-              backgroundColor: theme.scaffoldBackgroundColor,
+              backgroundColor: const Color(0xFF0D110F), // Canopi Dark Base
               body: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -71,24 +71,19 @@ class ProfilePage extends StatelessWidget {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-                                  theme.primaryColor.withValues(alpha: 0.15),
-                                  theme.colorScheme.secondary.withValues(
-                                    alpha: 0.05,
-                                  ),
-                                  theme.scaffoldBackgroundColor,
+                                  const Color(0xFF22C55E).withValues(alpha: 0.15),
+                                  Colors.transparent,
                                 ],
-                                stops: const [0.0, 0.5, 1.0],
+                                stops: const [0.0, 1.0],
                               ),
                             ),
                           ),
                           // Glassmorphism Blur Layer
                           ClipRect(
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                              filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
                               child: Container(
-                                color: theme.scaffoldBackgroundColor.withValues(
-                                  alpha: 0.6,
-                                ),
+                                color: const Color(0xFF0D110F).withValues(alpha: 0.7),
                               ),
                             ),
                           ),
@@ -106,21 +101,15 @@ class ProfilePage extends StatelessWidget {
                                       shape: BoxShape.circle,
                                       gradient: LinearGradient(
                                         colors: [
-                                          theme.primaryColor.withValues(
-                                            alpha: 0.8,
-                                          ),
-                                          theme.primaryColor.withValues(
-                                            alpha: 0.2,
-                                          ),
+                                          const Color(0xFF22C55E).withValues(alpha: 0.8),
+                                          const Color(0xFF22C55E).withValues(alpha: 0.2),
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: theme.primaryColor.withValues(
-                                            alpha: 0.2,
-                                          ),
+                                          color: const Color(0xFF22C55E).withValues(alpha: 0.25),
                                           blurRadius: 24,
                                           spreadRadius: 4,
                                           offset: const Offset(0, 8),
@@ -131,28 +120,25 @@ class ProfilePage extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: theme.scaffoldBackgroundColor,
+                                          color: const Color(0xFF0D110F),
                                           width: 3,
                                         ),
                                       ),
                                       child: CircleAvatar(
                                         radius: 54,
-                                        backgroundColor:
-                                            theme.colorScheme.surface,
+                                        backgroundColor: const Color(0xFF232325),
                                         backgroundImage: photoUrl != null
                                             ? NetworkImage(photoUrl)
                                             : null,
                                         child: photoUrl == null
                                             ? Text(
-                                                displayName
-                                                    .substring(0, 1)
-                                                    .toUpperCase(),
-                                                style: theme
-                                                    .textTheme
-                                                    .headlineMedium
-                                                    ?.copyWith(
-                                                      color: theme.primaryColor,
-                                                    ),
+                                                displayName.substring(0, 1).toUpperCase(),
+                                                style: const TextStyle(
+                                                  fontFamily: 'Inter',
+                                                  fontSize: 32,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
                                               )
                                             : null,
                                       ),
@@ -164,8 +150,13 @@ class ProfilePage extends StatelessWidget {
                                     children: [
                                       Text(
                                         displayName,
-                                        style: theme.textTheme.headlineMedium
-                                            ?.copyWith(letterSpacing: -0.5),
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: -0.5,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                       if (isVerified) ...[
                                         const SizedBox(width: 6),
@@ -181,14 +172,12 @@ class ProfilePage extends StatelessWidget {
                                   if (email.isNotEmpty)
                                     Text(
                                       email,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: theme
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.color
-                                                ?.withValues(alpha: 0.6),
-                                          ),
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white.withValues(alpha: 0.6),
+                                      ),
                                     ),
                                 ],
                               ),
@@ -209,12 +198,10 @@ class ProfilePage extends StatelessWidget {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(
-                                0xFFDC2626,
-                              ).withValues(alpha: 0.25),
+                              color: const Color(0xFFDC2626).withValues(alpha: 0.25),
                               blurRadius: 24,
                               spreadRadius: -4,
                               offset: const Offset(0, 8),
@@ -226,24 +213,24 @@ class ProfilePage extends StatelessWidget {
                             // TODO: Implement SOS action
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                              0xFFDC2626,
-                            ), // Premium Red 600
+                            backgroundColor: const Color(0xFFDC2626), // Premium Red 600
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(32),
                             ),
                             elevation: 0,
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.warning_amber_rounded, size: 28),
-                              const SizedBox(width: 12),
+                              Icon(Icons.warning_amber_rounded, size: 28),
+                              SizedBox(width: 12),
                               Text(
                                 "Emergency SOS",
-                                style: theme.textTheme.titleMedium?.copyWith(
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.5,
@@ -348,9 +335,11 @@ class ProfilePage extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8),
       child: Text(
         title,
-        style: theme.textTheme.bodySmall?.copyWith(
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: theme.disabledColor,
+          color: Colors.white.withValues(alpha: 0.5),
           letterSpacing: 1.0,
         ),
       ),
@@ -373,12 +362,12 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
+          color: const Color(0xFF232325).withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 24,
               spreadRadius: -4,
               offset: const Offset(0, 8),
@@ -390,14 +379,12 @@ class ProfilePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: (iconColor ?? theme.primaryColor).withValues(
-                  alpha: 0.08,
-                ),
-                borderRadius: BorderRadius.circular(16),
+                color: (iconColor ?? const Color(0xFF22C55E)).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
                 icon,
-                color: iconColor ?? theme.primaryColor,
+                color: iconColor ?? const Color(0xFF22C55E),
                 size: 24,
               ),
             ),
@@ -408,21 +395,21 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: TextStyle(
+                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: textColor,
+                      color: textColor ?? Colors.white,
                     ),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: TextStyle(
+                        fontFamily: 'Inter',
                         fontSize: 13,
-                        color: theme.textTheme.bodyMedium?.color?.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: Colors.white.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -434,7 +421,7 @@ class ProfilePage extends StatelessWidget {
             else if (showChevron)
               Icon(
                 Icons.chevron_right_rounded,
-                color: theme.dividerColor.withValues(alpha: 0.5),
+                color: Colors.white.withValues(alpha: 0.3),
                 size: 24,
               ),
           ],
@@ -447,12 +434,12 @@ class ProfilePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
+        color: const Color(0xFF232325).withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 24,
             spreadRadius: -4,
             offset: const Offset(0, 8),
@@ -484,6 +471,12 @@ class ProfilePage extends StatelessWidget {
             theme,
             AppColorTheme.slate,
             AppColors.themeSlate,
+            themeState,
+          ),
+          _buildColorSwatch(
+            theme,
+            AppColorTheme.green,
+            AppColors.themeGreen,
             themeState,
           ),
         ],
@@ -538,12 +531,12 @@ class ProfilePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.08)),
+        color: const Color(0xFF232325).withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 24,
             spreadRadius: -4,
             offset: const Offset(0, 8),
@@ -579,7 +572,7 @@ class ProfilePage extends StatelessWidget {
             Set<WidgetState> states,
           ) {
             if (states.contains(WidgetState.selected)) {
-              return theme.primaryColor.withValues(alpha: 0.15);
+              return const Color(0xFF22C55E).withValues(alpha: 0.15);
             }
             return Colors.transparent;
           }),
@@ -587,13 +580,16 @@ class ProfilePage extends StatelessWidget {
             Set<WidgetState> states,
           ) {
             if (states.contains(WidgetState.selected)) {
-              return theme.primaryColor;
+              return const Color(0xFF22C55E);
             }
-            return theme.colorScheme.onSurface;
+            return Colors.white;
           }),
+          textStyle: const WidgetStatePropertyAll(
+             TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.normal),
+          ),
           side: const WidgetStatePropertyAll(BorderSide.none),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           ),
         ),
       ),

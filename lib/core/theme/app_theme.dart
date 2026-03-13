@@ -15,6 +15,8 @@ class AppTheme {
         return AppColors.themeRed;
       case AppColorTheme.slate:
         return AppColors.themeSlate;
+      case AppColorTheme.green:
+        return AppColors.themeGreen;
     }
   }
 

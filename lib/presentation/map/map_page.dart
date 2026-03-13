@@ -592,8 +592,11 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       keyboardInset: keyboardInset,
     );
 
+    // 96px is added to push elements above the Home page's floating bottom navigation bar
+    final navBarOffset = 96.0;
+
     final overlayHeight =
-        76 +
+        76 + navBarOffset +
         (showSuggestions ? 240 : 0) +
         (showAiLocationCard ? 64 : 0) +
         (showAiPanel ? aiPanelHeight.round() : 0) +
@@ -662,7 +665,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             Positioned(
               left: 16,
               right: 16,
-              bottom: keyboardLift + 92,
+              bottom: keyboardLift + 92 + navBarOffset,
               child: _buildNavigationCard(theme, navState),
             ),
           Positioned(
@@ -672,7 +675,9 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             child: AnimatedPadding(
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
-              padding: EdgeInsets.only(bottom: keyboardInset),
+              padding: EdgeInsets.only(
+                bottom: keyboardInset > 0 ? keyboardInset : navBarOffset,
+              ),
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,

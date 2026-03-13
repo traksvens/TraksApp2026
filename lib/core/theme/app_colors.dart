@@ -29,4 +29,5 @@ class AppColors {
   static const Color themeBlue = Color(0xFF3B82F6);
   static const Color themeRed = Color(0xFFDC2626);
   static const Color themeSlate = Color(0xFF64748B);
+  static const Color themeGreen = Color(0xFF22C55E); // Canopi Green
 }

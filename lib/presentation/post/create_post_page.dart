@@ -239,6 +239,7 @@ class _CreatePostPageState extends State<CreatePostPage>
         });
       } catch (e) {
         if (mounted) {
+          final theme = Theme.of(context);
           final isServiceDisabled = e.toString().contains(
             'Location services are disabled',
           );
@@ -248,9 +249,13 @@ class _CreatePostPageState extends State<CreatePostPage>
                 isServiceDisabled
                     ? 'Location services are turned off.'
                     : 'Location permission required: $e',
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: theme.colorScheme.error,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               action: isServiceDisabled
                   ? SnackBarAction(
                       label: 'TURN ON',
@@ -278,10 +283,16 @@ class _CreatePostPageState extends State<CreatePostPage>
         if (state.formStatus == PostFormStatus.success) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Report posted successfully!'),
+            SnackBar(
+              content: const Text(
+                'Report posted successfully!',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green,
+              backgroundColor: theme.colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           );
         } else if (state.formStatus == PostFormStatus.failure) {
@@ -290,9 +301,15 @@ class _CreatePostPageState extends State<CreatePostPage>
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage ?? 'Submission failed'),
+              content: Text(
+                state.errorMessage ?? 'Submission failed',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               behavior: SnackBarBehavior.floating,
               backgroundColor: theme.colorScheme.error,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           );
         }
@@ -307,7 +324,8 @@ class _CreatePostPageState extends State<CreatePostPage>
           title: Text(
             'New Report',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.5,
             ),
           ),
           centerTitle: true,
@@ -316,27 +334,49 @@ class _CreatePostPageState extends State<CreatePostPage>
           surfaceTintColor: Colors.transparent,
           actions: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: FilledButton.tonal(
-                onPressed: _isSubmitting || _contentController.text.isEmpty
-                    ? null
-                    : _submitPost,
-                style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: _isSubmitting || _contentController.text.isEmpty
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          )
+                        ],
                 ),
-                child: _isSubmitting
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Post',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                child: FilledButton(
+                  onPressed: _isSubmitting || _contentController.text.isEmpty
+                      ? null
+                      : _submitPost,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    disabledForegroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                  ),
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Post',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                ),
               ),
             ),
           ],
@@ -398,11 +438,12 @@ class _CreatePostPageState extends State<CreatePostPage>
                             fillColor: theme.colorScheme.surfaceContainerHighest
                                 .withValues(alpha: 0.3),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(24),
                               borderSide: BorderSide.none,
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
+                              horizontal: 20,
+                              vertical: 16,
                             ),
                           ),
                         ),
@@ -411,7 +452,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                             margin: const EdgeInsets.only(top: 8),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surface,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(24),
                               border: Border.all(
                                 color: theme.dividerColor.withValues(
                                   alpha: 0.1,
@@ -577,17 +618,18 @@ class _CreatePostPageState extends State<CreatePostPage>
                                         size: 18,
                                         color: isSelected
                                             ? theme.colorScheme.onPrimary
-                                            : theme.colorScheme.onSurface,
+                                            : theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
                                         entry.key.toUpperCase(),
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w700,
                                           fontSize: 12,
+                                          letterSpacing: 0.5,
                                           color: isSelected
                                               ? theme.colorScheme.onPrimary
-                                              : theme.colorScheme.onSurface,
+                                              : theme.colorScheme.onSurface.withValues(alpha: 0.8),
                                         ),
                                       ),
                                     ],
@@ -603,11 +645,11 @@ class _CreatePostPageState extends State<CreatePostPage>
 
                       // Severity Selector (Custom Segmented Control)
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(20),
+                              .withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
                           children: _severityColors.keys.map((severityKey) {
@@ -627,7 +669,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     color: isSelected
                                         ? color
                                         : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(20),
                                     boxShadow: isSelected
                                         ? [
                                             BoxShadow(
@@ -674,39 +716,41 @@ class _CreatePostPageState extends State<CreatePostPage>
                     bottom: MediaQuery.of(context).viewInsets.bottom + 12,
                   ),
                   decoration: BoxDecoration(
-                    color: theme.scaffoldBackgroundColor,
+                    color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
                     border: Border(
                       top: BorderSide(
-                        color: theme.dividerColor.withValues(alpha: 0.05),
+                        color: theme.dividerColor.withValues(alpha: 0.1),
                       ),
                     ),
                   ),
                   child: Row(
                     children: [
-                      IconButton.filledTonal(
+                      IconButton.filled(
                         onPressed: _pickImage,
-                        icon: const Icon(Icons.add_photo_alternate_rounded),
+                        icon: const Icon(Icons.add_photo_alternate_rounded, size: 20),
                         style: IconButton.styleFrom(
-                          backgroundColor: theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.5),
-                          foregroundColor: theme.colorScheme.primary,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          foregroundColor: theme.colorScheme.onSurface,
+                          shape: const CircleBorder(),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      IconButton.filledTonal(
+                      IconButton.filled(
                         onPressed: _toggleLocation,
                         icon: Icon(
                           _useCurrentLocation
                               ? Icons.location_on_rounded
                               : Icons.location_off_rounded,
+                          size: 20,
                         ),
                         style: IconButton.styleFrom(
                           backgroundColor: _useCurrentLocation
-                              ? theme.colorScheme.primaryContainer
+                              ? theme.colorScheme.primary.withValues(alpha: 0.15)
                               : theme.colorScheme.surfaceContainerHighest,
                           foregroundColor: _useCurrentLocation
                               ? theme.colorScheme.primary
                               : theme.colorScheme.onSurfaceVariant,
+                          shape: const CircleBorder(),
                         ),
                       ),
                       const Spacer(),
@@ -714,6 +758,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                         "${_contentController.text.length} chars",
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.hintColor,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],

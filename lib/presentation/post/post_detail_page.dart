@@ -116,11 +116,11 @@ class _PostDetailPageState extends State<PostDetailPage>
         "${postTime.hour}:${postTime.minute.toString().padLeft(2, '0')}";
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: const Color(0xFF0D110F),
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 2,
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: const Color(0xFF0D110F),
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
@@ -293,7 +293,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                           const SizedBox(height: 16),
                           Divider(
                             height: 1,
-                            color: theme.dividerColor.withValues(alpha: 0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
 
                           // Interaction Bar
@@ -418,14 +418,13 @@ class _PostDetailPageState extends State<PostDetailPage>
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer
-                                    .withValues(alpha: 0.1),
+                                color: const Color(0xFF1A1D1C),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 size: 48,
-                                color: theme.colorScheme.primary.withValues(
+                                color: Colors.white.withValues(
                                   alpha: 0.4,
                                 ),
                               ),
@@ -436,7 +435,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                               textAlign: TextAlign.center,
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface.withValues(
+                                color: Colors.white.withValues(
                                   alpha: 0.8,
                                 ),
                               ),
@@ -446,7 +445,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                               "Share your thoughts and start a conversation with the community.",
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(
+                                color: Colors.white.withValues(
                                   alpha: 0.5,
                                 ),
                                 height: 1.5,
@@ -597,19 +596,12 @@ class _ReplyItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
+          color: const Color(0xFF1A1D1C),
+          borderRadius: BorderRadius.circular(32),
           border: Border.all(
-            color: theme.dividerColor.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Material(
@@ -790,10 +782,10 @@ class _GlassyReplyInput extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
-                  color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
+                  color: const Color(0xFF1A1D1C).withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(32),
                   border: Border.all(
-                    color: theme.dividerColor.withValues(alpha: 0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     width: 1.5,
                   ),
                 ),
@@ -859,7 +851,7 @@ class _AnimatedSendButtonState extends State<_AnimatedSendButton> {
         duration: const Duration(milliseconds: 100),
         child: CircleAvatar(
           radius: 22,
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: const Color(0xFF22C55E),
           child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
         ),
       ),
