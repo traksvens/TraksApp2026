@@ -82,6 +82,25 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<List<PostModel>> getPostsByProximity({
+    required double lat,
+    required double lng,
+    int radius = 1000,
+  }) async {
+    try {
+      return await _postService.getPostsByProximity(
+        lat: lat,
+        lng: lng,
+        radius: radius,
+      );
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } catch (e) {
+      throw ServerFailure('Unexpected error fetching nearby posts: $e');
+    }
+  }
+
+  @override
   Future<void> ratePost(String postId, RatingRequest request) async {
     try {
       await _postService.ratePost(postId, request);

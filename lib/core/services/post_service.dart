@@ -154,6 +154,40 @@ class PostService {
     }
   }
 
+  Future<List<PostModel>> getPostsByProximity({
+    required double lat,
+    required double lng,
+    int radius = 1000,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '$_baseUrl/locations/proximity/',
+        queryParameters: {
+          'lat': lat.toString(),
+          'long': lng.toString(),
+          'radius': radius,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data as List<dynamic>;
+        return data
+            .map((e) => PostModel.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
+      }
+
+      throw ServerException(
+        message: 'Failed to fetch nearby posts',
+        statusCode: response.statusCode,
+      );
+    } on DioException catch (e) {
+      throw ServerException(
+        message: e.message ?? 'Error fetching nearby posts',
+        statusCode: e.response?.statusCode,
+      );
+    }
+  }
+
   Future<void> ratePost(String postId, RatingRequest request) async {
     try {
       final response = await _dio.post(

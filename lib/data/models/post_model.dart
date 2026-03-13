@@ -23,6 +23,7 @@ class PostModel {
   final Map<String, dynamic>? location; // Lat/Lng
   final String? userName;
   final String? userAvatarUrl;
+  final String? geohash;
 
   /// Returns the absolute image URL, prepending the base API URL if needed.
   /// Returns null if imageUrl is null or empty.
@@ -49,6 +50,7 @@ class PostModel {
     this.location,
     this.userName,
     this.userAvatarUrl,
+    this.geohash,
   });
 
   // Factory constructor for JSON deserialization
@@ -78,6 +80,7 @@ class PostModel {
           : null,
       userName: json['userName'] as String?,
       userAvatarUrl: json['userAvatarUrl'] as String?,
+      geohash: json['geohash'] as String?,
     );
   }
 
@@ -100,6 +103,7 @@ class PostModel {
       'location': location,
       'userName': userName,
       'userAvatarUrl': userAvatarUrl,
+      'geohash': geohash,
     };
   }
 
@@ -121,6 +125,7 @@ class PostModel {
     Map<String, dynamic>? location,
     String? userName,
     String? userAvatarUrl,
+    String? geohash,
   }) {
     return PostModel(
       id: id ?? this.id,
@@ -139,6 +144,7 @@ class PostModel {
       location: location ?? this.location,
       userName: userName ?? this.userName,
       userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
+      geohash: geohash ?? this.geohash,
     );
   }
 }

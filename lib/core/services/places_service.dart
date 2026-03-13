@@ -63,4 +63,70 @@ class PlacesService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> resolveTextLocation(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return null;
+
+    try {
+      final response = await _dio.post(
+        '$_v1BaseUrl:searchText',
+        data: {'textQuery': trimmed, 'maxResultCount': 1},
+        options: Options(
+          headers: {
+            'X-Goog-Api-Key': ApiKeys.googleMapsApiKey,
+            'X-Goog-FieldMask':
+                'places.displayName,places.formattedAddress,places.location',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      final places = response.data?['places'] as List<dynamic>? ?? const [];
+      if (places.isEmpty) return null;
+
+      final place = Map<String, dynamic>.from(places.first as Map);
+      final location = place['location'] as Map<String, dynamic>?;
+      final lat = (location?['latitude'] as num?)?.toDouble();
+      final lng = (location?['longitude'] as num?)?.toDouble();
+
+      if (lat == null || lng == null) return null;
+
+      final displayName = place['displayName'] as Map<String, dynamic>?;
+      final label =
+          displayName?['text'] as String? ??
+          place['formattedAddress'] as String? ??
+          trimmed;
+
+      return {'lat': lat, 'lng': lng, 'label': label};
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> reverseGeocodeLocation({
+    required double lat,
+    required double lng,
+  }) async {
+    try {
+      final response = await _dio.get(
+        'https://geocode.googleapis.com/v4beta/geocode/location',
+        queryParameters: {'location.latitude': lat, 'location.longitude': lng},
+        options: Options(
+          headers: {
+            'X-Goog-Api-Key': ApiKeys.googleMapsApiKey,
+            'X-Goog-FieldMask': 'results.formattedAddress',
+          },
+        ),
+      );
+
+      final results = response.data?['results'] as List<dynamic>? ?? const [];
+      if (results.isEmpty) return null;
+
+      final first = results.first as Map<String, dynamic>;
+      return first['formattedAddress'] as String?;
+    } catch (e) {
+      return null;
+    }
+  }
 }

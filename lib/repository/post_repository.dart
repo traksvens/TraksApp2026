@@ -24,6 +24,11 @@ abstract class PostRepository {
   });
   Future<void> deletePost(String postId);
   Future<void> ratePost(String postId, RatingRequest request);
+  Future<List<PostModel>> getPostsByProximity({
+    required double lat,
+    required double lng,
+    int radius = 1000,
+  });
 
   // Replies
   Future<void> createReply(RepliesModel replyData, File? file);
