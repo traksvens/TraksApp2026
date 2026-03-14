@@ -42,8 +42,8 @@ class MapAiService {
   MapAiService({
     required PlacesService placesService,
     required PostRepository postRepository,
-  }) : _placesService = placesService,
-       _postRepository = postRepository {
+  })  : _placesService = placesService,
+        _postRepository = postRepository {
     _apiKey = dotenv.env['GEMINI_API_KEY']?.trim() ?? '';
     _modelName = dotenv.env['GEMINI_MODEL']?.trim().isNotEmpty == true
         ? dotenv.env['GEMINI_MODEL']!.trim()
@@ -88,15 +88,13 @@ class MapAiService {
       ..._history,
       userMessage,
     ], toolConfig: shouldForceTool ? _forcedToolConfig : null);
-    final initialCall =
-        _firstFunctionCall(initialResponse) ??
+    final initialCall = _firstFunctionCall(initialResponse) ??
         (shouldForceTool ? _buildFallbackFunctionCall(prompt) : null);
 
     if (initialCall == null) {
       _appendHistory(userMessage, _firstCandidateContent(initialResponse));
       return MapAiResponse(
-        assistantText:
-            _extractText(initialResponse) ??
+        assistantText: _extractText(initialResponse) ??
             'I could not find anything useful for that request.',
       );
     }
@@ -114,8 +112,7 @@ class MapAiService {
         ..._history,
         genai.Content.text(_buildToolSummaryPrompt(prompt, toolResult)),
       ], toolConfig: _disabledToolConfig);
-      assistantText =
-          _extractText(followUp) ??
+      assistantText = _extractText(followUp) ??
           _fallbackSummary(toolResult.posts, toolResult.resolvedLabel);
       assistantContent = _firstCandidateContent(followUp);
     } else {
@@ -169,11 +166,13 @@ class MapAiService {
                     nullable: true,
                   ),
                   'incidentType': genai.Schema.string(
-                    description: 'Optional. Filter by type (e.g., "Fire", "Flood", "Accident").',
+                    description:
+                        'Optional. Filter by type (e.g., "Fire", "Flood", "Accident").',
                     nullable: true,
                   ),
                   'severity': genai.Schema.string(
-                    description: 'Optional. Filter by severity level (e.g., "low", "medium", "high", "critical").',
+                    description:
+                        'Optional. Filter by severity level (e.g., "low", "medium", "high", "critical").',
                     nullable: true,
                   ),
                 },
@@ -295,10 +294,9 @@ Do not invent details that are not present in the tool result.
 
   bool _shouldUseNearbyTool(String prompt) {
     final normalized = prompt.toLowerCase();
-    
+
     // Looser matching strategy - if they ask for something in a specific area, or locally, we use the tool.
-    final hasSearchIntent =
-        normalized.contains('incident') ||
+    final hasSearchIntent = normalized.contains('incident') ||
         normalized.contains('post') ||
         normalized.contains('report') ||
         normalized.contains('crime') ||
@@ -313,21 +311,22 @@ Do not invent details that are not present in the tool result.
         normalized.startsWith('are there');
 
     // To prevent the tool from being completely ignored on short queries like "crimes in New York"
-    final hasLocationPreposition = RegExp(r'\b(?:in|at|near|around|for)\s+[a-z]+').hasMatch(normalized);
-    final hasCurrentLocationIntent = normalized.contains('near me') || 
-                                     normalized.contains('around me') || 
-                                     normalized.contains('here') ||
-                                     normalized.contains('current location');
+    final hasLocationPreposition =
+        RegExp(r'\b(?:in|at|near|around|for)\s+[a-z]+').hasMatch(normalized);
+    final hasCurrentLocationIntent = normalized.contains('near me') ||
+        normalized.contains('around me') ||
+        normalized.contains('here') ||
+        normalized.contains('current location');
 
-    return hasSearchIntent && (hasLocationPreposition || hasCurrentLocationIntent);
+    return hasSearchIntent &&
+        (hasLocationPreposition || hasCurrentLocationIntent);
   }
 
   genai.FunctionCall? _buildFallbackFunctionCall(String prompt) {
     final radius = _extractRadius(prompt);
     final useCurrentLocation = _usesCurrentLocation(prompt);
-    final locationQuery = useCurrentLocation
-        ? ''
-        : _extractLocationQuery(prompt);
+    final locationQuery =
+        useCurrentLocation ? '' : _extractLocationQuery(prompt);
 
     if (!useCurrentLocation && locationQuery.isEmpty) {
       return null;
@@ -360,7 +359,7 @@ Do not invent details that are not present in the tool result.
       r'\b(?:near|around|in|at|for)\b\s+(.+)$',
       caseSensitive: false,
     ).firstMatch(cleanedPrompt);
-    
+
     if (anchoredMatch != null) {
       final candidate = anchoredMatch.group(1)?.trim() ?? '';
       if (candidate.isNotEmpty) {
@@ -495,7 +494,7 @@ Do not invent details that are not present in the tool result.
     return 'I found ${posts.length} nearby posts around $label.';
   }
 
-static const String _systemInstruction = '''
+  static const String _systemInstruction = '''
 You are the map assistant for a safety incident app.
 
 Your job:
@@ -544,13 +543,13 @@ class _ToolExecutionResult {
   final int radiusMeters;
 
   Map<String, Object?> get modelPayload => {
-    'resolvedLocation': resolvedLabel,
-    'lat': lat,
-    'lng': lng,
-    'radiusMeters': radiusMeters,
-    'count': posts.length,
-    'posts': posts.map(_serializePost).toList(),
-  };
+        'resolvedLocation': resolvedLabel,
+        'lat': lat,
+        'lng': lng,
+        'radiusMeters': radiusMeters,
+        'count': posts.length,
+        'posts': posts.map(_serializePost).toList(),
+      };
 
   static Map<String, Object?> _serializePost(PostModel post) {
     // Robust lat/lng extraction

@@ -58,10 +58,11 @@ class PostWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D1C).withValues(alpha: 0.6), // Glassmorphism container
+          color: theme.colorScheme.surface
+              .withValues(alpha: 0.6), // Glassmorphism container
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
             width: 1,
           ),
           // Removing heavy shadows for a flatter, more modern look
@@ -77,8 +78,8 @@ class PostWidget extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => PostDetailPage(post: post)),
                 );
               },
-              splashColor: const Color(0xFF22C55E).withValues(alpha: 0.05),
-              highlightColor: const Color(0xFF22C55E).withValues(alpha: 0.02),
+              splashColor: theme.colorScheme.primary.withValues(alpha: 0.05),
+              highlightColor: theme.colorScheme.primary.withValues(alpha: 0.02),
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Column(
@@ -90,7 +91,8 @@ class PostWidget extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: const Color(0xFF232325),
+                          backgroundColor:
+                              theme.colorScheme.surfaceContainerHighest,
                           backgroundImage: post.userAvatarUrl != null
                               ? CachedNetworkImageProvider(post.userAvatarUrl!)
                               : null,
@@ -99,13 +101,13 @@ class PostWidget extends StatelessWidget {
                                   (post.userName?.isNotEmpty == true
                                           ? post.userName!
                                           : post.userId.length > 5
-                                          ? post.userId
-                                          : "U")
+                                              ? post.userId
+                                              : "U")
                                       .substring(0, 1)
                                       .toUpperCase(),
                                   style: const TextStyle(
                                     fontFamily: 'Inter',
-                                    color: Colors.white,
+                                    color: theme.colorScheme.onSurface,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 )
@@ -123,11 +125,11 @@ class PostWidget extends StatelessWidget {
                                       post.userName?.isNotEmpty == true
                                           ? post.userName!
                                           : (post.userId.length > 5
-                                                ? post.userId.substring(0, 5)
-                                                : post.userId),
+                                              ? post.userId.substring(0, 5)
+                                              : post.userId),
                                       style: const TextStyle(
                                         fontFamily: 'Inter',
-                                        color: Colors.white,
+                                        color: theme.colorScheme.onSurface,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -139,7 +141,8 @@ class PostWidget extends StatelessWidget {
                                     const Icon(
                                       Icons.verified,
                                       size: 14,
-                                      color: Color(0xFF22C55E), // Canopi Green
+                                      color: theme
+                                          .colorScheme.primary, // Canopi Green
                                     ),
                                 ],
                               ),
@@ -149,7 +152,7 @@ class PostWidget extends StatelessWidget {
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 12,
-                                  color: Colors.white.withValues(
+                                  color: theme.colorScheme.onSurface.withValues(
                                     alpha: 0.6,
                                   ),
                                   fontWeight: FontWeight.w500,
@@ -177,7 +180,7 @@ class PostWidget extends StatelessWidget {
                         fontSize: 15,
                         height: 1.5,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white.withValues(
+                        color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.95,
                         ),
                       ),
@@ -199,7 +202,7 @@ class PostWidget extends StatelessWidget {
                           if (post.incidentType.isNotEmpty)
                             _buildTag(
                               label: post.incidentType,
-                              color: Colors.white,
+                              color: theme.colorScheme.onSurface,
                               theme: theme,
                               isOutline: true,
                             ),
@@ -271,7 +274,7 @@ class PostWidget extends StatelessWidget {
                         _buildAction(
                           icon: Icons.chat_bubble_outline,
                           label: "${post.replyCount}",
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           theme: theme,
                           isActive: false,
                           onTap: () {
@@ -296,14 +299,14 @@ class PostWidget extends StatelessWidget {
                               onTap: () {
                                 if (currentUserId.isNotEmpty) {
                                   context.read<PostBloc>().add(
-                                    RatePostEvent(
-                                      postId: post.id,
-                                      request: RatingRequest(
-                                        userId: currentUserId,
-                                        rating: 'confirm',
-                                      ),
-                                    ),
-                                  );
+                                        RatePostEvent(
+                                          postId: post.id,
+                                          request: RatingRequest(
+                                            userId: currentUserId,
+                                            rating: 'confirm',
+                                          ),
+                                        ),
+                                      );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -327,14 +330,14 @@ class PostWidget extends StatelessWidget {
                               onTap: () {
                                 if (currentUserId.isNotEmpty) {
                                   context.read<PostBloc>().add(
-                                    RatePostEvent(
-                                      postId: post.id,
-                                      request: RatingRequest(
-                                        userId: currentUserId,
-                                        rating: 'refute',
-                                      ),
-                                    ),
-                                  );
+                                        RatePostEvent(
+                                          postId: post.id,
+                                          request: RatingRequest(
+                                            userId: currentUserId,
+                                            rating: 'refute',
+                                          ),
+                                        ),
+                                      );
                                 } else {
                                   // Prompt login or show snackbar
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -352,7 +355,7 @@ class PostWidget extends StatelessWidget {
                         _buildAction(
                           icon: Icons.share_outlined,
                           label: "",
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           theme: theme,
                           isActive: false,
                           onTap: () {},
@@ -377,9 +380,7 @@ class PostWidget extends StatelessWidget {
     required VoidCallback onTap,
     required bool isActive,
   }) {
-    final activeColor = isActive
-        ? color
-        : Colors.white.withValues(alpha: 0.6);
+    final activeColor = isActive ? color : theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return Material(
       color: isActive ? color.withValues(alpha: 0.1) : Colors.transparent,
@@ -393,9 +394,8 @@ class PostWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
-              color: isActive
-                  ? color.withValues(alpha: 0.3)
-                  : Colors.transparent,
+              color:
+                  isActive ? color.withValues(alpha: 0.3) : Colors.transparent,
               width: 1,
             ),
           ),
@@ -409,9 +409,8 @@ class PostWidget extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: isActive
-                        ? color
-                        : Colors.white.withValues(alpha: 0.7),
+                    color:
+                        isActive ? color : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
                   ),
@@ -435,7 +434,7 @@ class PostWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: isOutline ? Colors.transparent : color.withValues(alpha: 0.12),
         border: isOutline
-            ? Border.all(color: Colors.white.withValues(alpha: 0.2))
+            ? Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.2))
             : Border.all(color: color.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(16),
       ),

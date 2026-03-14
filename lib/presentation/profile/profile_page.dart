@@ -22,8 +22,8 @@ class ProfilePage extends StatelessWidget {
         final displayName = user?.displayName?.isNotEmpty == true
             ? user!.displayName!
             : (user?.email?.isNotEmpty == true
-                  ? user!.email!.split('@').first
-                  : "Anonymous");
+                ? user!.email!.split('@').first
+                : "Anonymous");
 
         final email = user?.email ?? "";
         final photoUrl = user?.photoURL;
@@ -31,9 +31,9 @@ class ProfilePage extends StatelessWidget {
         return StreamBuilder<DocumentSnapshot>(
           stream: user != null
               ? FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .snapshots()
+                  .collection('users')
+                  .doc(user.uid)
+                  .snapshots()
               : null,
           builder: (context, snapshot) {
             bool isVerified = false;
@@ -45,7 +45,8 @@ class ProfilePage extends StatelessWidget {
             }
 
             return Scaffold(
-              backgroundColor: const Color(0xFF0D110F), // Canopi Dark Base
+              backgroundColor:
+                  theme.scaffoldBackgroundColor, // Canopi Dark Base
               body: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -71,7 +72,8 @@ class ProfilePage extends StatelessWidget {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-                                  const Color(0xFF22C55E).withValues(alpha: 0.15),
+                                  theme.colorScheme.primary
+                                      .withValues(alpha: 0.15),
                                   Colors.transparent,
                                 ],
                                 stops: const [0.0, 1.0],
@@ -83,7 +85,8 @@ class ProfilePage extends StatelessWidget {
                             child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
                               child: Container(
-                                color: const Color(0xFF0D110F).withValues(alpha: 0.7),
+                                color: theme.scaffoldBackgroundColor
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                           ),
@@ -101,15 +104,18 @@ class ProfilePage extends StatelessWidget {
                                       shape: BoxShape.circle,
                                       gradient: LinearGradient(
                                         colors: [
-                                          const Color(0xFF22C55E).withValues(alpha: 0.8),
-                                          const Color(0xFF22C55E).withValues(alpha: 0.2),
+                                          theme.colorScheme.primary
+                                              .withValues(alpha: 0.8),
+                                          theme.colorScheme.primary
+                                              .withValues(alpha: 0.2),
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF22C55E).withValues(alpha: 0.25),
+                                          color: theme.colorScheme.primary
+                                              .withValues(alpha: 0.25),
                                           blurRadius: 24,
                                           spreadRadius: 4,
                                           offset: const Offset(0, 8),
@@ -120,24 +126,27 @@ class ProfilePage extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: const Color(0xFF0D110F),
+                                          color: theme.scaffoldBackgroundColor,
                                           width: 3,
                                         ),
                                       ),
                                       child: CircleAvatar(
                                         radius: 54,
-                                        backgroundColor: const Color(0xFF232325),
+                                        backgroundColor: theme.colorScheme
+                                            .surfaceContainerHighest,
                                         backgroundImage: photoUrl != null
                                             ? NetworkImage(photoUrl)
                                             : null,
                                         child: photoUrl == null
                                             ? Text(
-                                                displayName.substring(0, 1).toUpperCase(),
+                                                displayName
+                                                    .substring(0, 1)
+                                                    .toUpperCase(),
                                                 style: const TextStyle(
                                                   fontFamily: 'Inter',
                                                   fontSize: 32,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
+                                                  color: theme.colorScheme.onSurface,
                                                 ),
                                               )
                                             : null,
@@ -155,7 +164,7 @@ class ProfilePage extends StatelessWidget {
                                           fontSize: 24,
                                           fontWeight: FontWeight.w700,
                                           letterSpacing: -0.5,
-                                          color: Colors.white,
+                                          color: theme.colorScheme.onSurface,
                                         ),
                                       ),
                                       if (isVerified) ...[
@@ -176,7 +185,8 @@ class ProfilePage extends StatelessWidget {
                                         fontFamily: 'Inter',
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400,
-                                        color: Colors.white.withValues(alpha: 0.6),
+                                        color:
+                                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                       ),
                                     ),
                                 ],
@@ -201,7 +211,8 @@ class ProfilePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFDC2626).withValues(alpha: 0.25),
+                              color: theme.colorScheme.error
+                                  .withValues(alpha: 0.25),
                               blurRadius: 24,
                               spreadRadius: -4,
                               offset: const Offset(0, 8),
@@ -213,8 +224,9 @@ class ProfilePage extends StatelessWidget {
                             // TODO: Implement SOS action
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFDC2626), // Premium Red 600
-                            foregroundColor: Colors.white,
+                            backgroundColor:
+                                theme.colorScheme.error, // Premium Red 600
+                            foregroundColor: theme.colorScheme.onSurface,
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(32),
@@ -231,7 +243,7 @@ class ProfilePage extends StatelessWidget {
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.5,
                                 ),
@@ -273,7 +285,7 @@ class ProfilePage extends StatelessWidget {
                                 title: "SOS Customization",
                                 subtitle:
                                     "Configure emergency contacts and message",
-                                iconColor: const Color(0xFFDC2626),
+                                iconColor: theme.colorScheme.error,
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -303,13 +315,13 @@ class ProfilePage extends StatelessWidget {
                                 theme: theme,
                                 icon: Icons.logout_rounded,
                                 title: "Log Out",
-                                iconColor: const Color(0xFFEF4444),
-                                textColor: const Color(0xFFEF4444),
+                                iconColor: theme.colorScheme.error,
+                                textColor: theme.colorScheme.error,
                                 showChevron: false,
                                 onTap: () {
                                   context.read<AuthBloc>().add(
-                                    SignOutRequested(),
-                                  );
+                                        SignOutRequested(),
+                                      );
                                 },
                               ),
                               const SizedBox(
@@ -339,7 +351,7 @@ class ProfilePage extends StatelessWidget {
           fontFamily: 'Inter',
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: Colors.white.withValues(alpha: 0.5),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           letterSpacing: 1.0,
         ),
       ),
@@ -362,12 +374,13 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF232325).withValues(alpha: 0.6),
+          color:
+              theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.08)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: theme.colorScheme.surface.withValues(alpha: 0.1),
               blurRadius: 24,
               spreadRadius: -4,
               offset: const Offset(0, 8),
@@ -379,12 +392,13 @@ class ProfilePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: (iconColor ?? const Color(0xFF22C55E)).withValues(alpha: 0.1),
+                color: (iconColor ?? theme.colorScheme.primary)
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
                 icon,
-                color: iconColor ?? const Color(0xFF22C55E),
+                color: iconColor ?? theme.colorScheme.primary,
                 size: 24,
               ),
             ),
@@ -399,7 +413,7 @@ class ProfilePage extends StatelessWidget {
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: textColor ?? Colors.white,
+                      color: textColor ?? theme.colorScheme.onSurface,
                     ),
                   ),
                   if (subtitle != null) ...[
@@ -409,7 +423,7 @@ class ProfilePage extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -421,7 +435,7 @@ class ProfilePage extends StatelessWidget {
             else if (showChevron)
               Icon(
                 Icons.chevron_right_rounded,
-                color: Colors.white.withValues(alpha: 0.3),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                 size: 24,
               ),
           ],
@@ -434,12 +448,12 @@ class ProfilePage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF232325).withValues(alpha: 0.6),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: theme.colorScheme.surface.withValues(alpha: 0.1),
             blurRadius: 24,
             spreadRadius: -4,
             offset: const Offset(0, 8),
@@ -505,7 +519,7 @@ class ProfilePage extends StatelessWidget {
           shape: BoxShape.circle,
           border: isSelected
               ? Border.all(
-                  color: isDark ? Colors.white : Colors.black,
+                  color: isDark ? theme.colorScheme.onSurface : theme.colorScheme.surface,
                   width: 3,
                 )
               : null,
@@ -518,7 +532,7 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
         child: isSelected
-            ? Icon(Icons.check, color: isDark ? Colors.white : Colors.white)
+            ? Icon(Icons.check, color: isDark ? theme.colorScheme.onSurface : theme.colorScheme.onSurface)
             : null,
       ),
     );
@@ -531,12 +545,12 @@ class ProfilePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF232325).withValues(alpha: 0.6),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: theme.colorScheme.surface.withValues(alpha: 0.1),
             blurRadius: 24,
             spreadRadius: -4,
             offset: const Offset(0, 8),
@@ -572,7 +586,7 @@ class ProfilePage extends StatelessWidget {
             Set<WidgetState> states,
           ) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF22C55E).withValues(alpha: 0.15);
+              return theme.colorScheme.primary.withValues(alpha: 0.15);
             }
             return Colors.transparent;
           }),
@@ -580,12 +594,12 @@ class ProfilePage extends StatelessWidget {
             Set<WidgetState> states,
           ) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF22C55E);
+              return theme.colorScheme.primary;
             }
-            return Colors.white;
+            return theme.colorScheme.onSurface;
           }),
           textStyle: const WidgetStatePropertyAll(
-             TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.normal),
+            TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.normal),
           ),
           side: const WidgetStatePropertyAll(BorderSide.none),
           shape: WidgetStatePropertyAll(

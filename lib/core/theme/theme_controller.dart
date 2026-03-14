@@ -23,12 +23,12 @@ class ThemeController extends ValueNotifier<ThemeState> {
   static final ThemeController instance = ThemeController._();
 
   ThemeController._()
-    : super(
-        const ThemeState(
-          mode: ThemeMode.system,
-          colorTheme: AppColorTheme.navy,
-        ),
-      );
+      : super(
+          const ThemeState(
+            mode: ThemeMode.system,
+            colorTheme: AppColorTheme.navy,
+          ),
+        );
 
   /// Toggles between light and dark mode.
   /// If currently system, it defaults to toggling based on the platform brightness.

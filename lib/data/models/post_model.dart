@@ -79,7 +79,8 @@ class PostModel {
           ? Map<String, dynamic>.from(json['location'] as Map)
           : null,
       userName: json['userName'] as String? ?? json['user_name'] as String?,
-      userAvatarUrl: json['userAvatarUrl'] as String? ?? json['user_avatar_url'] as String?,
+      userAvatarUrl: json['userAvatarUrl'] as String? ??
+          json['user_avatar_url'] as String?,
       geohash: json['geohash'] as String?,
     );
   }

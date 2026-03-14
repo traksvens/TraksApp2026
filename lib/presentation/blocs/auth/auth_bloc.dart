@@ -9,8 +9,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription? _userSubscription;
 
   AuthBloc({required AuthRepository authRepository})
-    : _authRepository = authRepository,
-      super(AuthInitial()) {
+      : _authRepository = authRepository,
+        super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);

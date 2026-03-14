@@ -41,11 +41,11 @@ class SosContactModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    firstName,
-    lastName,
-    phoneNumber,
-    email,
-    userId,
-  ];
+        id,
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+        userId,
+      ];
 }

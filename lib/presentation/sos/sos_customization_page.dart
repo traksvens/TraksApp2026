@@ -88,7 +88,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFDC2626).withValues(alpha: 0.15),
+              theme.colorScheme.error.withValues(alpha: 0.15),
               theme.colorScheme.surface,
             ],
           ),
@@ -345,7 +345,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFDC2626).withValues(alpha: 0.2),
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -353,10 +353,11 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFDC2626).withValues(alpha: 0.1),
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.emergency_share, color: Color(0xFFDC2626)),
+            child: const Icon(Icons.emergency_share,
+                color: theme.colorScheme.error),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -407,12 +408,10 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
           return CustomScrollView(
             slivers: [
               _buildGlassHeader(theme),
-
               SliverToBoxAdapter(
                 child: _buildSectionTitle(theme, "Add New Contact"),
               ),
               _buildAddContactForm(theme),
-
               if (state is SosLoading && state is! SosDataLoaded)
                 const SliverToBoxAdapter(
                   child: Padding(
@@ -420,12 +419,10 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                     child: Center(child: CircularProgressIndicator()),
                   ),
                 ),
-
               if (state is SosDataLoaded) ...[
                 SliverToBoxAdapter(
                   child: _buildSectionTitle(theme, "Emergency Contacts"),
                 ),
-
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   sliver: SliverList(
@@ -436,7 +433,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                     ),
                   ),
                 ),
-
                 if (state.contacts.isEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
@@ -450,11 +446,9 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                       ),
                     ),
                   ),
-
                 SliverToBoxAdapter(
                   child: _buildSectionTitle(theme, "Recent SOS History"),
                 ),
-
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   sliver: SliverList(
@@ -465,7 +459,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                     ),
                   ),
                 ),
-
                 if (state.history.isEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
@@ -480,7 +473,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                     ),
                   ),
               ],
-
               const SliverToBoxAdapter(child: SizedBox(height: 64)),
             ],
           );

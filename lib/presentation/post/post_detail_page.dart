@@ -65,8 +65,9 @@ class _PostDetailPageState extends State<PostDetailPage>
 
     if (content.isNotEmpty) {
       context.read<PostBloc>().add(
-        CreateReply(postId: widget.post.id, userId: userId, content: content),
-      );
+            CreateReply(
+                postId: widget.post.id, userId: userId, content: content),
+          );
       _commentController.clear();
       FocusScope.of(context).unfocus();
     }
@@ -86,11 +87,11 @@ class _PostDetailPageState extends State<PostDetailPage>
     }
 
     context.read<PostBloc>().add(
-      RatePostEvent(
-        postId: widget.post.id,
-        request: RatingRequest(userId: userId, rating: type),
-      ),
-    );
+          RatePostEvent(
+            postId: widget.post.id,
+            request: RatingRequest(userId: userId, rating: type),
+          ),
+        );
 
     // Feedback
     ScaffoldMessenger.of(context).showSnackBar(
@@ -116,11 +117,11 @@ class _PostDetailPageState extends State<PostDetailPage>
         "${postTime.hour}:${postTime.minute.toString().padLeft(2, '0')}";
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D110F),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 2,
-        backgroundColor: const Color(0xFF0D110F),
+        backgroundColor: theme.scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
@@ -182,9 +183,9 @@ class _PostDetailPageState extends State<PostDetailPage>
                                           "User ${currentPost.userId.length > 6 ? currentPost.userId.substring(0, 6) : currentPost.userId}",
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                                fontWeight: FontWeight.w800,
-                                                letterSpacing: -0.5,
-                                              ),
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: -0.5,
+                                          ),
                                         ),
                                         const SizedBox(width: 4),
                                         Icon(
@@ -196,11 +197,11 @@ class _PostDetailPageState extends State<PostDetailPage>
                                     ),
                                     Text(
                                       "@user_${currentPost.userId.length > 4 ? currentPost.userId.substring(0, 4) : currentPost.userId}",
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: theme.hintColor,
-                                            height: 1.1,
-                                          ),
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme.hintColor,
+                                        height: 1.1,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -258,21 +259,21 @@ class _PostDetailPageState extends State<PostDetailPage>
                                     ),
                                     errorWidget: (context, url, error) =>
                                         Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: colorScheme
-                                                .surfaceContainerHighest
-                                                .withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            Icons.broken_image_outlined,
-                                            color: theme.hintColor,
-                                          ),
+                                      height: 100,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: colorScheme
+                                            .surfaceContainerHighest
+                                            .withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(
+                                          20,
                                         ),
+                                      ),
+                                      child: Icon(
+                                        Icons.broken_image_outlined,
+                                        color: theme.hintColor,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -293,7 +294,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                           const SizedBox(height: 16),
                           Divider(
                             height: 1,
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                           ),
 
                           // Interaction Bar
@@ -418,13 +419,13 @@ class _PostDetailPageState extends State<PostDetailPage>
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1A1D1C),
+                                color: theme.colorScheme.surface,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 size: 48,
-                                color: Colors.white.withValues(
+                                color: theme.colorScheme.onSurface.withValues(
                                   alpha: 0.4,
                                 ),
                               ),
@@ -435,7 +436,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                               textAlign: TextAlign.center,
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withValues(
+                                color: theme.colorScheme.onSurface.withValues(
                                   alpha: 0.8,
                                 ),
                               ),
@@ -445,7 +446,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                               "Share your thoughts and start a conversation with the community.",
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withValues(
+                                color: theme.colorScheme.onSurface.withValues(
                                   alpha: 0.5,
                                 ),
                                 height: 1.5,
@@ -486,7 +487,8 @@ class _SeverityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _getColor();
+    final theme = Theme.of(context);
+    final color = _getColor(theme);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -506,14 +508,14 @@ class _SeverityBadge extends StatelessWidget {
     );
   }
 
-  Color _getColor() {
+  Color _getColor(ThemeData theme) {
     switch (severity.toLowerCase()) {
       case 'high':
-        return const Color(0xFFF44336);
+        return theme.colorScheme.error;
       case 'medium':
-        return const Color(0xFFFF9800);
+        return theme.colorScheme.secondary;
       case 'low':
-        return const Color(0xFF4CAF50);
+        return theme.colorScheme.primary;
       default:
         return Colors.grey;
     }
@@ -596,10 +598,10 @@ class _ReplyItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D1C),
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             width: 1,
           ),
         ),
@@ -768,7 +770,7 @@ class _GlassyReplyInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: theme.colorScheme.surface.withValues(alpha: 0.2),
                 blurRadius: 30,
                 spreadRadius: -10,
                 offset: const Offset(0, 15),
@@ -782,10 +784,10 @@ class _GlassyReplyInput extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1D1C).withValues(alpha: 0.8),
+                  color: theme.colorScheme.surface.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(32),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                     width: 1.5,
                   ),
                 ),
@@ -851,8 +853,8 @@ class _AnimatedSendButtonState extends State<_AnimatedSendButton> {
         duration: const Duration(milliseconds: 100),
         child: CircleAvatar(
           radius: 22,
-          backgroundColor: const Color(0xFF22C55E),
-          child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+          backgroundColor: theme.colorScheme.primary,
+          child: const Icon(Icons.send_rounded, color: theme.colorScheme.onSurface, size: 20),
         ),
       ),
     );

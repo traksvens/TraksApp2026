@@ -31,7 +31,8 @@ class MapNavigationActive extends MapNavigationState {
   });
 
   @override
-  List<Object?> get props => [polylinePoints, distance, duration, destination, destinationName];
+  List<Object?> get props =>
+      [polylinePoints, distance, duration, destination, destinationName];
 }
 
 class MapNavigationError extends MapNavigationState {
@@ -63,7 +64,7 @@ class MapNavigationCubit extends Cubit<MapNavigationState> {
     if (data != null && data['routes'].isNotEmpty) {
       final route = data['routes'][0];
       final leg = route['legs'][0];
-      
+
       final points = _directionsService.decodePolyline(
         route['overview_polyline']['points'],
       );
@@ -76,7 +77,8 @@ class MapNavigationCubit extends Cubit<MapNavigationState> {
         destinationName: destinationName,
       ));
     } else {
-      emit(const MapNavigationError('Could not find a route to this destination.'));
+      emit(const MapNavigationError(
+          'Could not find a route to this destination.'));
     }
   }
 

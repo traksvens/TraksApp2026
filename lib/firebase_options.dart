@@ -55,10 +55,11 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get android => FirebaseOptions(
-    apiKey: dotenv.get('FIREBASE_API_KEY', fallback: ''),
-    appId: dotenv.get('FIREBASE_APP_ID', fallback: ''),
-    messagingSenderId: dotenv.get('FIREBASE_MESSAGING_SENDER_ID', fallback: ''),
-    projectId: dotenv.get('FIREBASE_PROJECT_ID', fallback: ''),
-    storageBucket: dotenv.get('FIREBASE_STORAGE_BUCKET', fallback: ''),
-  );
+        apiKey: dotenv.get('FIREBASE_API_KEY', fallback: ''),
+        appId: dotenv.get('FIREBASE_APP_ID', fallback: ''),
+        messagingSenderId:
+            dotenv.get('FIREBASE_MESSAGING_SENDER_ID', fallback: ''),
+        projectId: dotenv.get('FIREBASE_PROJECT_ID', fallback: ''),
+        storageBucket: dotenv.get('FIREBASE_STORAGE_BUCKET', fallback: ''),
+      );
 }

@@ -53,12 +53,6 @@ class _CreatePostPageState extends State<CreatePostPage>
     'other': Icons.campaign_rounded,
   };
 
-  final Map<String, Color> _severityColors = {
-    'low': const Color(0xFF4CAF50), // Vibrant Green
-    'medium': const Color(0xFFFF9800), // Vibrant Orange
-    'high': const Color(0xFFF44336), // Vibrant Red
-  };
-
   @override
   void initState() {
     super.initState();
@@ -73,8 +67,8 @@ class _CreatePostPageState extends State<CreatePostPage>
     );
     _slideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.05), end: Offset.zero).animate(
-          CurvedAnimation(parent: _animController, curve: Curves.easeOutQuart),
-        );
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutQuart),
+    );
 
     _animController.forward();
   }
@@ -196,9 +190,8 @@ class _CreatePostPageState extends State<CreatePostPage>
         setState(() => _locationSuggestions = []);
         return;
       }
-      final suggestions = await di
-          .sl<PlacesService>()
-          .getAutocompleteSuggestions(query);
+      final suggestions =
+          await di.sl<PlacesService>().getAutocompleteSuggestions(query);
       if (mounted) {
         setState(() => _locationSuggestions = suggestions);
       }
@@ -241,8 +234,8 @@ class _CreatePostPageState extends State<CreatePostPage>
         if (mounted) {
           final theme = Theme.of(context);
           final isServiceDisabled = e.toString().contains(
-            'Location services are disabled',
-          );
+                'Location services are disabled',
+              );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -259,7 +252,7 @@ class _CreatePostPageState extends State<CreatePostPage>
               action: isServiceDisabled
                   ? SnackBarAction(
                       label: 'TURN ON',
-                      textColor: Colors.white,
+                      textColor: theme.colorScheme.onSurface,
                       onPressed: () async =>
                           await Geolocator.openLocationSettings(),
                     )
@@ -334,7 +327,8 @@ class _CreatePostPageState extends State<CreatePostPage>
           surfaceTintColor: Colors.transparent,
           actions: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
@@ -343,7 +337,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                       ? []
                       : [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           )
@@ -355,9 +350,11 @@ class _CreatePostPageState extends State<CreatePostPage>
                       : _submitPost,
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
-                    disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    disabledBackgroundColor:
+                        theme.colorScheme.surfaceContainerHighest,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    disabledForegroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    disabledForegroundColor:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -369,12 +366,14 @@ class _CreatePostPageState extends State<CreatePostPage>
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(theme.colorScheme.onSurface),
                           ),
                         )
                       : const Text(
                           'Post',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                 ),
               ),
@@ -474,7 +473,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                   subtitle: Text(
-                                    suggestion['structuredFormat']?['secondaryText']?['text'] ??
+                                    suggestion['structuredFormat']
+                                            ?['secondaryText']?['text'] ??
                                         '',
                                     style: TextStyle(
                                       fontSize: 11,
@@ -537,17 +537,17 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withValues(
+                                        color: theme.colorScheme.surface.withValues(
                                           alpha: 0.6,
                                         ),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: Colors.white24,
+                                          color: theme.colorScheme.onSurface24,
                                         ),
                                       ),
                                       child: const Icon(
                                         Icons.close_rounded,
-                                        color: Colors.white,
+                                        color: theme.colorScheme.onSurface,
                                         size: 20,
                                       ),
                                     ),
@@ -591,9 +591,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     color: isSelected
                                         ? theme.colorScheme.primary
                                         : theme
-                                              .colorScheme
-                                              .surfaceContainerHighest
-                                              .withValues(alpha: 0.5),
+                                            .colorScheme.surfaceContainerHighest
+                                            .withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: isSelected
@@ -618,7 +617,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                         size: 18,
                                         color: isSelected
                                             ? theme.colorScheme.onPrimary
-                                            : theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                                            : theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.8),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
@@ -629,7 +629,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                           letterSpacing: 0.5,
                                           color: isSelected
                                               ? theme.colorScheme.onPrimary
-                                              : theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                                              : theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.8),
                                         ),
                                       ),
                                     ],
@@ -652,9 +653,13 @@ class _CreatePostPageState extends State<CreatePostPage>
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
-                          children: _severityColors.keys.map((severityKey) {
+                          children: ['low', 'medium', 'high'].map((severityKey) {
                             final isSelected = _severity == severityKey;
-                            final color = _severityColors[severityKey]!;
+                            final color = severityKey == 'low'
+                                ? theme.colorScheme.primary
+                                : severityKey == 'medium'
+                                    ? theme.colorScheme.secondary
+                                    : theme.colorScheme.error;
                             return Expanded(
                               child: GestureDetector(
                                 onTap: () =>
@@ -666,9 +671,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? color
-                                        : Colors.transparent,
+                                    color:
+                                        isSelected ? color : Colors.transparent,
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: isSelected
                                         ? [
@@ -687,9 +691,9 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     severityKey.toUpperCase(),
                                     style: TextStyle(
                                       color: isSelected
-                                          ? Colors.white
+                                          ? theme.colorScheme.onSurface
                                           : theme.colorScheme.onSurface
-                                                .withValues(alpha: 0.6),
+                                              .withValues(alpha: 0.6),
                                       fontWeight: FontWeight.w700,
                                       fontSize: 11,
                                       letterSpacing: 0.5,
@@ -727,9 +731,11 @@ class _CreatePostPageState extends State<CreatePostPage>
                     children: [
                       IconButton.filled(
                         onPressed: _pickImage,
-                        icon: const Icon(Icons.add_photo_alternate_rounded, size: 20),
+                        icon: const Icon(Icons.add_photo_alternate_rounded,
+                            size: 20),
                         style: IconButton.styleFrom(
-                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          backgroundColor:
+                              theme.colorScheme.surfaceContainerHighest,
                           foregroundColor: theme.colorScheme.onSurface,
                           shape: const CircleBorder(),
                         ),
@@ -745,7 +751,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                         ),
                         style: IconButton.styleFrom(
                           backgroundColor: _useCurrentLocation
-                              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                              ? theme.colorScheme.primary
+                                  .withValues(alpha: 0.15)
                               : theme.colorScheme.surfaceContainerHighest,
                           foregroundColor: _useCurrentLocation
                               ? theme.colorScheme.primary
