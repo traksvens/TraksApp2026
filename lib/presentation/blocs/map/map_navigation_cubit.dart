@@ -65,9 +65,18 @@ class MapNavigationCubit extends Cubit<MapNavigationState> {
       final route = data['routes'][0];
       final leg = route['legs'][0];
 
-      final points = _directionsService.decodePolyline(
-        route['overview_polyline']['points'],
-      );
+      final points = <LatLng>[];
+      if (leg['steps'] != null) {
+        for (final step in leg['steps']) {
+          points.addAll(_directionsService.decodePolyline(
+            step['polyline']['points'],
+          ));
+        }
+      } else {
+        points.addAll(_directionsService.decodePolyline(
+          route['overview_polyline']['points'],
+        ));
+      }
 
       emit(MapNavigationActive(
         polylinePoints: points,

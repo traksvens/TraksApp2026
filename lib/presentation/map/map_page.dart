@@ -32,7 +32,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   static const CameraPosition _kDefaultLocation = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(9.0820, 8.6753),
     zoom: 14.4746,
   );
 
@@ -59,7 +59,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   CurrentLocationContext? _currentLocationContext;
   bool _isSearching = false;
   bool _showSuggestions = false;
-  bool _isTrafficEnabled = false;
+  final ValueNotifier<bool> _isTrafficEnabled = ValueNotifier<bool>(false);
   bool _isAiLoading = false;
   bool _isAiPanelExpanded = false;
   bool _isRefreshingCurrentLocation = false;
@@ -97,6 +97,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     _locationFocusNode.dispose();
     _aiFocusNode.dispose();
     _a2uiProcessor.dispose();
+    _isTrafficEnabled.dispose();
     super.dispose();
   }
 
@@ -621,42 +622,55 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                     points: navState.polylinePoints,
                     color: theme.primaryColor,
                     width: 5,
+                    jointType: JointType.round,
+                    startCap: Cap.roundCap,
+                    endCap: Cap.roundCap,
                   ),
                 );
               }
 
-              return GoogleMap(
-                mapType: MapType.normal,
-                initialCameraPosition: initialPos,
-                onMapCreated: (controller) {
-                  if (!_controller.isCompleted) {
-                    _controller.complete(controller);
-                  }
-                  controller.setMapStyle(MapStyle.getStyle(context));
+              return ValueListenableBuilder<bool>(
+                valueListenable: _isTrafficEnabled,
+                builder: (context, isTrafficEnabled, child) {
+                  return GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: initialPos,
+                    onMapCreated: (controller) {
+                      if (!_controller.isCompleted) {
+                        _controller.complete(controller);
+                      }
+                      controller.setMapStyle(MapStyle.getStyle(context));
+                    },
+                    onTap: (_) {
+                      FocusScope.of(context).unfocus();
+                      if (_showSuggestions) {
+                        setState(() => _showSuggestions = false);
+                      }
+                    },
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    trafficEnabled: isTrafficEnabled,
+                    markers: markers,
+                    polylines: polylines,
+                    padding: EdgeInsets.only(
+                      top: 24,
+                      bottom: overlayHeight.toDouble(),
+                    ),
+                  );
                 },
-                onTap: (_) {
-                  FocusScope.of(context).unfocus();
-                  if (_showSuggestions) {
-                    setState(() => _showSuggestions = false);
-                  }
-                },
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                trafficEnabled: _isTrafficEnabled,
-                markers: markers,
-                polylines: polylines,
-                padding: EdgeInsets.only(
-                  top: 24,
-                  bottom: overlayHeight.toDouble(),
-                ),
               );
             },
           ),
           Positioned(
             top: MediaQuery.paddingOf(context).top + 16,
             right: 20,
-            child: _buildFloatingActions(theme),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _isTrafficEnabled,
+              builder: (context, isTrafficEnabled, child) {
+                return _buildFloatingActions(theme, isTrafficEnabled);
+              },
+            ),
           ),
           if (navState is MapNavigationActive)
             Positioned(
@@ -1319,14 +1333,14 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildFloatingActions(ThemeData theme) {
+  Widget _buildFloatingActions(ThemeData theme, bool isTrafficEnabled) {
     return Column(
       children: [
         _buildGlassIconBtn(
           theme,
-          _isTrafficEnabled ? Icons.traffic_rounded : Icons.traffic_outlined,
-          color: _isTrafficEnabled ? theme.primaryColor : null,
-          onTap: () => setState(() => _isTrafficEnabled = !_isTrafficEnabled),
+          isTrafficEnabled ? Icons.traffic_rounded : Icons.traffic_outlined,
+          color: isTrafficEnabled ? theme.primaryColor : null,
+          onTap: () => _isTrafficEnabled.value = !_isTrafficEnabled.value,
         ),
         const SizedBox(height: 12),
         _buildGlassIconBtn(
