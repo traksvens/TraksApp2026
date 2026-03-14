@@ -17,7 +17,7 @@ class PlacesService {
         '$_v1BaseUrl:autocomplete',
         data: {
           'input': query,
-          // You can add more parameters here like locationBias if needed
+          'includedRegionCodes': ['NG'],
         },
         options: Options(
           headers: {
@@ -71,7 +71,11 @@ class PlacesService {
     try {
       final response = await _dio.post(
         '$_v1BaseUrl:searchText',
-        data: {'textQuery': trimmed, 'maxResultCount': 1},
+        data: {
+          'textQuery': trimmed,
+          'maxResultCount': 1,
+          'regionCode': 'NG',
+        },
         options: Options(
           headers: {
             'X-Goog-Api-Key': ApiKeys.googleMapsApiKey,
