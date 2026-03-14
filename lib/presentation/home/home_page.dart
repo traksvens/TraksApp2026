@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 
@@ -8,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracks_app/presentation/blocs/post/post_bloc.dart';
 import 'package:tracks_app/presentation/blocs/post/post_state.dart';
 import 'package:tracks_app/data/models/post_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:tracks_app/presentation/blocs/post/post_event.dart';
 
 import 'package:tracks_app/presentation/map/map_page.dart';
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Inter',
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w700,
@@ -293,59 +293,65 @@ class _HomeFeedState extends State<_HomeFeed> {
 
     return SafeArea(
       bottom: false,
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildAppBar(theme, context),
-          _buildFilters(theme),
-          CupertinoSliverRefreshControl(
-            onRefresh: () async {
-              context.read<PostBloc>().add(const FetchPosts());
-              await Future.delayed(const Duration(seconds: 1));
-            },
+      child: RefreshIndicator(
+        onRefresh: () async {
+          final completer = Completer<void>();
+          context.read<PostBloc>().add(FetchPosts(completer: completer));
+          await completer.future;
+        },
+        backgroundColor: theme.colorScheme.surface,
+        color: theme.colorScheme.primary,
+        strokeWidth: 2.5,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 8),
-            sliver: BlocBuilder<PostBloc, PostState>(
-              buildWhen: (prev, curr) =>
-                  prev.status != curr.status || prev.posts != curr.posts,
-              builder: (context, state) {
-                if (state.status == PostStatus.loading) {
-                  return const PostLoadingWidget();
-                } else if (state.status == PostStatus.failure) {
-                  return SliverFillRemaining(
-                    child: Center(child: Text('Error: ${state.errorMessage}')),
-                  );
-                } else if (state.posts.isEmpty) {
-                  return const SliverFillRemaining(
-                    child: Center(child: Text('No posts yet')),
-                  );
-                }
+          slivers: [
+            _buildAppBar(theme, context),
+            _buildFilters(theme),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 8),
+              sliver: BlocBuilder<PostBloc, PostState>(
+                buildWhen: (prev, curr) =>
+                    prev.status != curr.status || prev.posts != curr.posts,
+                builder: (context, state) {
+                  if (state.status == PostStatus.loading) {
+                    return const PostLoadingWidget();
+                  } else if (state.status == PostStatus.failure) {
+                    return SliverFillRemaining(
+                      child: Center(child: Text('Error: ${state.errorMessage}')),
+                    );
+                  } else if (state.posts.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: Center(child: Text('No posts yet')),
+                    );
+                  }
 
-                // Apply Filters
-                final filteredPosts = _filterPosts(state.posts);
+                  // Apply Filters
+                  final filteredPosts = _filterPosts(state.posts);
 
-                if (filteredPosts.isEmpty) {
-                  return const SliverFillRemaining(
-                    child: Center(child: Text('No posts match your filters')),
+                  if (filteredPosts.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: Center(child: Text('No posts match your filters')),
+                    );
+                  }
+
+                  return SliverList.separated(
+                    addAutomaticKeepAlives: false,
+                    itemCount: filteredPosts.length,
+                    itemBuilder: (context, index) {
+                      return PostWidget(post: filteredPosts[index]);
+                    },
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 4),
                   );
-                }
-
-                return SliverList.separated(
-                  addAutomaticKeepAlives: false,
-                  itemCount: filteredPosts.length,
-                  itemBuilder: (context, index) {
-                    return PostWidget(post: filteredPosts[index]);
-                  },
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 4),
-                );
-              },
+                },
+              ),
             ),
-          ),
-          // Add spacing at bottom to ensure last items are scrollable above the solid navbar
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
+            // Add spacing at bottom to ensure last items are scrollable above the solid navbar
+            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          ],
+        ),
       ),
     );
   }
@@ -385,36 +391,36 @@ class _HomeFeedState extends State<_HomeFeed> {
                       'Fri',
                       'Sat'
                     ],
-                    weekdayLabelTextStyle: const TextStyle(
+                    weekdayLabelTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface54,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
                       fontWeight: FontWeight.w600,
                     ),
-                    controlsTextStyle: const TextStyle(
+                    controlsTextStyle: TextStyle(
                       fontFamily: 'Inter',
                       color: theme.colorScheme.onSurface,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
-                    dayTextStyle: const TextStyle(
+                    dayTextStyle: TextStyle(
                       fontFamily: 'Inter',
                       color: theme.colorScheme.onSurface,
                     ),
-                    selectedDayTextStyle: const TextStyle(
+                    selectedDayTextStyle: TextStyle(
                       fontFamily: 'Inter',
                       color: theme.scaffoldBackgroundColor,
                       fontWeight: FontWeight.bold,
                     ),
-                    yearTextStyle: const TextStyle(
+                    yearTextStyle: TextStyle(
                       fontFamily: 'Inter',
                       color: theme.colorScheme.onSurface,
                     ),
-                    cancelButtonTextStyle: const TextStyle(
+                    cancelButtonTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface54,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
                       fontWeight: FontWeight.w600,
                     ),
-                    okButtonTextStyle: const TextStyle(
+                    okButtonTextStyle: TextStyle(
                       fontFamily: 'Inter',
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -541,6 +547,8 @@ class _HomeFeedState extends State<_HomeFeed> {
     required VoidCallback onTap,
     VoidCallback? onClear,
   }) {
+
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -610,7 +618,7 @@ class _HomeFeedState extends State<_HomeFeed> {
                     color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close,
+                  child: Icon(Icons.close,
                       size: 12, color: theme.colorScheme.primary),
                 ),
               ),
@@ -623,22 +631,14 @@ class _HomeFeedState extends State<_HomeFeed> {
 
   Widget _buildAppBar(ThemeData theme, BuildContext context) {
     return SliverAppBar(
+      expandedHeight: 140,
       pinned: true,
-      floating: true,
+      floating: false,
       elevation: 0,
-      backgroundColor: Colors.transparent, // Transparent for blur
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30), // Glassmorphic Blur
-          child: Container(
-            color: theme.scaffoldBackgroundColor
-                .withValues(alpha: 0.90), // Canopi Dark Translucent
-          ),
-        ),
-      ),
-      leadingWidth: 64,
+      backgroundColor: Colors.transparent,
+      centerTitle: true,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 16.0, top: 10, bottom: 10),
+        padding: const EdgeInsets.only(left: 16.0, top: 8, bottom: 8),
         child: GestureDetector(
           onTap: widget.onProfileTap,
           child: Hero(
@@ -673,11 +673,11 @@ class _HomeFeedState extends State<_HomeFeed> {
                     child: photoUrl == null
                         ? Text(
                             initials,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Inter',
                               color: theme.colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 14,
                             ),
                           )
                         : null,
@@ -688,41 +688,71 @@ class _HomeFeedState extends State<_HomeFeed> {
           ),
         ),
       ),
-      centerTitle: false,
-      title: const TraksLogo(fontSize: 26),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16.0, top: 10, bottom: 10),
-          child: FilledButton.icon(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const CreatePostPage()));
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary, // Canopi Green Accent
-              foregroundColor: theme.scaffoldBackgroundColor, // Dark foreground
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32), // Pill shape 32px
-              ),
+          padding: const EdgeInsets.only(right: 16.0, top: 8, bottom: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            icon: const Icon(Icons.add_rounded,
-                size: 20, color: theme.scaffoldBackgroundColor),
-            label: const Text(
-              'Add Trak',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                color: theme.scaffoldBackgroundColor,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.1,
-                fontSize: 13,
+            child: IconButton.filled(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CreatePostPage()));
+              },
+              icon: const Icon(Icons.add_rounded, size: 22),
+              style: IconButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.scaffoldBackgroundColor,
+                minimumSize: const Size(44, 44),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14), // Modern squircle-like
+                ),
               ),
             ),
           ),
         ),
       ],
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.only(bottom: 12),
+        centerTitle: true,
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            // Calculate a scaling factor based on the height
+            // Expanded height is 140, collapsed is ~56 + status bar
+            final double height = constraints.maxHeight;
+            final bool isCollapsed = height <= kToolbarHeight + (MediaQuery.of(context).padding.top);
+            
+            return TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 42, end: isCollapsed ? 26 : 42),
+              duration: const Duration(milliseconds: 200),
+              builder: (context, size, child) {
+                return TraksLogo(fontSize: size);
+              },
+            );
+          },
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Glassmorphism background
+            ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  color: theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -85,12 +85,15 @@ class PostBloc extends HydratedBloc<PostEvent, PostState> {
       posts.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
       emit(state.copyWith(status: PostStatus.success, posts: posts));
+      event.completer?.complete();
     } on Failure catch (e) {
       emit(state.copyWith(status: PostStatus.failure, errorMessage: e.message));
+      event.completer?.complete();
     } catch (e) {
       emit(
         state.copyWith(status: PostStatus.failure, errorMessage: e.toString()),
       );
+      event.completer?.complete();
     }
   }
 

@@ -843,6 +843,7 @@ class _AnimatedSendButtonState extends State<_AnimatedSendButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTapDown: (_) => setState(() => _scale = 0.9),
       onTapUp: (_) => setState(() => _scale = 1.0),
@@ -854,7 +855,7 @@ class _AnimatedSendButtonState extends State<_AnimatedSendButton> {
         child: CircleAvatar(
           radius: 22,
           backgroundColor: theme.colorScheme.primary,
-          child: const Icon(Icons.send_rounded, color: theme.colorScheme.onSurface, size: 20),
+          child: Icon(Icons.send_rounded, color: theme.colorScheme.onSurface, size: 20),
         ),
       ),
     );

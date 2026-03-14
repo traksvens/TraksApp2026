@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:equatable/equatable.dart';
 import '../../../data/models/post_model.dart';
 import '../../../data/models/rating_request.dart';
@@ -14,11 +15,17 @@ class FetchPosts extends PostEvent {
   final String? city;
   final String? userId;
   final String? incidentType;
+  final Completer<void>? completer;
 
-  const FetchPosts({this.city, this.userId, this.incidentType});
+  const FetchPosts({
+    this.city,
+    this.userId,
+    this.incidentType,
+    this.completer,
+  });
 
   @override
-  List<Object?> get props => [city, userId, incidentType];
+  List<Object?> get props => [city, userId, incidentType, completer];
 }
 
 class CreatePost extends PostEvent {

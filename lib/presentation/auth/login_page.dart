@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           automaticallyImplyLeading: false,
           leading: Navigator.canPop(context)
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+                  icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
                   onPressed: () => Navigator.pop(context),
                 )
               : null,
@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: theme.colorScheme.primary
-                      .withOpacity(0.5), // Greenish glow
+                      .withValues(alpha: 0.5), // Greenish glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: theme.colorScheme.secondary
-                      .withOpacity(0.4), // Yellow-green glow
+                      .withValues(alpha: 0.4), // Yellow-green glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -148,10 +148,10 @@ class _LoginPageState extends State<LoginPage> {
                       // Logo mimicking the small 'cp' logo
                       Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurface.withOpacity(0.0),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.0),
                         ),
                         padding: const EdgeInsets.only(top: 12, bottom: 12),
-                        child: const Icon(
+                        child: Icon(
                           Icons.cloud_circle_outlined,
                           color: theme.colorScheme.onSurface,
                           size: 40,
@@ -217,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
                           if (state is AuthLoading) {
-                            return const Center(
+                            return Center(
                               child: CircularProgressIndicator(
                                 color: theme.colorScheme.onSurface,
                                 strokeWidth: 3,
@@ -339,6 +339,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isPassword = false,
     TextInputType? keyboardType,
   }) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -362,21 +363,21 @@ class _LoginPageState extends State<LoginPage> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                 fontSize: 16,
                 fontWeight: FontWeight.w500),
             filled: true,
             fillColor: theme.colorScheme.surfaceContainerHighest
-                .withOpacity(0.6), // Dark squircle specific to the canopi card
+                .withValues(alpha: 0.6), // Dark squircle specific to the canopi card
             prefixIcon:
-                Icon(icon, color: theme.colorScheme.onSurface.withOpacity(0.6), size: 22),
+                Icon(icon, color: theme.colorScheme.onSurface.withValues(alpha: 0.6), size: 22),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     onPressed: () {
                       setState(() {
@@ -392,12 +393,12 @@ class _LoginPageState extends State<LoginPage> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
               borderSide:
-                  BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.05), width: 1),
+                  BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05), width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
               borderSide:
-                  BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.2), width: 1.5),
+                  BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.2), width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
@@ -487,7 +488,7 @@ class _PrimaryButtonState extends State<_PrimaryButton>
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: widget.backgroundColor.withOpacity(0.15),
+                color: widget.backgroundColor.withValues(alpha: 0.15),
                 blurRadius: 20,
                 spreadRadius: -5,
                 offset: const Offset(0, 8),

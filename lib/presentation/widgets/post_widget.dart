@@ -105,7 +105,7 @@ class PostWidget extends StatelessWidget {
                                               : "U")
                                       .substring(0, 1)
                                       .toUpperCase(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Inter',
                                     color: theme.colorScheme.onSurface,
                                     fontWeight: FontWeight.bold,
@@ -127,7 +127,7 @@ class PostWidget extends StatelessWidget {
                                           : (post.userId.length > 5
                                               ? post.userId.substring(0, 5)
                                               : post.userId),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Inter',
                                         color: theme.colorScheme.onSurface,
                                         fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class PostWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   if (post.confirmCount > 5)
-                                    const Icon(
+                                    Icon(
                                       Icons.verified,
                                       size: 14,
                                       color: theme

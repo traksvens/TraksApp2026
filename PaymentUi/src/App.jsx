@@ -77,8 +77,8 @@ function App() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            verified: "True",
-            reporter: tier === 'reporter' ? "True" : "False"
+            reporter: "True",
+            isReporter: tier === 'reporter'
           })
         });
 

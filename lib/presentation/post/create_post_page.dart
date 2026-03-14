@@ -361,7 +361,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                   ),
                   child: _isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
@@ -542,10 +542,11 @@ class _CreatePostPageState extends State<CreatePostPage>
                                         ),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: theme.colorScheme.onSurface24,
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.24),
                                         ),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.close_rounded,
                                         color: theme.colorScheme.onSurface,
                                         size: 20,

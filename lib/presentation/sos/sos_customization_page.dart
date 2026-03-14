@@ -26,7 +26,7 @@ class SosCustomizationPage extends StatelessWidget {
           postRepository: di.sl<PostRepository>(),
         )..loadSosData(userId);
       },
-      child: const _SosCustomizationView(),
+      child: _SosCustomizationView(),
     );
   }
 }
@@ -356,7 +356,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
               color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.emergency_share,
+            child: Icon(Icons.emergency_share,
                 color: theme.colorScheme.error),
           ),
           const SizedBox(width: 16),

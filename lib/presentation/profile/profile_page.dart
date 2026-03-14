@@ -142,7 +142,7 @@ class ProfilePage extends StatelessWidget {
                                                 displayName
                                                     .substring(0, 1)
                                                     .toUpperCase(),
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontFamily: 'Inter',
                                                   fontSize: 32,
                                                   fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class ProfilePage extends StatelessWidget {
                                     children: [
                                       Text(
                                         displayName,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 24,
                                           fontWeight: FontWeight.w700,
@@ -233,11 +233,11 @@ class ProfilePage extends StatelessWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.warning_amber_rounded, size: 28),
-                              SizedBox(width: 12),
+                              const Icon(Icons.warning_amber_rounded, size: 28),
+                              const SizedBox(width: 12),
                               Text(
                                 "Emergency SOS",
                                 style: TextStyle(
@@ -598,7 +598,7 @@ class ProfilePage extends StatelessWidget {
             }
             return theme.colorScheme.onSurface;
           }),
-          textStyle: const WidgetStatePropertyAll(
+          textStyle: WidgetStatePropertyAll(
             TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.normal),
           ),
           side: const WidgetStatePropertyAll(BorderSide.none),

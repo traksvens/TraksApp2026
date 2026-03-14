@@ -68,10 +68,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // Premium Navy & White Theme Colors replaced with Canopi Dark Theme
-    const Color canopiBg = theme.scaffoldBackgroundColor;
-    const Color canopiText = theme.colorScheme.onSurface;
-    const Color canopiSubtitle = Color(0xFFA0A0A0);
-    const Color canopiGreen = theme.colorScheme.primary;
+    Color canopiBg = theme.scaffoldBackgroundColor;
+    Color canopiText = theme.colorScheme.onSurface;
+    Color canopiSubtitle = Color(0xFFA0A0A0);
+    Color canopiGreen = theme.colorScheme.primary;
 
     return Scaffold(
       backgroundColor: canopiBg,
@@ -81,14 +81,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: canopiText,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           "Plans & Upgrades",
           style: TextStyle(
             fontFamily: 'Inter',
@@ -125,8 +125,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               children: [
                 const SizedBox(height: 20),
                 // Header
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     children: [
                       Text(
@@ -141,7 +141,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                           height: 1.1,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Text(
                         "Unlock premium features and professional reporting tools built for clarity and impact.",
                         textAlign: TextAlign.center,
@@ -216,8 +216,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     required _TierModel tier,
     required bool isActive,
   }) {
-    const Color canopiText = theme.colorScheme.onSurface;
-    const Color canopiSubtitle = Color(0xFFA0A0A0);
+    final theme = Theme.of(context);
+    final Color canopiText = theme.colorScheme.onSurface;
+    final Color canopiSubtitle = Color(0xFFA0A0A0);
 
     final scale = isActive ? 1.0 : 0.92;
     final opacity = isActive ? 1.0 : 0.6;
@@ -237,7 +238,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(
+                color: Color(
                   0xFF1A1D1C,
                 ).withValues(alpha: 0.6), // Frosted glass dark
                 borderRadius: BorderRadius.circular(32),
@@ -287,7 +288,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         const SizedBox(height: 10),
                         // Icon and Name
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(16),
@@ -297,7 +298,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         const SizedBox(height: 24),
                         Text(
                           tier.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
@@ -312,17 +313,17 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                           children: [
                             Text(
                               tier.price == 0 ? "Free" : "₦${tier.price}",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 38,
                                 fontWeight: FontWeight.w900,
                                 color: canopiText,
                                 letterSpacing: -1.0,
-                                fontFeatures: [FontFeature.tabularFigures()],
+                                fontFeatures: const [FontFeature.tabularFigures()],
                               ),
                             ),
                             if (tier.price > 0)
-                              const Text(
+                              Text(
                                 " / lifetime",
                                 style: TextStyle(
                                   fontFamily: 'Inter',
@@ -355,7 +356,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                       ).withValues(alpha: 0.1),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.check_rounded,
                                       size: 14,
                                       color: theme.colorScheme.primary,
@@ -365,7 +366,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   Expanded(
                                     child: Text(
                                       tier.features[index],
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,

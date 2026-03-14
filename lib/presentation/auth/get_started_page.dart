@@ -24,7 +24,7 @@ class GetStartedPage extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color:
-                    theme.colorScheme.primary.withOpacity(0.5), // Greenish glow
+                    theme.colorScheme.primary.withValues(alpha: 0.5), // Greenish glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -41,7 +41,7 @@ class GetStartedPage extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: theme.colorScheme.secondary
-                    .withOpacity(0.4), // Yellow-green glow
+                    .withValues(alpha: 0.4), // Yellow-green glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -60,10 +60,10 @@ class GetStartedPage extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: theme.colorScheme.onSurface
-                          .withOpacity(0.0), // Transparent to match image
+                          .withValues(alpha: 0.0), // Transparent to match image
                     ),
                     padding: const EdgeInsets.all(12),
-                    child: const Icon(
+                    child: Icon(
                       Icons
                           .cloud_circle_outlined, // Cloud looks somewhat like the 'cp' shape
                       color: theme.colorScheme.onSurface,
@@ -129,8 +129,9 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: -0.05,
                           child: _buildFeatureCard(
+                            theme: theme,
                             child: _buildIconCardContent(
-                                Icons.map_outlined, 'Map'),
+                                theme, Icons.map_outlined, 'Map'),
                           ),
                         ),
                       ),
@@ -142,8 +143,9 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: 0.08, // rotated right
                           child: _buildFeatureCard(
+                            theme: theme,
                             child: _buildIconCardContent(
-                                Icons.fact_check_outlined, 'Logs'),
+                                theme, Icons.fact_check_outlined, 'Logs'),
                           ),
                         ),
                       ),
@@ -155,8 +157,9 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: -0.06, // rotated left
                           child: _buildFeatureCard(
+                            theme: theme,
                             isImage: true,
-                            child: const Align(
+                            child: Align(
                               alignment: Alignment.bottomCenter,
                               child: Text(
                                 'Photo',
@@ -178,8 +181,9 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: 0.05, // rotated right
                           child: _buildFeatureCard(
+                            theme: theme,
                             child: _buildIconCardContent(
-                                Icons.manage_search, 'Explore'),
+                                theme, Icons.manage_search, 'Explore'),
                           ),
                         ),
                       ),
@@ -197,6 +201,7 @@ class GetStartedPage extends StatelessWidget {
                     children: [
                       _buildBottomButton(
                         context: context,
+                        theme: theme,
                         text: 'Create Account',
                         icon: Icons.person_add,
                         isSignUp: true,
@@ -204,6 +209,7 @@ class GetStartedPage extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildBottomButton(
                         context: context,
+                        theme: theme,
                         text: 'Sign In',
                         icon: Icons.login,
                         isSignUp: false,
@@ -221,6 +227,7 @@ class GetStartedPage extends StatelessWidget {
 
   Widget _buildBottomButton({
     required BuildContext context,
+    required ThemeData theme,
     required String text,
     required IconData icon,
     required bool isSignUp,
@@ -268,7 +275,8 @@ class GetStartedPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard({required Widget child, bool isImage = false}) {
+  Widget _buildFeatureCard(
+      {required ThemeData theme, required Widget child, bool isImage = false}) {
     return Container(
       width: 115,
       height: 115,
@@ -281,17 +289,19 @@ class GetStartedPage extends StatelessWidget {
             BorderRadius.circular(32), // Extremely rounded squircle shape
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.surface.withOpacity(0.3),
+            color: theme.colorScheme.surface.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 10),
           ),
         ],
         image: isImage
-            ? const DecorationImage(
+            ? DecorationImage(
                 image: NetworkImage(
                     'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop'), // Example black and white architecture image
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(theme.colorScheme.surface38, BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                    theme.colorScheme.surface.withValues(alpha: 0.38),
+                    BlendMode.darken),
               )
             : null,
       ),
@@ -302,14 +312,14 @@ class GetStartedPage extends StatelessWidget {
     );
   }
 
-  Widget _buildIconCardContent(IconData icon, String title) {
+  Widget _buildIconCardContent(ThemeData theme, IconData icon, String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Icon(
           icon,
-          color: theme.colorScheme.onSurface.withOpacity(0.8),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           size: 28,
         ),
         Text(
