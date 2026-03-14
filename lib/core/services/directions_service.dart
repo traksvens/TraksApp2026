@@ -4,7 +4,8 @@ import '../constants/api_keys.dart';
 
 class DirectionsService {
   final Dio _dio;
-  final String _baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+  final String _baseUrl =
+      'https://maps.googleapis.com/maps/api/directions/json';
 
   DirectionsService(this._dio);
 

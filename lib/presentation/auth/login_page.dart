@@ -41,25 +41,26 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       if (_isSignUp) {
         context.read<AuthBloc>().add(
-          SignUpRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            displayName: _nameController.text.trim(),
-          ),
-        );
+              SignUpRequested(
+                email: _emailController.text.trim(),
+                password: _passwordController.text.trim(),
+                displayName: _nameController.text.trim(),
+              ),
+            );
       } else {
         context.read<AuthBloc>().add(
-          SignInRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          ),
-        );
+              SignInRequested(
+                email: _emailController.text.trim(),
+                password: _passwordController.text.trim(),
+              ),
+            );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
             SnackBar(
               content: Text(
                 state.message,
-                style: GoogleFonts.inter(color: Colors.white),
+                style: GoogleFonts.inter(color: theme.colorScheme.onSurface),
               ),
               backgroundColor: AppColors.alertHigh,
               behavior: SnackBarBehavior.floating,
@@ -81,7 +82,8 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF0C100D), // Very dark, slightly greenish background
+        backgroundColor: theme
+            .scaffoldBackgroundColor, // Very dark, slightly greenish background
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -89,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           automaticallyImplyLeading: false,
           leading: Navigator.canPop(context)
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
                   onPressed: () => Navigator.pop(context),
                 )
               : null,
@@ -105,7 +107,8 @@ class _LoginPageState extends State<LoginPage> {
                 height: 400,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF1E3A2F).withOpacity(0.5), // Greenish glow
+                  color: theme.colorScheme.primary
+                      .withOpacity(0.5), // Greenish glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -122,7 +125,8 @@ class _LoginPageState extends State<LoginPage> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF2C3E20).withOpacity(0.4), // Yellow-green glow
+                  color: theme.colorScheme.secondary
+                      .withOpacity(0.4), // Yellow-green glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -144,12 +148,12 @@ class _LoginPageState extends State<LoginPage> {
                       // Logo mimicking the small 'cp' logo
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.0),
+                          color: theme.colorScheme.onSurface.withOpacity(0.0),
                         ),
                         padding: const EdgeInsets.only(top: 12, bottom: 12),
                         child: const Icon(
                           Icons.cloud_circle_outlined,
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           size: 40,
                         ),
                       ),
@@ -157,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         _isSignUp ? 'Create\nAccount' : 'Welcome\nBack',
                         style: GoogleFonts.inter(
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 48,
                           fontWeight: FontWeight.w900,
                           letterSpacing: -2.0,
@@ -170,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                             ? 'Get started by creating your account below.'
                             : 'Log in to continue sharing and discovering.',
                         style: GoogleFonts.inter(
-                          color: const Color(0xFF88888E),
+                          color: theme.hintColor,
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                           letterSpacing: -0.2,
@@ -215,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (state is AuthLoading) {
                             return const Center(
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface,
                                 strokeWidth: 3,
                               ),
                             );
@@ -225,15 +229,15 @@ class _LoginPageState extends State<LoginPage> {
                               _PrimaryButton(
                                 text: _isSignUp ? 'SIGN UP' : 'LOG IN',
                                 onPressed: _submit,
-                                backgroundColor: Colors.white,
-                                textColor: Colors.black,
+                                backgroundColor: theme.colorScheme.onSurface,
+                                textColor: theme.colorScheme.surface,
                               ),
                               const SizedBox(height: 24),
                               Row(
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: Colors.white.withOpacity(0.1),
+                                      color: theme.colorScheme.onSurface.withOpacity(0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -244,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                                     child: Text(
                                       'OR',
                                       style: GoogleFonts.inter(
-                                        color: const Color(0xFF88888E),
+                                        color: theme.hintColor,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                         letterSpacing: 1,
@@ -253,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: Colors.white.withOpacity(0.1),
+                                      color: theme.colorScheme.onSurface.withOpacity(0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -265,8 +269,8 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icons.g_mobiledata,
                                 onPressed: () {
                                   context.read<AuthBloc>().add(
-                                    GoogleSignInRequested(),
-                                  );
+                                        GoogleSignInRequested(),
+                                      );
                                 },
                               ),
                             ],
@@ -282,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.white,
+                            foregroundColor: theme.colorScheme.onSurface,
                             padding: const EdgeInsets.symmetric(
                               vertical: 8,
                               horizontal: 16,
@@ -297,7 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ? "Already have an account? "
                                   : "Don't have an account? ",
                               style: GoogleFonts.inter(
-                                color: const Color(0xFF88888E),
+                                color: theme.hintColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: -0.2,
@@ -306,7 +310,7 @@ class _LoginPageState extends State<LoginPage> {
                                 TextSpan(
                                   text: _isSignUp ? 'Log In' : 'Sign Up',
                                   style: GoogleFonts.inter(
-                                    color: Colors.white,
+                                    color: theme.colorScheme.onSurface,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -341,7 +345,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           label,
           style: GoogleFonts.inter(
-            color: const Color(0xFF88888E),
+            color: theme.hintColor,
             fontSize: 13,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
@@ -352,21 +356,27 @@ class _LoginPageState extends State<LoginPage> {
           controller: controller,
           obscureText: isPassword ? _obscurePassword : false,
           keyboardType: keyboardType,
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
-          cursorColor: Colors.white,
+          style: GoogleFonts.inter(
+              color: theme.colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.w500),
+          cursorColor: theme.colorScheme.onSurface,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(color: Colors.white.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.w500),
+            hintStyle: GoogleFonts.inter(
+                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
             filled: true,
-            fillColor: const Color(0xFF232325).withOpacity(0.6), // Dark squircle specific to the canopi card
-            prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.6), size: 22),
+            fillColor: theme.colorScheme.surfaceContainerHighest
+                .withOpacity(0.6), // Dark squircle specific to the canopi card
+            prefixIcon:
+                Icon(icon, color: theme.colorScheme.onSurface.withOpacity(0.6), size: 22),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.white.withOpacity(0.6),
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
                     ),
                     onPressed: () {
                       setState(() {
@@ -381,19 +391,23 @@ class _LoginPageState extends State<LoginPage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+              borderSide:
+                  BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.05), width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+              borderSide:
+                  BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.2), width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: const BorderSide(color: AppColors.alertHigh, width: 1),
+              borderSide:
+                  const BorderSide(color: AppColors.alertHigh, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide: const BorderSide(color: AppColors.alertHigh, width: 1.5),
+              borderSide:
+                  const BorderSide(color: AppColors.alertHigh, width: 1.5),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
@@ -419,7 +433,7 @@ class _PrimaryButton extends StatefulWidget {
   final Color textColor;
 
   const _PrimaryButton({
-    required this.text, 
+    required this.text,
     required this.onPressed,
     required this.backgroundColor,
     required this.textColor,
@@ -455,6 +469,7 @@ class _PrimaryButtonState extends State<_PrimaryButton>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
@@ -537,6 +552,7 @@ class _SecondaryButtonState extends State<_SecondaryButton>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
@@ -550,18 +566,19 @@ class _SecondaryButtonState extends State<_SecondaryButton>
           width: double.infinity,
           height: 64, // Exact height to match the thick pill shape
           decoration: BoxDecoration(
-            color: const Color(0xFF090909), // True black button
+            color:
+                theme.colorScheme.surfaceContainerHighest, // True black button
             borderRadius: BorderRadius.circular(32),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(widget.icon, color: Colors.white, size: 28),
+              Icon(widget.icon, color: theme.colorScheme.onSurface, size: 28),
               const SizedBox(width: 8),
               Text(
                 widget.text,
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -0.5,
@@ -574,4 +591,3 @@ class _SecondaryButtonState extends State<_SecondaryButton>
     );
   }
 }
-

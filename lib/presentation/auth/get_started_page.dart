@@ -8,8 +8,10 @@ class GetStartedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF0C100D), // Very dark, slightly greenish background
+      backgroundColor: theme
+          .scaffoldBackgroundColor, // Very dark, slightly greenish background
       body: Stack(
         children: [
           // Background ambient gradient
@@ -21,7 +23,8 @@ class GetStartedPage extends StatelessWidget {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF1E3A2F).withOpacity(0.5), // Greenish glow
+                color:
+                    theme.colorScheme.primary.withOpacity(0.5), // Greenish glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -37,7 +40,8 @@ class GetStartedPage extends StatelessWidget {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF2C3E20).withOpacity(0.4), // Yellow-green glow
+                color: theme.colorScheme.secondary
+                    .withOpacity(0.4), // Yellow-green glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -45,34 +49,36 @@ class GetStartedPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           SafeArea(
             child: Column(
               children: [
                 const SizedBox(height: 60),
-                
+
                 // Logo section mimicking the small 'cp' logo
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.0), // Transparent to match image
+                      color: theme.colorScheme.onSurface
+                          .withOpacity(0.0), // Transparent to match image
                     ),
                     padding: const EdgeInsets.all(12),
                     child: const Icon(
-                      Icons.cloud_circle_outlined, // Cloud looks somewhat like the 'cp' shape
-                      color: Colors.white,
+                      Icons
+                          .cloud_circle_outlined, // Cloud looks somewhat like the 'cp' shape
+                      color: theme.colorScheme.onSurface,
                       size: 40,
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Welcome Text
                 Text(
                   'Welcome to',
                   style: GoogleFonts.inter(
-                    color: const Color(0xFF88888E),
+                    color: theme.hintColor,
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.5,
@@ -81,16 +87,16 @@ class GetStartedPage extends StatelessWidget {
                 Text(
                   'NasBombs',
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 52,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -2.0,
                     height: 1.1,
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Subtitle
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -98,7 +104,7 @@ class GetStartedPage extends StatelessWidget {
                     'Share Real-Time Incident Reports\nwith your Community.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: const Color(0xFF88888E),
+                      color: theme.hintColor,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       height: 1.4,
@@ -106,9 +112,9 @@ class GetStartedPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Feature Cards Carousel exactly like Canopi
                 SizedBox(
                   height: 150,
@@ -123,11 +129,12 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: -0.05,
                           child: _buildFeatureCard(
-                            child: _buildIconCardContent(Icons.map_outlined, 'Map'),
+                            child: _buildIconCardContent(
+                                Icons.map_outlined, 'Map'),
                           ),
                         ),
                       ),
-                      
+
                       // Card 2 (Tasks/Report)
                       Positioned(
                         left: 90,
@@ -135,11 +142,12 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: 0.08, // rotated right
                           child: _buildFeatureCard(
-                            child: _buildIconCardContent(Icons.fact_check_outlined, 'Logs'),
+                            child: _buildIconCardContent(
+                                Icons.fact_check_outlined, 'Logs'),
                           ),
                         ),
                       ),
-                      
+
                       // Card 3 (Photo)
                       Positioned(
                         left: 215,
@@ -153,7 +161,7 @@ class GetStartedPage extends StatelessWidget {
                               child: Text(
                                 'Photo',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                 ),
@@ -162,7 +170,7 @@ class GetStartedPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      
+
                       // Card 4 (Website/Alerts)
                       Positioned(
                         left: 345,
@@ -170,19 +178,21 @@ class GetStartedPage extends StatelessWidget {
                         child: Transform.rotate(
                           angle: 0.05, // rotated right
                           child: _buildFeatureCard(
-                            child: _buildIconCardContent(Icons.manage_search, 'Explore'),
+                            child: _buildIconCardContent(
+                                Icons.manage_search, 'Explore'),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Buttons at the bottom
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 24.0),
                   child: Column(
                     children: [
                       _buildBottomButton(
@@ -228,8 +238,9 @@ class GetStartedPage extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF090909), // True black button
-          foregroundColor: Colors.white,
+          backgroundColor:
+              theme.colorScheme.surfaceContainerHighest, // True black button
+          foregroundColor: theme.colorScheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32),
           ),
@@ -238,7 +249,10 @@ class GetStartedPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(isSignUp ? Icons.apple : Icons.email, size: 24, color: Colors.white), // Using Apple icon visually just to keep up aesthetic
+            Icon(isSignUp ? Icons.apple : Icons.email,
+                size: 24,
+                color: Colors
+                    .white), // Using Apple icon visually just to keep up aesthetic
             const SizedBox(width: 12),
             Text(
               text,
@@ -259,24 +273,31 @@ class GetStartedPage extends StatelessWidget {
       width: 115,
       height: 115,
       decoration: BoxDecoration(
-        color: isImage ? Colors.grey[800] : const Color(0xFF232325), // Dark squircle specific to the canopi card
-        borderRadius: BorderRadius.circular(32), // Extremely rounded squircle shape
+        color: isImage
+            ? Colors.grey[800]
+            : theme.colorScheme
+                .surfaceContainerHighest, // Dark squircle specific to the canopi card
+        borderRadius:
+            BorderRadius.circular(32), // Extremely rounded squircle shape
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: theme.colorScheme.surface.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 10),
           ),
         ],
-        image: isImage 
-          ? const DecorationImage(
-              image: NetworkImage('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop'), // Example black and white architecture image
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black38, BlendMode.darken),
-            )
-          : null,
+        image: isImage
+            ? const DecorationImage(
+                image: NetworkImage(
+                    'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop'), // Example black and white architecture image
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(theme.colorScheme.surface38, BlendMode.darken),
+              )
+            : null,
       ),
-      padding: isImage ? const EdgeInsets.only(bottom: 12) : const EdgeInsets.all(16.0),
+      padding: isImage
+          ? const EdgeInsets.only(bottom: 12)
+          : const EdgeInsets.all(16.0),
       child: child,
     );
   }
@@ -288,13 +309,13 @@ class GetStartedPage extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: Colors.white.withOpacity(0.8),
+          color: theme.colorScheme.onSurface.withOpacity(0.8),
           size: 28,
         ),
         Text(
           title,
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
             fontSize: 15,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.5,

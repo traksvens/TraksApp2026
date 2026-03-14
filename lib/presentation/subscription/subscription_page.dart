@@ -66,11 +66,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     // Premium Navy & White Theme Colors replaced with Canopi Dark Theme
-    const Color canopiBg = Color(0xFF0D110F);
-    const Color canopiText = Colors.white;
+    const Color canopiBg = theme.scaffoldBackgroundColor;
+    const Color canopiText = theme.colorScheme.onSurface;
     const Color canopiSubtitle = Color(0xFFA0A0A0);
-    const Color canopiGreen = Color(0xFF22C55E);
+    const Color canopiGreen = theme.colorScheme.primary;
 
     return Scaffold(
       backgroundColor: canopiBg,
@@ -167,9 +168,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         _currentPage = page;
                       });
                     },
-                    itemCount: _subscriptionTiers.length,
+                    itemCount: _getSubscriptionTiers(theme).length,
                     itemBuilder: (context, index) {
-                      final tier = _subscriptionTiers[index];
+                      final tier = _getSubscriptionTiers(theme)[index];
                       final isActive = _currentPage == index;
 
                       return _buildTierCard(
@@ -185,7 +186,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_subscriptionTiers.length, (index) {
+                  children: List.generate(_getSubscriptionTiers(theme).length, (index) {
                     final isActive = _currentPage == index;
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
@@ -195,7 +196,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       decoration: BoxDecoration(
                         color: isActive
                             ? canopiGreen
-                            : Colors.white.withValues(alpha: 0.2),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                     );
@@ -215,7 +216,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     required _TierModel tier,
     required bool isActive,
   }) {
-    const Color canopiText = Colors.white;
+    const Color canopiText = theme.colorScheme.onSurface;
     const Color canopiSubtitle = Color(0xFFA0A0A0);
 
     final scale = isActive ? 1.0 : 0.92;
@@ -243,7 +244,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 border: Border.all(
                   color: isActive
                       ? tier.gradientColors.last.withValues(alpha: 0.5)
-                      : Colors.white.withValues(alpha: 0.08),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.08),
                   width: 1,
                 ),
                 boxShadow: isActive
@@ -288,7 +289,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF232325),
+                            color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(tier.icon, color: canopiText, size: 28),
@@ -357,7 +358,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                     child: const Icon(
                                       Icons.check_rounded,
                                       size: 14,
-                                      color: Color(0xFF22C55E),
+                                      color: theme.colorScheme.primary,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -391,8 +392,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                             ), // Pill shape 32px
                             color: isActive
                                 ? (tier.id == 'freemium'
-                                      ? const Color(0xFF232325)
-                                      : const Color(0xFF22C55E))
+                                    ? theme.colorScheme.surfaceContainerHighest
+                                    : theme.colorScheme.primary)
                                 : const Color(
                                     0xFF232325,
                                   ).withValues(alpha: 0.5),
@@ -419,8 +420,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     color: isActive && tier.id != 'freemium'
-                                        ? const Color(0xFF0D110F)
-                                        : Colors.white,
+                                        ? theme.scaffoldBackgroundColor
+                                        : theme.colorScheme.onSurface,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.2,
@@ -463,49 +464,51 @@ class _TierModel {
   });
 }
 
-final List<_TierModel> _subscriptionTiers = [
-  _TierModel(
-    id: 'freemium',
-    name: 'Freemium',
-    price: 0,
-    buttonText: 'Current Plan',
-    gradientColors: [const Color(0xFF94A3B8), const Color(0xFF64748B)],
-    icon: Icons.person_outline_rounded,
-    features: [
-      'Basic profile features',
-      'Standard access to Traks resources',
-      'Limited community interaction',
-      'Standard support',
-    ],
-  ),
-  _TierModel(
-    id: 'premium',
-    name: 'Premium',
-    price: 3000,
-    buttonText: 'Get Premium',
-    gradientColors: [const Color(0xFF22C55E), const Color(0xFF16A34A)],
-    icon: Icons.workspace_premium_rounded,
-    features: [
-      'Blue Verified Checkmark',
-      'Ad-Free Experience',
-      'Priority Customer Support',
-      'Enhanced Profile Visibility',
-      'Exclusive Access to Premium Content',
-    ],
-  ),
-  _TierModel(
-    id: 'reporter',
-    name: 'Reporter',
-    price: 7000,
-    buttonText: 'Become a Reporter',
-    gradientColors: [const Color(0xFFEAB308), const Color(0xFFCA8A04)],
-    icon: Icons.campaign_rounded,
-    features: [
-      'Everything in Premium',
-      'Official Reporter Identity Status',
-      'Direct Data Export Capabilities',
-      'Post Verified News and Alerts',
-      'Access to Advanced Analytics',
-    ],
-  ),
-];
+List<_TierModel> _getSubscriptionTiers(ThemeData theme) {
+  return [
+    _TierModel(
+      id: 'freemium',
+      name: 'Freemium',
+      price: 0,
+      buttonText: 'Current Plan',
+      gradientColors: [const Color(0xFF94A3B8), const Color(0xFF64748B)],
+      icon: Icons.person_outline_rounded,
+      features: [
+        'Basic profile features',
+        'Standard access to Traks resources',
+        'Limited community interaction',
+        'Standard support',
+      ],
+    ),
+    _TierModel(
+      id: 'premium',
+      name: 'Premium',
+      price: 3000,
+      buttonText: 'Get Premium',
+      gradientColors: [theme.colorScheme.primary, const Color(0xFF16A34A)],
+      icon: Icons.workspace_premium_rounded,
+      features: [
+        'Blue Verified Checkmark',
+        'Ad-Free Experience',
+        'Priority Customer Support',
+        'Enhanced Profile Visibility',
+        'Exclusive Access to Premium Content',
+      ],
+    ),
+    _TierModel(
+      id: 'reporter',
+      name: 'Reporter',
+      price: 7000,
+      buttonText: 'Become a Reporter',
+      gradientColors: [theme.colorScheme.tertiary, const Color(0xFFCA8A04)],
+      icon: Icons.campaign_rounded,
+      features: [
+        'Everything in Premium',
+        'Official Reporter Identity Status',
+        'Direct Data Export Capabilities',
+        'Post Verified News and Alerts',
+        'Access to Advanced Analytics',
+      ],
+    ),
+  ];
+}

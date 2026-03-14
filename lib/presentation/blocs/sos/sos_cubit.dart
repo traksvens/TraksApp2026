@@ -14,9 +14,9 @@ class SosCubit extends Cubit<SosState> {
   SosCubit({
     required AuthRepository authRepository,
     required PostRepository postRepository,
-  }) : _authRepository = authRepository,
-       _postRepository = postRepository,
-       super(const SosInitial());
+  })  : _authRepository = authRepository,
+        _postRepository = postRepository,
+        super(const SosInitial());
 
   Future<void> loadSosData(String userId) async {
     emit(SosLoading());

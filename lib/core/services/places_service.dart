@@ -93,8 +93,7 @@ class PlacesService {
       if (lat == null || lng == null) return null;
 
       final displayName = place['displayName'] as Map<String, dynamic>?;
-      final label =
-          displayName?['text'] as String? ??
+      final label = displayName?['text'] as String? ??
           place['formattedAddress'] as String? ??
           trimmed;
 

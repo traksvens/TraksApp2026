@@ -545,14 +545,12 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     final searchState = context.watch<SearchBloc>().state;
     final postState = context.watch<PostBloc>().state;
     final navState = context.watch<MapNavigationCubit>().state;
-    final assistantSurface = _a2uiProcessor
-        .getSurfaceNotifier(_assistantSurfaceId)
-        .value;
+    final assistantSurface =
+        _a2uiProcessor.getSurfaceNotifier(_assistantSurfaceId).value;
     final hasAssistantSurface =
         assistantSurface != null && assistantSurface.rootComponentId != null;
 
-    final initialPos =
-        (locationState.lastKnownLat != null &&
+    final initialPos = (locationState.lastKnownLat != null &&
             locationState.lastKnownLng != null)
         ? CameraPosition(
             target: LatLng(
@@ -583,8 +581,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
 
     final showSuggestions =
         _mode == _MapInputMode.search && (_showSuggestions || _isSearching);
-    final showAiPanel =
-        _mode == _MapInputMode.ai &&
+    final showAiPanel = _mode == _MapInputMode.ai &&
         (_chatEntries.isNotEmpty || _isAiLoading || hasAssistantSurface);
     final showAiLocationCard = _mode == _MapInputMode.ai && !showAiPanel;
     final aiPanelHeight = _resolveAiPanelHeight(
@@ -595,8 +592,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     // 96px is added to push elements above the Home page's floating bottom navigation bar
     final navBarOffset = 96.0;
 
-    final overlayHeight =
-        76 + navBarOffset +
+    final overlayHeight = 76 +
+        navBarOffset +
         (showSuggestions ? 240 : 0) +
         (showAiLocationCard ? 64 : 0) +
         (showAiPanel ? aiPanelHeight.round() : 0) +
@@ -685,7 +682,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (showAiPanel) _buildAiPanel(theme, isDark, aiPanelHeight),
+                    if (showAiPanel)
+                      _buildAiPanel(theme, isDark, aiPanelHeight),
                     if (showAiLocationCard)
                       _buildAiLocationContext(theme, isDark, embedded: false),
                     if (showSuggestions) _buildSuggestionsList(theme, isDark),
@@ -703,7 +701,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildBottomComposer(ThemeData theme) {
     final isAiMode = _mode == _MapInputMode.ai;
     final controller = isAiMode ? _aiController : _locationSearchController;
-    final primaryColor = isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
+    final primaryColor =
+        isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
 
     return Container(
       decoration: BoxDecoration(
@@ -734,14 +733,16 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 0.5,
               ),
-              gradient: isAiMode ? LinearGradient(
-                colors: [
-                  theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
-                  primaryColor.withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ) : null,
+              gradient: isAiMode
+                  ? LinearGradient(
+                      colors: [
+                        theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
+                        primaryColor.withValues(alpha: 0.05),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    )
+                  : null,
             ),
             child: Row(
               children: [
@@ -792,12 +793,11 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildSendButton(ThemeData theme) {
     final isAiMode = _mode == _MapInputMode.ai;
     final isLoading = isAiMode ? _isAiLoading : _isSearching;
-    final primaryColor = isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
+    final primaryColor =
+        isAiMode ? theme.colorScheme.primary : theme.colorScheme.secondary;
 
     return GestureDetector(
-      onTap: isLoading
-          ? null
-          : (isAiMode ? _sendAiPrompt : null), 
+      onTap: isLoading ? null : (isAiMode ? _sendAiPrompt : null),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 44,
@@ -843,7 +843,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget _buildModeToggle() {
     final theme = Theme.of(context);
     final isSearch = _mode == _MapInputMode.search;
-    final color = isSearch ? theme.colorScheme.secondary : theme.colorScheme.primary;
+    final color =
+        isSearch ? theme.colorScheme.secondary : theme.colorScheme.primary;
 
     return PopupMenuButton<_MapInputMode>(
       initialValue: _mode,
@@ -956,12 +957,12 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             ),
             itemBuilder: (context, index) {
               final suggestion = _suggestions[index];
-              final mainText =
-                  suggestion['structuredFormat']?['mainText']?['text'] ??
+              final mainText = suggestion['structuredFormat']?['mainText']
+                      ?['text'] ??
                   suggestion['text']?['text'] ??
                   'Unknown location';
-              final secondaryText =
-                  suggestion['structuredFormat']?['secondaryText']?['text'] ??
+              final secondaryText = suggestion['structuredFormat']
+                      ?['secondaryText']?['text'] ??
                   '';
               return ListTile(
                 leading: const Icon(Icons.location_on_rounded),
@@ -1064,9 +1065,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                       onPressed: () => setState(
                         () => _isAiPanelExpanded = !_isAiPanelExpanded,
                       ),
-                      tooltip: _isAiPanelExpanded
-                          ? 'Collapse chat'
-                          : 'Expand chat',
+                      tooltip:
+                          _isAiPanelExpanded ? 'Collapse chat' : 'Expand chat',
                       icon: Icon(
                         _isAiPanelExpanded
                             ? Icons.fullscreen_exit_rounded
@@ -1081,7 +1081,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                         foregroundColor: theme.hintColor,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                       ),
-                      child: const Text('Clear', style: TextStyle(fontWeight: FontWeight.w600)),
+                      child: const Text('Clear',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -1201,7 +1202,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
                 ? null
                 : () => _ensureCurrentLocationContext(forceRefresh: true),
             style: IconButton.styleFrom(
-              backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              backgroundColor: theme.colorScheme.surfaceContainerHighest
+                  .withValues(alpha: 0.5),
             ),
             icon: _isRefreshingCurrentLocation
                 ? const SizedBox(
@@ -1218,9 +1220,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   }
 
   Widget _buildChatBubble(ThemeData theme, _ChatEntry entry) {
-    final alignment = entry.isUser
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
+    final alignment =
+        entry.isUser ? Alignment.centerRight : Alignment.centerLeft;
     final bubbleDecoration = entry.isUser
         ? BoxDecoration(
             gradient: LinearGradient(
@@ -1243,7 +1244,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             ],
           )
         : BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+            color: theme.colorScheme.surfaceContainerHighest
+                .withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(20).copyWith(
               bottomLeft: const Radius.circular(4),
             ),
@@ -1252,9 +1254,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             ),
           );
 
-    final textColor = entry.isUser
-        ? Colors.white
-        : theme.textTheme.bodyMedium?.color;
+    final textColor =
+        entry.isUser ? Colors.white : theme.textTheme.bodyMedium?.color;
 
     return Align(
       alignment: alignment,

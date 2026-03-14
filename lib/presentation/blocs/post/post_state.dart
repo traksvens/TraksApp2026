@@ -42,13 +42,13 @@ class PostState extends Equatable {
 
   @override
   List<Object?> get props => [
-    status,
-    formStatus,
-    posts,
-    errorMessage,
-    hasReachedMax,
-    replies,
-  ];
+        status,
+        formStatus,
+        posts,
+        errorMessage,
+        hasReachedMax,
+        replies,
+      ];
 
   Map<String, dynamic> toJson() {
     return {
@@ -67,8 +67,7 @@ class PostState extends Equatable {
     return PostState(
       status: PostStatus.values[json['status'] as int? ?? 0],
       formStatus: PostFormStatus.values[json['formStatus'] as int? ?? 0],
-      posts:
-          (json['posts'] as List<dynamic>?)
+      posts: (json['posts'] as List<dynamic>?)
               ?.map((e) => PostModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

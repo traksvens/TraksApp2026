@@ -117,10 +117,14 @@ final incidentPostCardItem = CatalogItem(
                         CircleAvatar(
                           radius: 18,
                           backgroundColor: theme.colorScheme.primaryContainer,
-                          backgroundImage: (data['userAvatarUrl'] as String?)?.isNotEmpty == true
-                              ? CachedNetworkImageProvider(data['userAvatarUrl'] as String)
-                              : null,
-                          child: (data['userAvatarUrl'] as String?)?.isEmpty ?? true
+                          backgroundImage:
+                              (data['userAvatarUrl'] as String?)?.isNotEmpty ==
+                                      true
+                                  ? CachedNetworkImageProvider(
+                                      data['userAvatarUrl'] as String)
+                                  : null,
+                          child: (data['userAvatarUrl'] as String?)?.isEmpty ??
+                                  true
                               ? Icon(
                                   data['isAnonymous'] == true
                                       ? Icons.visibility_off_rounded
@@ -180,7 +184,8 @@ final incidentPostCardItem = CatalogItem(
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      (data['incidentType'] as String? ?? 'Incident').toUpperCase(),
+                      (data['incidentType'] as String? ?? 'Incident')
+                          .toUpperCase(),
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: theme.hintColor.withValues(alpha: 0.6),
                         fontWeight: FontWeight.w800,

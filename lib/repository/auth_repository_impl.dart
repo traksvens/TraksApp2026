@@ -14,9 +14,9 @@ class AuthRepositoryImpl implements AuthRepository {
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
     UserService? userService,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn(),
-       _userService = userService ?? UserService();
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn(),
+        _userService = userService ?? UserService();
 
   @override
   Stream<User?> get user => _firebaseAuth.authStateChanges();

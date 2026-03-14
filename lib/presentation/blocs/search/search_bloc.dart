@@ -45,17 +45,17 @@ class SearchFilters extends Equatable {
 
   @override
   List<Object?> get props => [
-    city,
-    state,
-    country,
-    neighbourhood,
-    zipcode,
-    severity,
-    incidentType,
-    userId,
-    timestampStart,
-    timestampEnd,
-  ];
+        city,
+        state,
+        country,
+        neighbourhood,
+        zipcode,
+        severity,
+        incidentType,
+        userId,
+        timestampStart,
+        timestampEnd,
+      ];
 }
 
 // Events
@@ -121,13 +121,13 @@ class SearchState extends Equatable {
 
   @override
   List<Object?> get props => [
-    status,
-    results,
-    postIds,
-    errorMessage,
-    filters,
-    query,
-  ];
+        status,
+        results,
+        postIds,
+        errorMessage,
+        filters,
+        query,
+      ];
 }
 
 // Bloc

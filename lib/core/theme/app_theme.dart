@@ -27,7 +27,6 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.darkBackground,
       primaryColor: primaryColor,
       dividerColor: AppColors.darkDivider,
-
       colorScheme: ColorScheme.dark(
         primary: primaryColor,
         secondary: primaryColor,
@@ -36,7 +35,6 @@ class AppTheme {
         onSecondary: Colors.white,
         onSurface: AppColors.darkTextPrimary,
       ),
-
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.darkBackground,
         foregroundColor: AppColors.darkTextPrimary,
@@ -50,7 +48,6 @@ class AppTheme {
           systemNavigationBarIconBrightness: Brightness.light,
         ),
       ),
-
       textTheme: TextTheme(
         headlineLarge: GoogleFonts.plusJakartaSans(
           color: AppColors.darkTextPrimary,
@@ -92,7 +89,6 @@ class AppTheme {
           letterSpacing: 0.2,
         ),
       ),
-
       iconTheme: const IconThemeData(color: AppColors.darkTextSecondary),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkBackground,
@@ -114,7 +110,6 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.lightBackground,
       primaryColor: primaryColor,
       dividerColor: AppColors.lightDivider,
-
       colorScheme: ColorScheme.light(
         primary: primaryColor,
         secondary: primaryColor,
@@ -123,7 +118,6 @@ class AppTheme {
         onSecondary: Colors.white,
         onSurface: AppColors.lightTextPrimary,
       ),
-
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.lightBackground,
         foregroundColor: AppColors.lightTextPrimary,
@@ -137,7 +131,6 @@ class AppTheme {
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
       ),
-
       textTheme: TextTheme(
         headlineLarge: GoogleFonts.plusJakartaSans(
           color: AppColors.lightTextPrimary,
@@ -179,7 +172,6 @@ class AppTheme {
           letterSpacing: 0.2,
         ),
       ),
-
       iconTheme: const IconThemeData(color: AppColors.lightTextSecondary),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightBackground,

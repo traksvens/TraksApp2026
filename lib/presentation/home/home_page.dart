@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                   state.errorMessage!,
                   style: const TextStyle(fontFamily: 'Inter'),
                 ),
-                backgroundColor: const Color(0xFFDC2626), // Canopi Error Red
+                backgroundColor: theme.colorScheme.error, // Canopi Error Red
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16), // Rounded snackbar
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: const Color(0xFF0D110F), // Canopi Dark Theme
+        backgroundColor: theme.scaffoldBackgroundColor, // Canopi Dark Theme
         extendBody: true, // Crucial for floating navbar over content
         body: Stack(
           children: [
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF22C55E).withValues(alpha: 0.15),
+                      theme.colorScheme.primary.withValues(alpha: 0.15),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 1.0],
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            
+
             IndexedStack(
               index: _currentIndex >= pages.length ? 0 : _currentIndex,
               children: pages,
@@ -145,7 +145,8 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.only(
         left: 24,
         right: 24,
-        bottom: MediaQuery.paddingOf(context).bottom + 20, // SafeArea + floating offset
+        bottom: MediaQuery.paddingOf(context).bottom +
+            20, // SafeArea + floating offset
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32), // Pill shape
@@ -154,10 +155,10 @@ class _HomePageState extends State<HomePage> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1D1C).withValues(alpha: 0.85),
+              color: theme.colorScheme.surface.withValues(alpha: 0.85),
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
                 width: 1,
               ),
             ),
@@ -213,7 +214,8 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF22C55E).withValues(alpha: 0.15) // Canopi Green Accent
+              ? theme.colorScheme.primary
+                  .withValues(alpha: 0.15) // Canopi Green Accent
               : Colors.transparent,
           borderRadius: BorderRadius.circular(32),
         ),
@@ -224,8 +226,8 @@ class _HomePageState extends State<HomePage> {
               icon,
               size: isSelected ? 26 : 24,
               color: isSelected
-                  ? const Color(0xFF22C55E)
-                  : Colors.white.withValues(alpha: 0.6),
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             if (isSelected) ...[
               const SizedBox(width: 8),
@@ -233,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                 label,
                 style: const TextStyle(
                   fontFamily: 'Inter',
-                  color: Color(0xFF22C55E),
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
                 ),
@@ -373,59 +375,69 @@ class _HomeFeedState extends State<_HomeFeed> {
                     calendarType: CalendarDatePicker2Type.range,
                     firstDate: DateTime(2020),
                     lastDate: DateTime.now(),
-                    selectedDayHighlightColor: const Color(0xFF22C55E),
-                    weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    selectedDayHighlightColor: theme.colorScheme.primary,
+                    weekdayLabels: [
+                      'Sun',
+                      'Mon',
+                      'Tue',
+                      'Wed',
+                      'Thu',
+                      'Fri',
+                      'Sat'
+                    ],
                     weekdayLabelTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white54,
+                      color: theme.colorScheme.onSurface54,
                       fontWeight: FontWeight.w600,
                     ),
                     controlsTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                     dayTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                     ),
                     selectedDayTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Color(0xFF0D110F),
+                      color: theme.scaffoldBackgroundColor,
                       fontWeight: FontWeight.bold,
                     ),
                     yearTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                     ),
                     cancelButtonTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Colors.white54,
+                      color: theme.colorScheme.onSurface54,
                       fontWeight: FontWeight.w600,
                     ),
                     okButtonTextStyle: const TextStyle(
                       fontFamily: 'Inter',
-                      color: Color(0xFF22C55E),
+                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   dialogSize: const Size(325, 400),
-                  value: _selectedDateRange != null 
+                  value: _selectedDateRange != null
                       ? [_selectedDateRange!.start, _selectedDateRange!.end]
                       : [],
                   borderRadius: BorderRadius.circular(24),
-                  dialogBackgroundColor: const Color(0xFF1A1D1C),
+                  dialogBackgroundColor: theme.colorScheme.surface,
                 );
 
                 if (values != null && values.isNotEmpty) {
                   setState(() {
                     if (values.length == 2 && values[1] != null) {
-                      _selectedDateRange = DateTimeRange(start: values[0]!, end: values[1]!);
+                      _selectedDateRange =
+                          DateTimeRange(start: values[0]!, end: values[1]!);
                     } else {
-                       // If only one date selected or same date twice, set range to that single day
-                      _selectedDateRange = DateTimeRange(start: values[0]!, end: values[0]!);
+                      // If only one date selected or same date twice, set range to that single day
+                      _selectedDateRange =
+                          DateTimeRange(start: values[0]!, end: values[0]!);
                     }
                   });
                 }
@@ -441,18 +453,18 @@ class _HomeFeedState extends State<_HomeFeed> {
               width: 1,
               height: 20,
               margin: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-              color: Colors.white.withValues(alpha: 0.2),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
             ),
             const SizedBox(width: 8),
 
             // Severity Filters
-            _buildSeverityPill(theme, 'Critical', const Color(0xFFEF4444)),
+            _buildSeverityPill(theme, 'Critical', theme.colorScheme.error),
             const SizedBox(width: 8),
-            _buildSeverityPill(theme, 'High', const Color(0xFFF97316)),
+            _buildSeverityPill(theme, 'High', theme.colorScheme.secondary),
             const SizedBox(width: 8),
-            _buildSeverityPill(theme, 'Medium', const Color(0xFFEAB308)),
+            _buildSeverityPill(theme, 'Medium', theme.colorScheme.tertiary),
             const SizedBox(width: 8),
-            _buildSeverityPill(theme, 'Low', const Color(0xFF22C55E)),
+            _buildSeverityPill(theme, 'Low', theme.colorScheme.primary),
           ],
         ),
       ),
@@ -480,12 +492,13 @@ class _HomeFeedState extends State<_HomeFeed> {
         decoration: BoxDecoration(
           color: isSelected
               ? highlightColor.withValues(alpha: 0.15)
-              : const Color(0xFF232325).withValues(alpha: 0.6), // Frosted glass dark
+              : theme.colorScheme.surfaceContainerHighest
+                  .withValues(alpha: 0.6), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
                 ? highlightColor.withValues(alpha: 0.5)
-                : Colors.white.withValues(alpha: 0.08),
+                : theme.colorScheme.onSurface.withValues(alpha: 0.08),
             width: 1,
           ),
           boxShadow: isSelected
@@ -498,7 +511,7 @@ class _HomeFeedState extends State<_HomeFeed> {
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: theme.colorScheme.surface.withValues(alpha: 0.1),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -510,7 +523,7 @@ class _HomeFeedState extends State<_HomeFeed> {
             fontFamily: 'Inter',
             color: isSelected
                 ? highlightColor
-                : Colors.white.withValues(alpha: 0.7),
+                : theme.colorScheme.onSurface.withValues(alpha: 0.7),
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 14,
             letterSpacing: 0.2,
@@ -537,26 +550,27 @@ class _HomeFeedState extends State<_HomeFeed> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF22C55E).withValues(alpha: 0.15)
-              : const Color(0xFF232325).withValues(alpha: 0.6), // Frosted glass dark
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+              : theme.colorScheme.surfaceContainerHighest
+                  .withValues(alpha: 0.6), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF22C55E).withValues(alpha: 0.5)
-                : Colors.white.withValues(alpha: 0.08),
+                ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                : theme.colorScheme.onSurface.withValues(alpha: 0.08),
             width: 1,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF22C55E).withValues(alpha: 0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: theme.colorScheme.surface.withValues(alpha: 0.1),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
@@ -569,8 +583,8 @@ class _HomeFeedState extends State<_HomeFeed> {
               icon,
               size: 16,
               color: isSelected
-                  ? const Color(0xFF22C55E)
-                  : Colors.white.withValues(alpha: 0.7),
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 8),
             Text(
@@ -578,8 +592,8 @@ class _HomeFeedState extends State<_HomeFeed> {
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: isSelected
-                    ? const Color(0xFF22C55E)
-                    : Colors.white.withValues(alpha: 0.9),
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.9),
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 14,
                 letterSpacing: 0.2,
@@ -593,10 +607,11 @@ class _HomeFeedState extends State<_HomeFeed> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF22C55E).withValues(alpha: 0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, size: 12, color: Color(0xFF22C55E)),
+                  child: const Icon(Icons.close,
+                      size: 12, color: theme.colorScheme.primary),
                 ),
               ),
             ],
@@ -616,7 +631,8 @@ class _HomeFeedState extends State<_HomeFeed> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30), // Glassmorphic Blur
           child: Container(
-            color: const Color(0xFF0D110F).withValues(alpha: 0.90), // Canopi Dark Translucent
+            color: theme.scaffoldBackgroundColor
+                .withValues(alpha: 0.90), // Canopi Dark Translucent
           ),
         ),
       ),
@@ -644,23 +660,22 @@ class _HomeFeedState extends State<_HomeFeed> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       width: 1.5,
                     ),
-                    color: const Color(0xFF232325),
+                    color: theme.colorScheme.surfaceContainerHighest,
                   ),
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage: photoUrl != null
-                        ? NetworkImage(photoUrl)
-                        : null,
+                    backgroundImage:
+                        photoUrl != null ? NetworkImage(photoUrl) : null,
                     radius: 18,
                     child: photoUrl == null
                         ? Text(
                             initials,
                             style: const TextStyle(
                               fontFamily: 'Inter',
-                              color: Colors.white,
+                              color: theme.colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -685,20 +700,21 @@ class _HomeFeedState extends State<_HomeFeed> {
               ).push(MaterialPageRoute(builder: (_) => const CreatePostPage()));
             },
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF22C55E), // Canopi Green Accent
-              foregroundColor: const Color(0xFF0D110F), // Dark foreground
+              backgroundColor: theme.colorScheme.primary, // Canopi Green Accent
+              foregroundColor: theme.scaffoldBackgroundColor, // Dark foreground
               padding: const EdgeInsets.symmetric(horizontal: 16),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32), // Pill shape 32px
               ),
             ),
-            icon: const Icon(Icons.add_rounded, size: 20, color: Color(0xFF0D110F)),
+            icon: const Icon(Icons.add_rounded,
+                size: 20, color: theme.scaffoldBackgroundColor),
             label: const Text(
               'Add Trak',
               style: TextStyle(
                 fontFamily: 'Inter',
-                color: Color(0xFF0D110F),
+                color: theme.scaffoldBackgroundColor,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.1,
                 fontSize: 13,
