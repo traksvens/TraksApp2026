@@ -23,8 +23,9 @@ class GetStartedPage extends StatelessWidget {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    theme.colorScheme.primary.withValues(alpha: 0.5), // Greenish glow
+                color: theme.colorScheme.primary.withValues(
+                  alpha: 0.5,
+                ), // Greenish glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -40,8 +41,9 @@ class GetStartedPage extends StatelessWidget {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: theme.colorScheme.secondary
-                    .withValues(alpha: 0.4), // Yellow-green glow
+                color: theme.colorScheme.secondary.withValues(
+                  alpha: 0.4,
+                ), // Yellow-green glow
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -59,8 +61,9 @@ class GetStartedPage extends StatelessWidget {
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.0), // Transparent to match image
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.0,
+                      ), // Transparent to match image
                     ),
                     padding: const EdgeInsets.all(12),
                     child: Icon(
@@ -131,7 +134,10 @@ class GetStartedPage extends StatelessWidget {
                           child: _buildFeatureCard(
                             theme: theme,
                             child: _buildIconCardContent(
-                                theme, Icons.map_outlined, 'Map'),
+                              theme,
+                              Icons.map_outlined,
+                              'Map',
+                            ),
                           ),
                         ),
                       ),
@@ -145,7 +151,10 @@ class GetStartedPage extends StatelessWidget {
                           child: _buildFeatureCard(
                             theme: theme,
                             child: _buildIconCardContent(
-                                theme, Icons.fact_check_outlined, 'Logs'),
+                              theme,
+                              Icons.fact_check_outlined,
+                              'Logs',
+                            ),
                           ),
                         ),
                       ),
@@ -183,7 +192,10 @@ class GetStartedPage extends StatelessWidget {
                           child: _buildFeatureCard(
                             theme: theme,
                             child: _buildIconCardContent(
-                                theme, Icons.manage_search, 'Explore'),
+                              theme,
+                              Icons.manage_search,
+                              'Explore',
+                            ),
                           ),
                         ),
                       ),
@@ -196,7 +208,9 @@ class GetStartedPage extends StatelessWidget {
                 // Buttons at the bottom
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 24.0),
+                    horizontal: 24.0,
+                    vertical: 24.0,
+                  ),
                   child: Column(
                     children: [
                       _buildBottomButton(
@@ -232,6 +246,7 @@ class GetStartedPage extends StatelessWidget {
     required IconData icon,
     required bool isSignUp,
   }) {
+    final theme = Theme.of(context);
     return SizedBox(
       width: double.infinity,
       height: 64, // Exact height to match the thick pill shape
@@ -256,10 +271,11 @@ class GetStartedPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(isSignUp ? Icons.apple : Icons.email,
-                size: 24,
-                color: Colors
-                    .white), // Using Apple icon visually just to keep up aesthetic
+            Icon(
+              isSignUp ? Icons.apple : Icons.email,
+              size: 24,
+              color: Colors.white,
+            ), // Using Apple icon visually just to keep up aesthetic
             const SizedBox(width: 12),
             Text(
               text,
@@ -275,18 +291,23 @@ class GetStartedPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(
-      {required ThemeData theme, required Widget child, bool isImage = false}) {
+  Widget _buildFeatureCard({
+    required ThemeData theme,
+    required Widget child,
+    bool isImage = false,
+  }) {
     return Container(
       width: 115,
       height: 115,
       decoration: BoxDecoration(
         color: isImage
             ? Colors.grey[800]
-            : theme.colorScheme
-                .surfaceContainerHighest, // Dark squircle specific to the canopi card
-        borderRadius:
-            BorderRadius.circular(32), // Extremely rounded squircle shape
+            : theme
+                  .colorScheme
+                  .surfaceContainerHighest, // Dark squircle specific to the canopi card
+        borderRadius: BorderRadius.circular(
+          32,
+        ), // Extremely rounded squircle shape
         boxShadow: [
           BoxShadow(
             color: theme.colorScheme.surface.withValues(alpha: 0.3),
@@ -296,12 +317,14 @@ class GetStartedPage extends StatelessWidget {
         ],
         image: isImage
             ? DecorationImage(
-                image: NetworkImage(
-                    'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop'), // Example black and white architecture image
+                image: const NetworkImage(
+                  'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2670&auto=format&fit=crop',
+                ), // Example black and white architecture image
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
-                    theme.colorScheme.surface.withValues(alpha: 0.38),
-                    BlendMode.darken),
+                  theme.colorScheme.surface.withValues(alpha: 0.38),
+                  BlendMode.darken,
+                ),
               )
             : null,
       ),

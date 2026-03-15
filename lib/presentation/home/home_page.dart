@@ -145,7 +145,8 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.only(
         left: 24,
         right: 24,
-        bottom: MediaQuery.paddingOf(context).bottom +
+        bottom:
+            MediaQuery.paddingOf(context).bottom +
             20, // SafeArea + floating offset
       ),
       child: ClipRRect(
@@ -214,8 +215,9 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primary
-                  .withValues(alpha: 0.15) // Canopi Green Accent
+              ? theme.colorScheme.primary.withValues(
+                  alpha: 0.15,
+                ) // Canopi Green Accent
               : Colors.transparent,
           borderRadius: BorderRadius.circular(32),
         ),
@@ -319,7 +321,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                     return const PostLoadingWidget();
                   } else if (state.status == PostStatus.failure) {
                     return SliverFillRemaining(
-                      child: Center(child: Text('Error: ${state.errorMessage}')),
+                      child: Center(
+                        child: Text('Error: ${state.errorMessage}'),
+                      ),
                     );
                   } else if (state.posts.isEmpty) {
                     return const SliverFillRemaining(
@@ -389,11 +393,13 @@ class _HomeFeedState extends State<_HomeFeed> {
                       'Wed',
                       'Thu',
                       'Fri',
-                      'Sat'
+                      'Sat',
                     ],
                     weekdayLabelTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.54,
+                      ),
                       fontWeight: FontWeight.w600,
                     ),
                     controlsTextStyle: TextStyle(
@@ -417,7 +423,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                     ),
                     cancelButtonTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.54,
+                      ),
                       fontWeight: FontWeight.w600,
                     ),
                     okButtonTextStyle: TextStyle(
@@ -438,12 +446,16 @@ class _HomeFeedState extends State<_HomeFeed> {
                 if (values != null && values.isNotEmpty) {
                   setState(() {
                     if (values.length == 2 && values[1] != null) {
-                      _selectedDateRange =
-                          DateTimeRange(start: values[0]!, end: values[1]!);
+                      _selectedDateRange = DateTimeRange(
+                        start: values[0]!,
+                        end: values[1]!,
+                      );
                     } else {
                       // If only one date selected or same date twice, set range to that single day
-                      _selectedDateRange =
-                          DateTimeRange(start: values[0]!, end: values[0]!);
+                      _selectedDateRange = DateTimeRange(
+                        start: values[0]!,
+                        end: values[0]!,
+                      );
                     }
                   });
                 }
@@ -498,8 +510,9 @@ class _HomeFeedState extends State<_HomeFeed> {
         decoration: BoxDecoration(
           color: isSelected
               ? highlightColor.withValues(alpha: 0.15)
-              : theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.6), // Frosted glass dark
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.6,
+                ), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
@@ -547,7 +560,6 @@ class _HomeFeedState extends State<_HomeFeed> {
     required VoidCallback onTap,
     VoidCallback? onClear,
   }) {
-
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
@@ -559,8 +571,9 @@ class _HomeFeedState extends State<_HomeFeed> {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary.withValues(alpha: 0.15)
-              : theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.6), // Frosted glass dark
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.6,
+                ), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
@@ -618,8 +631,11 @@ class _HomeFeedState extends State<_HomeFeed> {
                     color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close,
-                      size: 12, color: theme.colorScheme.primary),
+                  child: Icon(
+                    Icons.close,
+                    size: 12,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
             ],
@@ -667,8 +683,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                   ),
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage:
-                        photoUrl != null ? NetworkImage(photoUrl) : null,
+                    backgroundImage: photoUrl != null
+                        ? NetworkImage(photoUrl)
+                        : null,
                     radius: 18,
                     child: photoUrl == null
                         ? Text(
@@ -701,18 +718,36 @@ class _HomeFeedState extends State<_HomeFeed> {
                 ),
               ],
             ),
-            child: IconButton.filled(
+            child: FilledButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const CreatePostPage()));
+                  MaterialPageRoute(builder: (_) => const CreatePostPage()),
+                );
               },
-              icon: const Icon(Icons.add_rounded, size: 22),
-              style: IconButton.styleFrom(
+              icon: Icon(
+                Icons.add_rounded,
+                size: 20,
+                color: theme.scaffoldBackgroundColor,
+              ),
+              label: Text(
+                'Add Trak',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.1,
+                  fontSize: 13,
+                ),
+              ),
+              style: FilledButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.scaffoldBackgroundColor,
-                minimumSize: const Size(44, 44),
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14), // Modern squircle-like
+                  borderRadius: BorderRadius.circular(
+                    14,
+                  ), // Modern squircle-like
                 ),
               ),
             ),
@@ -727,8 +762,9 @@ class _HomeFeedState extends State<_HomeFeed> {
             // Calculate a scaling factor based on the height
             // Expanded height is 140, collapsed is ~56 + status bar
             final double height = constraints.maxHeight;
-            final bool isCollapsed = height <= kToolbarHeight + (MediaQuery.of(context).padding.top);
-            
+            final bool isCollapsed =
+                height <= kToolbarHeight + (MediaQuery.of(context).padding.top);
+
             return TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 42, end: isCollapsed ? 26 : 42),
               duration: const Duration(milliseconds: 200),
