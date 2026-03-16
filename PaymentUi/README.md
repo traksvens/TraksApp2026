@@ -1,16 +1,38 @@
-# React + Vite
+# Traks Payment UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the React/Vite payment frontend used during the Traks upgrade flow. It is opened from the Flutter app when a user selects the premium or reporter tier.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- reads `userId`, `return_url`, and `tier` from the query string
+- launches Interswitch Webpay
+- attempts to notify the backend after successful payment
+- redirects the user back into the app through the provided return URL or the `traksapp://payment` deep link
 
-## React Compiler
+## Local Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd TraksApp2026/PaymentUi
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Query Parameters
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Parameter | Purpose |
+| --- | --- |
+| `userId` | User being upgraded. |
+| `return_url` | URL or custom scheme to redirect back to after checkout. |
+| `tier` | Selected upgrade tier. Expected values: `premium` or `reporter`. |
+
+## Relationship To The Flutter App
+
+- The Flutter subscription screen builds the payment URL using `PAYMENT_UI_BASE_URL`.
+- The payment UI is not a separate product; it is one step inside the Traks subscription flow.
+- The expected redirect target in the mobile flow is `traksapp://payment`.
+
+## Important Caveats
+
+- The current implementation contains a hardcoded backend verification URL.
+- The payment flow expects a verification endpoint that is not visible in the current FastAPI routes.
+- Review the workspace-level `../../docs/known-gaps.md` for the latest mismatch list.
