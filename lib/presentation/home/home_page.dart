@@ -20,6 +20,7 @@ import 'package:tracks_app/presentation/widgets/post_loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracks_app/presentation/subscription/subscription_page.dart';
+import 'package:tracks_app/presentation/subscription/national_id_verification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -48,10 +49,14 @@ class _HomePageState extends State<HomePage> {
           .snapshots(),
       builder: (context, snapshot) {
         bool isVerified = false;
+        bool isPaid = false;
+        String? kycStatus;
         if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data();
+          final data = snapshot.data!.data() as Map<String, dynamic>?;
           isVerified =
               data?['isVerified'] == true || data?['verified'] == 'True';
+          isPaid = data?['tier'] == 'premium' || data?['tier'] == 'reporter';
+          kycStatus = data?['kycStatus'] as String?;
         }
 
         // Safety check: if currently on the premium tab but just got verified, jump to home
@@ -63,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           });
         }
 
-        return _buildScaffold(context, theme, isVerified);
+        return _buildScaffold(context, theme, isVerified, isPaid, kycStatus);
       },
     );
   }
@@ -72,13 +77,20 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
     ThemeData theme,
     bool isVerified,
+    bool isPaid,
+    String? kycStatus,
   ) {
     // Pages defined here to access context/setState
     final List<Widget> pages = [
       _HomeFeed(onProfileTap: () => setState(() => _currentIndex = 2)),
       const MapPage(),
       const ProfilePage(),
-      if (!isVerified) const SubscriptionPage(),
+      if (!isVerified)
+        (!isPaid
+            ? const SubscriptionPage()
+            : (kycStatus == 'pending'
+                ? const _PendingVerificationPage()
+                : const NationalIdVerificationPage())),
     ];
 
     return MultiBlocListener(
@@ -787,6 +799,68 @@ class _HomeFeedState extends State<_HomeFeed> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PendingVerificationPage extends StatelessWidget {
+  const _PendingVerificationPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "Verification Pending",
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.hourglass_empty_rounded,
+                size: 64,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                "Review in Progress",
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Your identity verification has been submitted and is currently under review. We will notify you once it's complete.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

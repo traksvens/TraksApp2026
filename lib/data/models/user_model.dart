@@ -8,6 +8,12 @@ class UserModel {
   final bool isVerified;
   final String? verificationTxnRef;
   final DateTime? joinedAt;
+  final String? kycStatus;
+  final String? kycProvider;
+  final String? kycReferenceId;
+  final String? kycDocumentType;
+  final String? kycCountry;
+  final DateTime? kycSubmittedAt;
 
   UserModel({
     required this.uid,
@@ -19,6 +25,12 @@ class UserModel {
     this.isVerified = false,
     this.verificationTxnRef,
     this.joinedAt,
+    this.kycStatus,
+    this.kycProvider,
+    this.kycReferenceId,
+    this.kycDocumentType,
+    this.kycCountry,
+    this.kycSubmittedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -33,6 +45,14 @@ class UserModel {
         joinedAt: json['joinedAt'] != null
             ? DateTime.parse(json['joinedAt'] as String)
             : null,
+        kycStatus: json['kycStatus'] as String?,
+        kycProvider: json['kycProvider'] as String?,
+        kycReferenceId: json['kycReferenceId'] as String?,
+        kycDocumentType: json['kycDocumentType'] as String?,
+        kycCountry: json['kycCountry'] as String?,
+        kycSubmittedAt: json['kycSubmittedAt'] != null
+            ? DateTime.tryParse(json['kycSubmittedAt'].toString())
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -46,5 +66,11 @@ class UserModel {
         if (verificationTxnRef != null)
           'verificationTxnRef': verificationTxnRef,
         if (joinedAt != null) 'joinedAt': joinedAt?.toIso8601String(),
+        if (kycStatus != null) 'kycStatus': kycStatus,
+        if (kycProvider != null) 'kycProvider': kycProvider,
+        if (kycReferenceId != null) 'kycReferenceId': kycReferenceId,
+        if (kycDocumentType != null) 'kycDocumentType': kycDocumentType,
+        if (kycCountry != null) 'kycCountry': kycCountry,
+        if (kycSubmittedAt != null) 'kycSubmittedAt': kycSubmittedAt?.toIso8601String(),
       };
 }

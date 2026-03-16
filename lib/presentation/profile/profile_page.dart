@@ -7,6 +7,7 @@ import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
 import 'package:tracks_app/core/theme/theme_controller.dart';
 import 'package:tracks_app/core/theme/app_colors.dart';
 import 'package:tracks_app/presentation/sos/sos_customization_page.dart';
+import 'package:tracks_app/presentation/subscription/national_id_verification_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -37,11 +38,15 @@ class ProfilePage extends StatelessWidget {
               : null,
           builder: (context, snapshot) {
             bool isVerified = false;
+            bool isPaid = false;
+            String? kycStatus;
 
             if (snapshot.hasData && snapshot.data!.exists) {
               final data = snapshot.data!.data() as Map<String, dynamic>?;
               isVerified =
                   data?['isVerified'] == true || data?['verified'] == 'True';
+              isPaid = data?['tier'] == 'premium' || data?['tier'] == 'reporter';
+              kycStatus = data?['kycStatus'] as String?;
             }
 
             return Scaffold(
@@ -279,6 +284,25 @@ class ProfilePage extends StatelessWidget {
                               const SizedBox(height: 48),
                               _buildSectionTitle(theme, "ACCOUNT"),
                               const SizedBox(height: 16),
+                              if (isPaid && !isVerified) ...[
+                                _buildSettingTile(
+                                  theme: theme,
+                                  icon: Icons.badge_rounded,
+                                  title: kycStatus == 'pending' ? "Verification Pending" : "Verify Identity",
+                                  subtitle: kycStatus == 'pending' ? "Your National ID is under review" : "Complete KYC to unlock features",
+                                  iconColor: kycStatus == 'pending' ? Colors.orange : theme.colorScheme.primary,
+                                  onTap: kycStatus == 'pending' ? null : () {
+                                    // Navigate to National ID verification
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const NationalIdVerificationPage(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                              ],
                               _buildSettingTile(
                                 theme: theme,
                                 icon: Icons.emergency_share_outlined,

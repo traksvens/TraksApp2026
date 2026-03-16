@@ -68,12 +68,14 @@ The app loads `.env` at startup and also includes it as a Flutter asset.
 | `FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID. |
 | `FIREBASE_PROJECT_ID` | Firebase project ID. |
 | `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket. |
+| `DOJAH_WIDGET_ID` | Widget ID for Dojah KYC SDK. |
 
 Example local `.env`:
 
 ```env
 API_BASE_URL=http://10.0.2.2:8000
 PAYMENT_UI_BASE_URL=http://localhost:5173
+DOJAH_WIDGET_ID=your_dojah_widget_id
 GOOGLE_MAPS_API_KEY=your_google_maps_client_key
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-3.1-flash-lite-preview
