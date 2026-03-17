@@ -457,7 +457,7 @@ class _HomePageState extends State<HomePage> {
       } catch (e) {
         // Offline fallback
         try {
-          final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+          final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get(const GetOptions(source: Source.cache));
           final data = doc.data();
           if (data != null && (data['tier'] == 'premium' || data['tier'] == 'reporter')) {
             final authRepo = di.sl<AuthRepository>();

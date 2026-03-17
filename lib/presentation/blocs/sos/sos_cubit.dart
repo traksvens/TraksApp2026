@@ -97,7 +97,7 @@ class SosCubit extends Cubit<SosState> {
     } catch (e) {
       // Offline fallback
       try {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(sosData.reporterId).get();
+        final doc = await FirebaseFirestore.instance.collection('users').doc(sosData.reporterId).get(const GetOptions(source: Source.cache));
         final data = doc.data();
         if (data != null && (data['tier'] == 'premium' || data['tier'] == 'reporter')) {
           final contacts = await _authRepository.getLocalEmergencyContacts(sosData.reporterId);
