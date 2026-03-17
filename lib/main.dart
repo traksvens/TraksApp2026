@@ -11,6 +11,7 @@ import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_event.dart';
 import 'package:tracks_app/presentation/blocs/location/location_cubit.dart';
 import 'package:tracks_app/presentation/blocs/map/map_navigation_cubit.dart';
+import 'package:tracks_app/presentation/blocs/sos/sos_cubit.dart';
 import 'package:tracks_app/presentation/splash/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tracks_app/firebase_options.dart';
@@ -83,6 +84,7 @@ class _AppMainState extends State<AppMain> {
         BlocProvider(create: (_) => di.sl<PostBloc>()..add(const FetchPosts())),
         BlocProvider(create: (_) => di.sl<SearchBloc>()),
         BlocProvider(create: (_) => di.sl<MapNavigationCubit>()),
+        BlocProvider(create: (_) => di.sl<SosCubit>()),
       ],
       child: ValueListenableBuilder<ThemeState>(
         valueListenable: ThemeController.instance,

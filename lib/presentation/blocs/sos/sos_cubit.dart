@@ -23,7 +23,18 @@ class SosCubit extends Cubit<SosState> {
     try {
       final contacts = await _authRepository.getEmergencyContacts(userId);
       final history = await _postRepository.getSosByReporter(userId);
-      emit(SosDataLoaded(contacts: contacts, history: history));
+      
+      String? activeId;
+      if (history.isNotEmpty && history.first.status.toLowerCase() == 'active') {
+        activeId = history.first.id; // API might return id as incident_id
+      }
+
+      emit(SosDataLoaded(
+        userId: userId,
+        contacts: contacts,
+        history: history,
+        activeIncidentId: activeId,
+      ));
     } catch (e) {
       emit(SosError('Failed to load SOS data: $e'));
     }
@@ -50,11 +61,44 @@ class SosCubit extends Cubit<SosState> {
     final currentState = state;
     emit(SosLoading());
     try {
-      await _postRepository.createSos(sosData);
-      await loadSosData(sosData.reporterId);
+      final incidentId = await _postRepository.createSos(sosData);
+      
+      final contacts = await _authRepository.getEmergencyContacts(sosData.userId);
+      final history = await _postRepository.getSosByReporter(sosData.userId);
+
+      emit(SosDataLoaded(
+        userId: sosData.userId,
+        contacts: contacts,
+        history: history,
+        activeIncidentId: incidentId,
+      ));
     } catch (e) {
       emit(SosError('Failed to broadcast SOS: $e'));
       if (currentState is SosDataLoaded) {
+        emit(currentState);
+      }
+    }
+  }
+
+  Future<void> updateSosLocation(String incidentId, double lat, double lng) async {
+    try {
+      await _postRepository.updateSosLocation(incidentId, lat, lng);
+    } catch (e) {
+      // We don't necessarily want to emit an error state for background location updates
+      // unless it's critical. For now, just print or log.
+      print('Failed to update SOS location: $e');
+    }
+  }
+
+  Future<void> resolveSos(String incidentId, String resolution, {String? note}) async {
+    final currentState = state;
+    if (currentState is SosDataLoaded) {
+      emit(SosLoading());
+      try {
+        await _postRepository.resolveSos(incidentId, resolution, note: note);
+        await loadSosData(currentState.userId);
+      } catch (e) {
+        emit(SosError('Failed to resolve SOS: $e'));
         emit(currentState);
       }
     }

@@ -13,6 +13,7 @@ import '../../presentation/blocs/search/search_bloc.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/blocs/location/location_cubit.dart';
 import '../../presentation/blocs/map/map_navigation_cubit.dart';
+import '../../presentation/blocs/sos/sos_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -25,6 +26,9 @@ Future<void> init() async {
   sl.registerFactory(() => AuthBloc(authRepository: sl()));
   sl.registerFactory(() => LocationCubit());
   sl.registerFactory(() => MapNavigationCubit(sl()));
+  sl.registerFactory(
+    () => SosCubit(authRepository: sl(), postRepository: sl()),
+  );
 
   // Repositories
   sl.registerLazySingleton<PostRepository>(() => PostRepositoryImpl(sl()));

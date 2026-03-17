@@ -38,9 +38,11 @@ abstract class PostRepository {
   Future<void> rateReply(String postId, String replyId, RatingRequest request);
 
   // SOS
-  Future<void> createSos(SosModel sosData);
+  Future<String> createSos(SosModel sosData);
   Future<List<SosModel>> getAllSos();
   Future<List<SosModel>> getSosByReporter(String userId);
+  Future<void> updateSosLocation(String incidentId, double lat, double lng);
+  Future<void> resolveSos(String incidentId, String status, {String? note});
 
   // Vectors
   Future<Map<String, dynamic>> queryVectors(QueryRequest request);

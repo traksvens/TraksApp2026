@@ -14,13 +14,20 @@ class SosInitial extends SosState {
 class SosLoading extends SosState {}
 
 class SosDataLoaded extends SosState {
+  final String userId;
   final List<SosContactModel> contacts;
   final List<SosModel> history;
+  final String? activeIncidentId;
 
-  const SosDataLoaded({required this.contacts, required this.history});
+  const SosDataLoaded({
+    required this.userId,
+    required this.contacts,
+    required this.history,
+    this.activeIncidentId,
+  });
 
   @override
-  List<Object?> get props => [contacts, history];
+  List<Object?> get props => [userId, contacts, history, activeIncidentId];
 }
 
 class SosError extends SosState {

@@ -146,6 +146,13 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // Refresh the overlay when keyboard height or screen metrics change
+    _aiModalOverlay?.markNeedsBuild();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkLocationStatus();
@@ -604,7 +611,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final keyboardInset = View.of(context).viewInsets.bottom / View.of(context).devicePixelRatio;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     
     final locationState = context.watch<LocationCubit>().state;
     final searchState = context.watch<SearchBloc>().state;
@@ -768,7 +775,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
         final screenHeight = MediaQuery.sizeOf(context).height;
-        final keyboardInset = View.of(context).viewInsets.bottom / View.of(context).devicePixelRatio;
+        // Use MediaQuery for easier reactive updates to viewInsets
+        final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
         final navBarOffset = 96.0;
 
         return Material(
@@ -777,7 +785,10 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             children: [
               // Dismissible background layer
               GestureDetector(
-                onTap: () => _toggleMode(_MapInputMode.search),
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  _toggleMode(_MapInputMode.search);
+                },
                 child: Container(color: Colors.transparent),
               ),
               _buildAiDraggableSheet(
@@ -805,11 +816,13 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         _isAiLoading ||
         _a2uiProcessor.getSurfaceNotifier(_assistantSurfaceId).value != null;
 
-    final bottomPadding = keyboardInset > 0 ? keyboardInset + 8.0 : 16.0;
+    final bottomPadding = keyboardInset > 0 
+        ? keyboardInset + 8.0 
+        : (navBarOffset + 16.0);
 
     return DraggableScrollableSheet(
-      initialChildSize: hasContent ? 0.65 : 0.45,
-      minChildSize: 0.35,
+      initialChildSize: keyboardInset > 0 ? 0.95 : (hasContent ? 0.65 : 0.45),
+      minChildSize: keyboardInset > 0 ? 0.5 : 0.35,
       maxChildSize: 0.95,
       snap: true,
       builder: (context, scrollController) {

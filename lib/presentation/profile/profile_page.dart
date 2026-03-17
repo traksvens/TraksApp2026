@@ -5,8 +5,8 @@ import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_event.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
 import 'package:tracks_app/core/theme/theme_controller.dart';
-import 'package:tracks_app/core/theme/app_colors.dart';
 import 'package:tracks_app/presentation/sos/sos_customization_page.dart';
+import 'package:tracks_app/core/theme/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -198,62 +198,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
 
-                  // 2. SOS Button Section (Premium Action Pattern)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(32),
-                          boxShadow: [
-                            BoxShadow(
-                              color: theme.colorScheme.error
-                                  .withValues(alpha: 0.25),
-                              blurRadius: 24,
-                              spreadRadius: -4,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: Implement SOS action
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                theme.colorScheme.error, // Premium Red 600
-                            foregroundColor: theme.colorScheme.onSurface,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.warning_amber_rounded, size: 28),
-                              const SizedBox(width: 12),
-                              Text(
-                                "Emergency SOS",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 18,
-                                  color: theme.colorScheme.onSurface,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
 
                   // 3. Settings Section
                   SliverToBoxAdapter(

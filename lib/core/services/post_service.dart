@@ -307,65 +307,56 @@ class PostService {
 
   // --- SOS ---
 
-  Future<void> createSos(SosModel sosData) async {
+  Future<String> createSos(SosModel sos) async {
     try {
       final response = await _dio.post(
-        '$_baseUrl/sos/',
-        data: sosData.toJson(),
+        '$_baseUrl/sos/send',
+        data: sos.toJson(),
       );
-      if (response.statusCode != 200 && response.statusCode != 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Backend currently returns reporterId instead of incident_id
+        return response.data['reporterId'] as String? ?? '';
+      } else {
         throw ServerException(
-          message: 'Failed to create SOS',
+          message: 'Failed to create SOS: ${response.statusMessage}',
           statusCode: response.statusCode,
         );
       }
     } on DioException catch (e) {
       throw ServerException(
-        message:
-            e.response?.data.toString() ?? e.message ?? 'Error creating SOS',
+        message: e.response?.data.toString() ?? e.message ?? 'Error creating SOS',
         statusCode: e.response?.statusCode,
       );
     }
+  }
+
+  // Note: The following methods are currently disabled as the backend 
+  // does not yet support SOS lifecycle management (tracking and resolution).
+
+  Future<void> updateSosLocation(
+      String incidentId, double lat, double lng) async {
+    // Current backend doesn't support this
+    print('updateSosLocation currently not supported by backend');
+    return;
+  }
+
+  Future<void> resolveSos(
+      String incidentId, String resolution, String? note) async {
+    // Current backend doesn't support this
+    print('resolveSos currently not supported by backend');
+    return;
   }
 
   Future<List<SosModel>> getAllSos() async {
-    try {
-      final response = await _dio.get('$_baseUrl/sos/');
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((e) => SosModel.fromJson(e)).toList();
-      } else {
-        throw ServerException(
-          message: 'Failed to fetch SOS',
-          statusCode: response.statusCode,
-        );
-      }
-    } on DioException catch (e) {
-      throw ServerException(
-        message: e.message ?? 'Error fetching SOS',
-        statusCode: e.response?.statusCode,
-      );
-    }
+    // Current backend doesn't support this
+    print('getAllSos currently not supported by backend');
+    return [];
   }
 
   Future<List<SosModel>> getSosByReporter(String userId) async {
-    try {
-      final response = await _dio.get('$_baseUrl/users/$userId/sos');
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((e) => SosModel.fromJson(e)).toList();
-      } else {
-        throw ServerException(
-          message: 'Failed to fetch SOS by reporter',
-          statusCode: response.statusCode,
-        );
-      }
-    } on DioException catch (e) {
-      throw ServerException(
-        message: e.message ?? 'Error fetching SOS by reporter',
-        statusCode: e.response?.statusCode,
-      );
-    }
+    // Current backend doesn't support this
+    print('getSosByReporter currently not supported by backend');
+    return [];
   }
 
   // --- Search ---

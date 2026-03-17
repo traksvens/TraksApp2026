@@ -2,17 +2,21 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class SosModel {
-  final String reporterId;
-  final String? reporterName;
-  final Map<String, dynamic> location; // { "lat": double, "lng": double }
+  final String userId;
+  final String reporterName;
+  final Map<String, dynamic> location; // { "latitude": double, "longitude": double, "accuracy": double }
+  final String? alert_type; // MANUAL_TRIGGER, FALL_DETECTION, etc.
+  final String? message;
   final String status;
-  final String? timestamp; // Often useful
+  final String? timestamp;
   final String? id;
 
   const SosModel({
-    required this.reporterId,
-    this.reporterName,
+    required this.userId,
+    required this.reporterName,
     required this.location,
+    this.alert_type = 'MANUAL_TRIGGER',
+    this.message,
     required this.status,
     this.timestamp,
     this.id,
@@ -20,20 +24,28 @@ class SosModel {
 
   factory SosModel.fromJson(Map<String, dynamic> json) {
     return SosModel(
-      reporterId: json['reporterId'] as String,
-      reporterName: json['reporterName'] as String?,
+      userId: json['user_id'] as String? ?? 
+              json['userId'] as String? ?? 
+              json['reporterId'] as String? ?? 
+              json['device_id'] as String? ?? '',
+      reporterName: json['reporterName'] as String? ?? json['name'] as String? ?? 'Unknown',
       location: Map<String, dynamic>.from(json['location'] as Map),
-      status: json['status'] as String,
+      alert_type: json['alert_type'] as String?,
+      message: json['message'] as String?,
+      status: json['status'] as String? ?? 'Active',
       timestamp: json['timestamp'] as String?,
-      id: json['id'] as String?,
+      id: json['id'] as String? ?? json['incident_id'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'reporterId': reporterId,
-      if (reporterName != null) 'reporterName': reporterName,
+      'user_id': userId,
+      'reporterId': userId, // Fallback for current backend
+      'reporterName': reporterName,
       'location': location,
+      if (alert_type != null) 'alert_type': alert_type,
+      if (message != null) 'message': message,
       'status': status,
       if (timestamp != null) 'timestamp': timestamp,
       if (id != null) 'id': id,

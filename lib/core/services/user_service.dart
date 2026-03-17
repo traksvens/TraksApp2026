@@ -32,15 +32,13 @@ class UserService {
         return data.map((e) => SosContactModel.fromJson(e)).toList();
       } else {
         throw ServerException(
-          message:
-              'Failed to fetch emergency contacts: ${response.statusMessage}',
+          message: 'Failed to fetch emergency contacts: ${response.statusMessage}',
           statusCode: response.statusCode,
         );
       }
     } on DioException catch (e) {
       throw ServerException(
-        message:
-            e.response?.data.toString() ?? e.message ?? 'Unknown Dio Error',
+        message: e.response?.data.toString() ?? e.message ?? 'Unknown Dio Error',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {

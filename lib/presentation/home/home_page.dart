@@ -20,6 +20,10 @@ import 'package:tracks_app/presentation/widgets/post_loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracks_app/presentation/subscription/subscription_page.dart';
+import 'package:tracks_app/presentation/blocs/sos/sos_cubit.dart';
+import 'package:tracks_app/data/models/sos_model.dart';
+import 'package:tracks_app/presentation/blocs/location/location_cubit.dart';
+import 'package:tracks_app/presentation/blocs/location/location_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -94,19 +98,34 @@ class _HomePageState extends State<HomePage> {
                   state.errorMessage!,
                   style: const TextStyle(fontFamily: 'Inter'),
                 ),
-                backgroundColor: theme.colorScheme.error, // Canopi Error Red
+                backgroundColor: theme.colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16), // Rounded snackbar
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
             );
           },
         ),
+        BlocListener<LocationCubit, LocationState>(
+          listener: (context, locationState) {
+            final sosState = context.read<SosCubit>().state;
+            if (sosState is SosDataLoaded &&
+                sosState.activeIncidentId != null &&
+                locationState.lastKnownLat != null &&
+                locationState.lastKnownLng != null) {
+              context.read<SosCubit>().updateSosLocation(
+                    sosState.activeIncidentId!,
+                    locationState.lastKnownLat!,
+                    locationState.lastKnownLng!,
+                  );
+            }
+          },
+        ),
       ],
       child: Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor, // Canopi Dark Theme
-        extendBody: true, // Crucial for floating navbar over content
+        backgroundColor: theme.scaffoldBackgroundColor,
+        extendBody: true,
         body: Stack(
           children: [
             // Ambient Radial Glow Backdrop
@@ -120,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.15),
+                      theme.colorScheme.primary.withOpacity(0.15),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 1.0],
@@ -133,11 +152,276 @@ class _HomePageState extends State<HomePage> {
               index: _currentIndex >= pages.length ? 0 : _currentIndex,
               children: pages,
             ),
+
+            // Active SOS Overlay
+            BlocBuilder<SosCubit, SosState>(
+              builder: (context, state) {
+                if (state is SosDataLoaded && state.activeIncidentId != null) {
+                  return Positioned(
+                    top: MediaQuery.paddingOf(context).top + 10,
+                    left: 20,
+                    right: 20,
+                    child: _buildActiveSosBanner(theme, state.activeIncidentId!),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ],
         ),
+        floatingActionButton:
+            _currentIndex == 0 ? _buildSosFab(context, theme) : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: _buildModernNavbar(theme, isVerified),
       ),
     );
+  }
+
+  Widget _buildSosFab(BuildContext context, ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.paddingOf(context).bottom + 30,
+      ), // Set to sit flush above the navbar
+      child: Hero(
+        tag: 'sos_fab',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onLongPress: () => _showSosConfirmation(context),
+            borderRadius: BorderRadius.circular(24), // Sqircle-like radius
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    theme.colorScheme.error,
+                    theme.colorScheme.error.withOpacity(0.8),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(24), // Sqircle-like shape
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.error.withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.warning_rounded, // Triangular warning logo
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveSosBanner(ThemeData theme, String incidentId) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.error,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.error.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.emergency_rounded, color: Colors.white, size: 20),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Text(
+              "ACTIVE SOS BROADCAST",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                letterSpacing: 1.1,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => _showResolveSosDialog(context, incidentId),
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            child: const Text(
+              "RESOLVE",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showResolveSosDialog(BuildContext context, String incidentId) {
+    final theme = Theme.of(context);
+    final noteController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: theme.colorScheme.surface,
+        title: const Text("Resolve SOS",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+                "Are you safe? Resolving will stop the emergency broadcast."),
+            const SizedBox(height: 16),
+            TextField(
+              controller: noteController,
+              decoration: InputDecoration(
+                labelText: "Optional Note (e.g. False alarm)",
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<SosCubit>().resolveSos(
+                    incidentId,
+                    'RESOLVED',
+                    note: noteController.text,
+                  );
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+            ),
+            child: const Text("RESOLVE SOS"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSosConfirmation(BuildContext context) {
+    final theme = Theme.of(context);
+    showDialog(
+      context: context,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: AlertDialog(
+          backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
+              const SizedBox(width: 12),
+              const Text("Confirm SOS",
+                  style: TextStyle(fontWeight: FontWeight.w800)),
+            ],
+          ),
+          content: const Text(
+            "This will broadcast an emergency alert to all your emergency contacts with your current location. Are you sure?",
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel",
+                  style: TextStyle(
+                      color:
+                          theme.colorScheme.onSurface.withOpacity(0.6))),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleSosBroadcast(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.error,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text("SEND ALERT",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleSosBroadcast(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final locationState = context.read<LocationCubit>().state;
+
+    if (authState is Authenticated && locationState.lastKnownLat != null) {
+      final sosData = SosModel(
+        userId: authState.user.uid,
+        reporterName: authState.user.displayName ?? 'User',
+        location: {
+          'latitude': locationState.lastKnownLat!,
+          'longitude': locationState.lastKnownLng!,
+          'accuracy': 0.0, // Default for now
+        },
+        alert_type: 'MANUAL_TRIGGER',
+        message: 'SOS Alert from ${authState.user.displayName ?? authState.user.email?.split('@').first}',
+        status: 'Active',
+      );
+      context.read<SosCubit>().broadcastSos(sosData);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            "Emergency SOS Broadcasted!",
+            style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            "Unable to broadcast SOS. Ensure GPS is enabled.",
+            style: TextStyle(fontFamily: 'Inter'),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      );
+    }
   }
 
   Widget _buildModernNavbar(ThemeData theme, bool isVerified) {

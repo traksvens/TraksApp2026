@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/models/sos_contact_model.dart';
-import '../../repository/auth_repository.dart';
-import '../../repository/post_repository.dart';
-import '../../injection_container.dart' as di;
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/sos/sos_cubit.dart';
@@ -16,18 +13,7 @@ class SosCustomizationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final authState = context.read<AuthBloc>().state;
-        final userId = authState is Authenticated ? authState.user.uid : '';
-
-        return SosCubit(
-          authRepository: di.sl<AuthRepository>(),
-          postRepository: di.sl<PostRepository>(),
-        )..loadSosData(userId);
-      },
-      child: _SosCustomizationView(),
-    );
+    return const _SosCustomizationView();
   }
 }
 
@@ -44,10 +30,23 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _latController = TextEditingController();
+  final _lngController = TextEditingController();
+
 
   String get _currentUserId {
     final authState = context.read<AuthBloc>().state;
     return authState is Authenticated ? authState.user.uid : '';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<SosCubit>().loadSosData(_currentUserId);
+      }
+    });
   }
 
   @override
@@ -56,6 +55,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
     _lastNameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _latController.dispose();
+    _lngController.dispose();
     super.dispose();
   }
 
@@ -67,6 +68,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         phoneNumber: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         userId: _currentUserId,
+        lat: double.tryParse(_latController.text),
+        lng: double.tryParse(_lngController.text),
       );
 
       context.read<SosCubit>().addEmergencyContact(_currentUserId, contact);
@@ -75,6 +78,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
       _lastNameController.clear();
       _phoneController.clear();
       _emailController.clear();
+      _latController.clear();
+      _lngController.clear();
       FocusScope.of(context).unfocus();
     }
   }
@@ -88,7 +93,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.colorScheme.error.withValues(alpha: 0.15),
+              theme.colorScheme.error.withOpacity(0.15),
               theme.colorScheme.surface,
             ],
           ),
@@ -108,8 +113,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surface.withValues(
-                              alpha: 0.5,
+                            color: theme.colorScheme.surface.withOpacity(
+                              0.5,
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -133,8 +138,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                   Text(
                     "Manage your emergency contacts and monitor active broadcast history.",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withValues(
-                        alpha: 0.7,
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                        0.7,
                       ),
                     ),
                   ),
@@ -155,7 +160,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         style: theme.textTheme.titleSmall?.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: 1.2,
-          color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+          color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
         ),
       ),
     );
@@ -175,14 +180,14 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
           ),
           prefixIcon: Icon(
             icon,
-            color: theme.iconTheme.color?.withValues(alpha: 0.5),
+            color: theme.iconTheme.color?.withOpacity(0.5),
           ),
           filled: true,
-          fillColor: theme.colorScheme.surface.withValues(alpha: 0.5),
+          fillColor: theme.colorScheme.surface.withOpacity(0.5),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
@@ -198,6 +203,41 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
     );
   }
 
+  Widget _buildCoordinateField(
+    ThemeData theme,
+    TextEditingController controller,
+    String label,
+    IconData icon,
+  ) {
+    return Expanded(
+      child: TextFormField(
+        controller: controller,
+        style: theme.textTheme.bodyMedium,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
+          ),
+          prefixIcon: Icon(
+            icon,
+            color: theme.iconTheme.color?.withOpacity(0.5),
+          ),
+          filled: true,
+          fillColor: theme.colorScheme.surface.withOpacity(0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildAddContactForm(ThemeData theme) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -209,7 +249,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 24,
                 spreadRadius: -4,
                 offset: const Offset(0, 8),
@@ -245,7 +285,24 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                   "Email",
                   Icons.email_outlined,
                 ),
-                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildCoordinateField(
+                      theme,
+                      _latController,
+                      "Lat (Opt)",
+                      Icons.location_on_outlined,
+                    ),
+                    const SizedBox(width: 12),
+                    _buildCoordinateField(
+                      theme,
+                      _lngController,
+                      "Lng (Opt)",
+                      Icons.location_on_outlined,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _submitContact,
                   style: ElevatedButton.styleFrom(
@@ -274,6 +331,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
   }
 
   Widget _buildContactTile(ThemeData theme, SosContactModel contact) {
+    final fullName = '${contact.firstName} ${contact.lastName}'.trim();
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -293,10 +351,10 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
           CircleAvatar(
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
             child: Text(
-              contact.firstName[0].toUpperCase(),
+              fullName.isNotEmpty ? fullName[0].toUpperCase() : '?',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -305,11 +363,17 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "${contact.firstName} ${contact.lastName}",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        fullName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(

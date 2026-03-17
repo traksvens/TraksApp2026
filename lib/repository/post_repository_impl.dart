@@ -153,13 +153,35 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<void> createSos(SosModel sosData) async {
+  Future<String> createSos(SosModel sosData) async {
     try {
-      await _postService.createSos(sosData);
+      return await _postService.createSos(sosData);
     } on ServerException catch (e) {
       throw ServerFailure(e.message);
     } catch (e) {
       throw ServerFailure('Unexpected error creating SOS: $e');
+    }
+  }
+
+  @override
+  Future<void> updateSosLocation(String incidentId, double lat, double lng) async {
+    try {
+      await _postService.updateSosLocation(incidentId, lat, lng);
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } catch (e) {
+      throw ServerFailure('Unexpected error updating SOS location: $e');
+    }
+  }
+
+  @override
+  Future<void> resolveSos(String incidentId, String status, {String? note}) async {
+    try {
+      await _postService.resolveSos(incidentId, status, note);
+    } on ServerException catch (e) {
+      throw ServerFailure(e.message);
+    } catch (e) {
+      throw ServerFailure('Unexpected error resolving SOS: $e');
     }
   }
 
