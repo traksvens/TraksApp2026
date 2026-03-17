@@ -237,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.1),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -257,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.1),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -470,7 +470,6 @@ class _PrimaryButtonState extends State<_PrimaryButton>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {

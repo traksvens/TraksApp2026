@@ -68,10 +68,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // Premium Navy & White Theme Colors replaced with Canopi Dark Theme
-    Color canopiBg = theme.scaffoldBackgroundColor;
-    Color canopiText = theme.colorScheme.onSurface;
-    Color canopiSubtitle = Color(0xFFA0A0A0);
-    Color canopiGreen = theme.colorScheme.primary;
+    final Color canopiBg = theme.scaffoldBackgroundColor;
+    final Color canopiText = theme.colorScheme.onSurface;
+    const Color canopiSubtitle = Color(0xFFA0A0A0);
+    final Color canopiGreen = theme.colorScheme.primary;
 
     return Scaffold(
       backgroundColor: canopiBg,
@@ -186,7 +186,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_getSubscriptionTiers(theme).length, (index) {
+                  children: List.generate(_getSubscriptionTiers(theme).length, (
+                    index,
+                  ) {
                     final isActive = _currentPage == index;
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
@@ -196,7 +198,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       decoration: BoxDecoration(
                         color: isActive
                             ? canopiGreen
-                            : theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                            : theme.colorScheme.onSurface.withValues(
+                                alpha: 0.2,
+                              ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                     );
@@ -218,7 +222,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   }) {
     final theme = Theme.of(context);
     final Color canopiText = theme.colorScheme.onSurface;
-    final Color canopiSubtitle = Color(0xFFA0A0A0);
+    const Color canopiSubtitle = Color(0xFFA0A0A0);
 
     final scale = isActive ? 1.0 : 0.92;
     final opacity = isActive ? 1.0 : 0.6;
@@ -319,7 +323,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 fontWeight: FontWeight.w900,
                                 color: canopiText,
                                 letterSpacing: -1.0,
-                                fontFeatures: const [FontFeature.tabularFigures()],
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
                               ),
                             ),
                             if (tier.price > 0)
@@ -393,8 +399,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                             ), // Pill shape 32px
                             color: isActive
                                 ? (tier.id == 'freemium'
-                                    ? theme.colorScheme.surfaceContainerHighest
-                                    : theme.colorScheme.primary)
+                                      ? theme
+                                            .colorScheme
+                                            .surfaceContainerHighest
+                                      : theme.colorScheme.primary)
                                 : const Color(
                                     0xFF232325,
                                   ).withValues(alpha: 0.5),

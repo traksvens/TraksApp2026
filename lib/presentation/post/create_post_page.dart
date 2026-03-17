@@ -67,8 +67,8 @@ class _CreatePostPageState extends State<CreatePostPage>
     );
     _slideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.05), end: Offset.zero).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutQuart),
-    );
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutQuart),
+        );
 
     _animController.forward();
   }
@@ -190,8 +190,9 @@ class _CreatePostPageState extends State<CreatePostPage>
         setState(() => _locationSuggestions = []);
         return;
       }
-      final suggestions =
-          await di.sl<PlacesService>().getAutocompleteSuggestions(query);
+      final suggestions = await di
+          .sl<PlacesService>()
+          .getAutocompleteSuggestions(query);
       if (mounted) {
         setState(() => _locationSuggestions = suggestions);
       }
@@ -234,8 +235,8 @@ class _CreatePostPageState extends State<CreatePostPage>
         if (mounted) {
           final theme = Theme.of(context);
           final isServiceDisabled = e.toString().contains(
-                'Location services are disabled',
-              );
+            'Location services are disabled',
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -327,8 +328,10 @@ class _CreatePostPageState extends State<CreatePostPage>
           surfaceTintColor: Colors.transparent,
           actions: [
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
@@ -337,11 +340,12 @@ class _CreatePostPageState extends State<CreatePostPage>
                       ? []
                       : [
                           BoxShadow(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                 ),
                 child: FilledButton(
@@ -353,8 +357,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                     disabledBackgroundColor:
                         theme.colorScheme.surfaceContainerHighest,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    disabledForegroundColor:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    disabledForegroundColor: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -366,14 +370,17 @@ class _CreatePostPageState extends State<CreatePostPage>
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(theme.colorScheme.onSurface),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              theme.colorScheme.onSurface,
+                            ),
                           ),
                         )
                       : const Text(
                           'Post',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                 ),
               ),
@@ -462,7 +469,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: _locationSuggestions.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (context, index) =>
                                   const Divider(height: 1),
                               itemBuilder: (context, index) {
                                 final suggestion = _locationSuggestions[index];
@@ -473,8 +480,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                   subtitle: Text(
-                                    suggestion['structuredFormat']
-                                            ?['secondaryText']?['text'] ??
+                                    suggestion['structuredFormat']?['secondaryText']?['text'] ??
                                         '',
                                     style: TextStyle(
                                       fontSize: 11,
@@ -537,9 +543,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.surface.withValues(
-                                          alpha: 0.6,
-                                        ),
+                                        color: theme.colorScheme.surface
+                                            .withValues(alpha: 0.6),
                                         shape: BoxShape.circle,
                                         border: Border.all(
                                           color: theme.colorScheme.onSurface
@@ -592,8 +597,9 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     color: isSelected
                                         ? theme.colorScheme.primary
                                         : theme
-                                            .colorScheme.surfaceContainerHighest
-                                            .withValues(alpha: 0.5),
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                              .withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: isSelected
@@ -619,7 +625,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                                         color: isSelected
                                             ? theme.colorScheme.onPrimary
                                             : theme.colorScheme.onSurface
-                                                .withValues(alpha: 0.8),
+                                                  .withValues(alpha: 0.8),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
@@ -631,7 +637,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                                           color: isSelected
                                               ? theme.colorScheme.onPrimary
                                               : theme.colorScheme.onSurface
-                                                  .withValues(alpha: 0.8),
+                                                    .withValues(alpha: 0.8),
                                         ),
                                       ),
                                     ],
@@ -654,13 +660,15 @@ class _CreatePostPageState extends State<CreatePostPage>
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
-                          children: ['low', 'medium', 'high'].map((severityKey) {
+                          children: ['low', 'medium', 'high'].map((
+                            severityKey,
+                          ) {
                             final isSelected = _severity == severityKey;
                             final color = severityKey == 'low'
                                 ? theme.colorScheme.primary
                                 : severityKey == 'medium'
-                                    ? theme.colorScheme.secondary
-                                    : theme.colorScheme.error;
+                                ? theme.colorScheme.secondary
+                                : theme.colorScheme.error;
                             return Expanded(
                               child: GestureDetector(
                                 onTap: () =>
@@ -672,8 +680,9 @@ class _CreatePostPageState extends State<CreatePostPage>
                                     vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color:
-                                        isSelected ? color : Colors.transparent,
+                                    color: isSelected
+                                        ? color
+                                        : Colors.transparent,
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: isSelected
                                         ? [
@@ -694,7 +703,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                                       color: isSelected
                                           ? theme.colorScheme.onSurface
                                           : theme.colorScheme.onSurface
-                                              .withValues(alpha: 0.6),
+                                                .withValues(alpha: 0.6),
                                       fontWeight: FontWeight.w700,
                                       fontSize: 11,
                                       letterSpacing: 0.5,
@@ -732,8 +741,10 @@ class _CreatePostPageState extends State<CreatePostPage>
                     children: [
                       IconButton.filled(
                         onPressed: _pickImage,
-                        icon: const Icon(Icons.add_photo_alternate_rounded,
-                            size: 20),
+                        icon: const Icon(
+                          Icons.add_photo_alternate_rounded,
+                          size: 20,
+                        ),
                         style: IconButton.styleFrom(
                           backgroundColor:
                               theme.colorScheme.surfaceContainerHighest,
@@ -752,8 +763,9 @@ class _CreatePostPageState extends State<CreatePostPage>
                         ),
                         style: IconButton.styleFrom(
                           backgroundColor: _useCurrentLocation
-                              ? theme.colorScheme.primary
-                                  .withValues(alpha: 0.15)
+                              ? theme.colorScheme.primary.withValues(
+                                  alpha: 0.15,
+                                )
                               : theme.colorScheme.surfaceContainerHighest,
                           foregroundColor: _useCurrentLocation
                               ? theme.colorScheme.primary

@@ -24,6 +24,7 @@ import 'package:tracks_app/presentation/blocs/sos/sos_cubit.dart';
 import 'package:tracks_app/data/models/sos_model.dart';
 import 'package:tracks_app/presentation/blocs/location/location_cubit.dart';
 import 'package:tracks_app/presentation/blocs/location/location_state.dart';
+import 'package:tracks_app/presentation/subscription/national_id_verification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,7 +43,7 @@ class _HomePageState extends State<HomePage> {
 
     if (user == null) {
       // If no user is logged in, fallback to a basic unverified layout.
-      return _buildScaffold(context, theme, false);
+      return _buildScaffold(context, theme, false, false, null);
     }
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -52,10 +53,14 @@ class _HomePageState extends State<HomePage> {
           .snapshots(),
       builder: (context, snapshot) {
         bool isVerified = false;
+        bool isPaid = false;
+        String? kycStatus;
         if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data();
+          final data = snapshot.data!.data() as Map<String, dynamic>?;
           isVerified =
               data?['isVerified'] == true || data?['verified'] == 'True';
+          isPaid = data?['tier'] == 'premium' || data?['tier'] == 'reporter';
+          kycStatus = data?['kycStatus'] as String?;
         }
 
         // Safety check: if currently on the premium tab but just got verified, jump to home
@@ -67,7 +72,7 @@ class _HomePageState extends State<HomePage> {
           });
         }
 
-        return _buildScaffold(context, theme, isVerified);
+        return _buildScaffold(context, theme, isVerified, isPaid, kycStatus);
       },
     );
   }
@@ -76,13 +81,20 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
     ThemeData theme,
     bool isVerified,
+    bool isPaid,
+    String? kycStatus,
   ) {
     // Pages defined here to access context/setState
     final List<Widget> pages = [
       _HomeFeed(onProfileTap: () => setState(() => _currentIndex = 2)),
       const MapPage(),
       const ProfilePage(),
-      if (!isVerified) const SubscriptionPage(),
+      if (!isVerified)
+        (!isPaid
+            ? const SubscriptionPage()
+            : (kycStatus == 'pending'
+                ? const _PendingVerificationPage()
+                : const NationalIdVerificationPage())),
     ];
 
     return MultiBlocListener(
@@ -429,7 +441,8 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.only(
         left: 24,
         right: 24,
-        bottom: MediaQuery.paddingOf(context).bottom +
+        bottom:
+            MediaQuery.paddingOf(context).bottom +
             20, // SafeArea + floating offset
       ),
       child: ClipRRect(
@@ -498,8 +511,9 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primary
-                  .withValues(alpha: 0.15) // Canopi Green Accent
+              ? theme.colorScheme.primary.withValues(
+                  alpha: 0.15,
+                ) // Canopi Green Accent
               : Colors.transparent,
           borderRadius: BorderRadius.circular(32),
         ),
@@ -603,7 +617,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                     return const PostLoadingWidget();
                   } else if (state.status == PostStatus.failure) {
                     return SliverFillRemaining(
-                      child: Center(child: Text('Error: ${state.errorMessage}')),
+                      child: Center(
+                        child: Text('Error: ${state.errorMessage}'),
+                      ),
                     );
                   } else if (state.posts.isEmpty) {
                     return const SliverFillRemaining(
@@ -673,11 +689,13 @@ class _HomeFeedState extends State<_HomeFeed> {
                       'Wed',
                       'Thu',
                       'Fri',
-                      'Sat'
+                      'Sat',
                     ],
                     weekdayLabelTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.54,
+                      ),
                       fontWeight: FontWeight.w600,
                     ),
                     controlsTextStyle: TextStyle(
@@ -701,7 +719,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                     ),
                     cancelButtonTextStyle: TextStyle(
                       fontFamily: 'Inter',
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.54,
+                      ),
                       fontWeight: FontWeight.w600,
                     ),
                     okButtonTextStyle: TextStyle(
@@ -722,12 +742,16 @@ class _HomeFeedState extends State<_HomeFeed> {
                 if (values != null && values.isNotEmpty) {
                   setState(() {
                     if (values.length == 2 && values[1] != null) {
-                      _selectedDateRange =
-                          DateTimeRange(start: values[0]!, end: values[1]!);
+                      _selectedDateRange = DateTimeRange(
+                        start: values[0]!,
+                        end: values[1]!,
+                      );
                     } else {
                       // If only one date selected or same date twice, set range to that single day
-                      _selectedDateRange =
-                          DateTimeRange(start: values[0]!, end: values[0]!);
+                      _selectedDateRange = DateTimeRange(
+                        start: values[0]!,
+                        end: values[0]!,
+                      );
                     }
                   });
                 }
@@ -782,8 +806,9 @@ class _HomeFeedState extends State<_HomeFeed> {
         decoration: BoxDecoration(
           color: isSelected
               ? highlightColor.withValues(alpha: 0.15)
-              : theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.6), // Frosted glass dark
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.6,
+                ), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
@@ -831,7 +856,6 @@ class _HomeFeedState extends State<_HomeFeed> {
     required VoidCallback onTap,
     VoidCallback? onClear,
   }) {
-
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
@@ -843,8 +867,9 @@ class _HomeFeedState extends State<_HomeFeed> {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary.withValues(alpha: 0.15)
-              : theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.6), // Frosted glass dark
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.6,
+                ), // Frosted glass dark
           borderRadius: BorderRadius.circular(32), // Pill shape squircle
           border: Border.all(
             color: isSelected
@@ -902,8 +927,11 @@ class _HomeFeedState extends State<_HomeFeed> {
                     color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close,
-                      size: 12, color: theme.colorScheme.primary),
+                  child: Icon(
+                    Icons.close,
+                    size: 12,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
             ],
@@ -951,8 +979,9 @@ class _HomeFeedState extends State<_HomeFeed> {
                   ),
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
-                    backgroundImage:
-                        photoUrl != null ? NetworkImage(photoUrl) : null,
+                    backgroundImage: photoUrl != null
+                        ? NetworkImage(photoUrl)
+                        : null,
                     radius: 18,
                     child: photoUrl == null
                         ? Text(
@@ -985,18 +1014,36 @@ class _HomeFeedState extends State<_HomeFeed> {
                 ),
               ],
             ),
-            child: IconButton.filled(
+            child: FilledButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const CreatePostPage()));
+                  MaterialPageRoute(builder: (_) => const CreatePostPage()),
+                );
               },
-              icon: const Icon(Icons.add_rounded, size: 22),
-              style: IconButton.styleFrom(
+              icon: Icon(
+                Icons.add_rounded,
+                size: 20,
+                color: theme.scaffoldBackgroundColor,
+              ),
+              label: Text(
+                'Add Trak',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.1,
+                  fontSize: 13,
+                ),
+              ),
+              style: FilledButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.scaffoldBackgroundColor,
-                minimumSize: const Size(44, 44),
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14), // Modern squircle-like
+                  borderRadius: BorderRadius.circular(
+                    14,
+                  ), // Modern squircle-like
                 ),
               ),
             ),
@@ -1011,8 +1058,9 @@ class _HomeFeedState extends State<_HomeFeed> {
             // Calculate a scaling factor based on the height
             // Expanded height is 140, collapsed is ~56 + status bar
             final double height = constraints.maxHeight;
-            final bool isCollapsed = height <= kToolbarHeight + (MediaQuery.of(context).padding.top);
-            
+            final bool isCollapsed =
+                height <= kToolbarHeight + (MediaQuery.of(context).padding.top);
+
             return TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 42, end: isCollapsed ? 26 : 42),
               duration: const Duration(milliseconds: 200),
@@ -1035,6 +1083,68 @@ class _HomeFeedState extends State<_HomeFeed> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PendingVerificationPage extends StatelessWidget {
+  const _PendingVerificationPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "Verification Pending",
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.hourglass_empty_rounded,
+                size: 64,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                "Review in Progress",
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Your identity verification has been submitted and is currently under review. We will notify you once it's complete.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

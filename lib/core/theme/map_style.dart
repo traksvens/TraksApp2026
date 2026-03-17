@@ -8,7 +8,7 @@ class MapStyle {
     // Convert primary color to hex for the map style
     final primaryColor = theme.primaryColor;
     final primaryHex =
-        '#${primaryColor.value.toRadixString(16).substring(2, 8)}';
+        '#${primaryColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2, 8)}';
 
     if (!isDark) {
       // Clear style for light mode
