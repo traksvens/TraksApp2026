@@ -55,9 +55,14 @@ class PostModel {
 
   // Factory constructor for JSON deserialization
   factory PostModel.fromJson(Map<String, dynamic> json) {
+    final userId =
+        json['userId'] as String? ?? json['user_id'] as String? ?? '';
+    final rawUserName =
+        json['userName'] as String? ?? json['user_name'] as String?;
+
     return PostModel(
       id: json['id'] as String? ?? '',
-      userId: json['userId'] as String? ?? json['user_id'] as String? ?? '',
+      userId: userId,
       severity: json['severity'] as String? ?? 'low',
       isAnonymous: json['isAnonymous'] as bool? ?? false,
       timestamp: json['timestamp'] as String? ?? '',
@@ -78,8 +83,11 @@ class PostModel {
       location: json['location'] != null
           ? Map<String, dynamic>.from(json['location'] as Map)
           : null,
-      userName: json['userName'] as String? ?? json['user_name'] as String?,
-      userAvatarUrl: json['userAvatarUrl'] as String? ??
+      userName:
+          _normalizedUserName(rawUserName) ??
+          _deriveLegacyBulkPosterName(userId),
+      userAvatarUrl:
+          json['userAvatarUrl'] as String? ??
           json['user_avatar_url'] as String?,
       geohash: json['geohash'] as String?,
     );
@@ -147,5 +155,39 @@ class PostModel {
       userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
       geohash: geohash ?? this.geohash,
     );
+  }
+
+  static String? _normalizedUserName(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+
+    final normalized = trimmed.toLowerCase();
+    const placeholders = {'bulk poster', 'bulk_poster', 'bulkposter', 'user'};
+    if (placeholders.contains(normalized)) {
+      return null;
+    }
+
+    return trimmed;
+  }
+
+  static String? _deriveLegacyBulkPosterName(String userId) {
+    if (!userId.startsWith('bulk-')) return null;
+
+    final match = RegExp(r'^bulk-(.+)-[a-f0-9]{8}$').firstMatch(userId);
+    if (match == null) return null;
+
+    final slug = match.group(1);
+    if (slug == null || slug.isEmpty) return null;
+
+    final words = slug.split('-').where((part) => part.trim().isNotEmpty).map((
+      part,
+    ) {
+      final clean = part.trim().toLowerCase();
+      return clean[0].toUpperCase() + clean.substring(1);
+    }).toList();
+
+    if (words.isEmpty) return null;
+    return words.join(' ');
   }
 }

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../data/models/sos_contact_model.dart';
 import '../../core/services/analytics_service.dart';
@@ -46,6 +47,14 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         context.read<SosCubit>().loadSosData(_currentUserId);
       }
     });
+    _checkAndRequestPermissions();
+  }
+
+  Future<void> _checkAndRequestPermissions() async {
+    final status = await Permission.sms.status;
+    if (!status.isGranted) {
+      await Permission.sms.request();
+    }
   }
 
   @override

@@ -15,5 +15,6 @@ abstract class AuthRepository {
   Future<UserCredential> signInWithGoogle();
   Future<void> signOut();
   Future<List<SosContactModel>> getEmergencyContacts(String userId);
+  Future<List<SosContactModel>> getLocalEmergencyContacts(String userId);
   Future<void> createEmergencyContact(String userId, SosContactModel contact);
 }

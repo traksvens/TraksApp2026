@@ -68,6 +68,8 @@ dependencies:
   json_schema_builder: ^0.1.3
   calendar_date_picker2: ^2.0.1
   dojah_kyc_sdk_flutter: ^0.1.3
+  shared_preferences: ^2.5.4
+  another_telephony: ^0.4.1
 
 dev_dependencies:
   flutter_test:

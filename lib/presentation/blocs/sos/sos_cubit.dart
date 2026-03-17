@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:another_telephony/telephony.dart';
 import '../../../data/models/sos_contact_model.dart';
 import '../../../data/models/sos_model.dart';
 import '../../../repository/auth_repository.dart';
@@ -93,6 +95,30 @@ class SosCubit extends Cubit<SosState> {
         longitude: sosData.location['longitude'] as double?,
       );
     } catch (e) {
+      // Offline fallback
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(sosData.reporterId).get();
+        final data = doc.data();
+        if (data != null && (data['tier'] == 'premium' || data['tier'] == 'reporter')) {
+          final contacts = await _authRepository.getLocalEmergencyContacts(sosData.reporterId);
+          if (contacts.isNotEmpty) {
+            final telephony = Telephony.instance;
+            bool? hasPermission = await telephony.requestPhoneAndSmsPermissions;
+            if (hasPermission == true) {
+              final message = "🆘 SOS ALERT from ${sosData.reporterName}!\nLocation: https://maps.google.com/?q=${sosData.lat},${sosData.lng}\nPlease help immediately!";
+              for (final contact in contacts) {
+                await telephony.sendSms(to: contact.phoneNumber, message: message);
+              }
+              emit(const SosError('Network failed, but offline SMS SOS was sent successfully!'));
+              if (currentState is SosDataLoaded) {
+                emit(currentState);
+              }
+              return;
+            }
+          }
+        }
+      } catch (_) {}
+
       emit(SosError('Failed to broadcast SOS: $e'));
       if (currentState is SosDataLoaded) {
         emit(currentState);

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/user_model.dart';
 import '../../data/models/sos_contact_model.dart';
 import '../error/exceptions.dart';
@@ -29,7 +31,17 @@ class UserService {
       final response = await _dio.get('$_baseUrl/users/$userId/contacts');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data.map((e) => SosContactModel.fromJson(e)).toList();
+        final contacts = data.map((e) => SosContactModel.fromJson(e)).toList();
+        
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final encodedData = json.encode(data);
+          await prefs.setString('emergency_contacts_$userId', encodedData);
+        } catch (e) {
+          // Ignore cache errors
+        }
+        
+        return contacts;
       } else {
         throw ServerException(
           message: 'Failed to fetch emergency contacts: ${response.statusMessage}',
@@ -62,6 +74,19 @@ class UserService {
               'Failed to create emergency contact: ${response.statusMessage}',
           statusCode: response.statusCode,
         );
+      }
+
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final storedData = prefs.getString('emergency_contacts_$userId');
+        List<dynamic> currentData = [];
+        if (storedData != null) {
+          currentData = json.decode(storedData);
+        }
+        currentData.add(contact.toJson());
+        await prefs.setString('emergency_contacts_$userId', json.encode(currentData));
+      } catch (e) {
+        // Ignore cache errors
       }
     } on DioException catch (e) {
       throw ServerException(
@@ -97,5 +122,17 @@ class UserService {
       if (e is ServerException) rethrow;
       throw ServerException(message: 'Unexpected error: $e');
     }
+  }
+
+  Future<List<SosContactModel>> getLocalEmergencyContacts(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? encodedData = prefs.getString('emergency_contacts_$userId');
+      if (encodedData != null) {
+        final List<dynamic> decodedData = json.decode(encodedData);
+        return decodedData.map((e) => SosContactModel.fromJson(e)).toList();
+      }
+    } catch (_) {}
+    return [];
   }
 }

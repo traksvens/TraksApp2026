@@ -150,6 +150,21 @@ class _PostDetailPageState extends State<PostDetailPage>
                       (p) => p.id == widget.post.id,
                       orElse: () => widget.post,
                     );
+                    final hasUserName =
+                        currentPost.userName?.trim().isNotEmpty == true;
+                    final displayName = hasUserName
+                        ? currentPost.userName!.trim()
+                        : "User ${currentPost.userId.length > 6 ? currentPost.userId.substring(0, 6) : currentPost.userId}";
+                    final handleSource = hasUserName
+                        ? currentPost.userName!.trim()
+                        : currentPost.userId;
+                    final normalizedHandle = handleSource
+                        .toLowerCase()
+                        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+                        .replaceAll(RegExp(r'^_+|_+$'), '');
+                    final userHandle = normalizedHandle.isEmpty
+                        ? 'user'
+                        : normalizedHandle;
 
                     return Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -170,11 +185,28 @@ class _PostDetailPageState extends State<PostDetailPage>
                                 ),
                                 child: CircleAvatar(
                                   radius: 22,
-                                  backgroundImage: const NetworkImage(
-                                    "https://i.pravatar.cc/150?u=user",
-                                  ),
+                                  backgroundImage:
+                                      (currentPost.userAvatarUrl?.isNotEmpty ??
+                                          false)
+                                      ? CachedNetworkImageProvider(
+                                          currentPost.userAvatarUrl!,
+                                        )
+                                      : null,
                                   backgroundColor:
                                       colorScheme.surfaceContainerHighest,
+                                  child:
+                                      (currentPost.userAvatarUrl?.isNotEmpty ??
+                                          false)
+                                      ? null
+                                      : Text(
+                                          displayName
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                        ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -185,7 +217,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                                     Row(
                                       children: [
                                         Text(
-                                          "User ${currentPost.userId.length > 6 ? currentPost.userId.substring(0, 6) : currentPost.userId}",
+                                          displayName,
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w800,
@@ -201,7 +233,7 @@ class _PostDetailPageState extends State<PostDetailPage>
                                       ],
                                     ),
                                     Text(
-                                      "@user_${currentPost.userId.length > 4 ? currentPost.userId.substring(0, 4) : currentPost.userId}",
+                                      "@$userHandle",
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(
                                             color: theme.hintColor,

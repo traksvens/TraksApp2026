@@ -108,6 +108,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<List<SosContactModel>> getLocalEmergencyContacts(String userId) async {
+    return await _userService.getLocalEmergencyContacts(userId);
+  }
+
+  @override
   Future<void> createEmergencyContact(
     String userId,
     SosContactModel contact,
