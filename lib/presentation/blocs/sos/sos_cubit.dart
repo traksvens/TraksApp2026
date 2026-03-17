@@ -105,7 +105,9 @@ class SosCubit extends Cubit<SosState> {
             final telephony = Telephony.instance;
             bool? hasPermission = await telephony.requestPhoneAndSmsPermissions;
             if (hasPermission == true) {
-              final message = "🆘 SOS ALERT from ${sosData.reporterName}!\nLocation: https://maps.google.com/?q=${sosData.lat},${sosData.lng}\nPlease help immediately!";
+              final lat = sosData.location['lat'];
+              final lng = sosData.location['lng'];
+              final message = "🆘 SOS ALERT from ${sosData.reporterName}!\nLocation: https://maps.google.com/?q=$lat,$lng\nPlease help immediately!";
               for (final contact in contacts) {
                 await telephony.sendSms(to: contact.phoneNumber, message: message);
               }
