@@ -21,6 +21,9 @@ import 'package:tracks_app/presentation/profile/profile_page.dart';
 import 'package:tracks_app/presentation/widgets/post_loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:another_telephony/telephony.dart';
+import 'package:tracks_app/repository/auth_repository.dart';
+import 'package:tracks_app/injection_container.dart' as di;
 import 'package:tracks_app/presentation/subscription/subscription_page.dart';
 import 'package:tracks_app/presentation/blocs/sos/sos_cubit.dart';
 import 'package:tracks_app/presentation/blocs/location/location_cubit.dart';
@@ -452,6 +455,43 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       } catch (e) {
+        // Offline fallback
+        try {
+          final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+          final data = doc.data();
+          if (data != null && (data['tier'] == 'premium' || data['tier'] == 'reporter')) {
+            final authRepo = di.sl<AuthRepository>();
+            final contacts = await authRepo.getLocalEmergencyContacts(userId);
+            if (contacts.isNotEmpty) {
+              final telephony = Telephony.instance;
+              bool? hasPermission = await telephony.requestPhoneAndSmsPermissions;
+              if (hasPermission == true) {
+                final reporterName = authState.user.displayName ?? 'User';
+                final message = "🆘 SOS ALERT from $reporterName!\nLocation: https://maps.google.com/?q=$lat,$lng\nPlease help immediately!";
+                for (final contact in contacts) {
+                  await telephony.sendSms(to: contact.phoneNumber, message: message);
+                }
+                
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text(
+                      "Network failed, but offline SMS SOS was sent successfully!",
+                      style: TextStyle(fontFamily: 'Inter'),
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                );
+                return;
+              }
+            }
+          }
+        } catch (_) {}
+
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
