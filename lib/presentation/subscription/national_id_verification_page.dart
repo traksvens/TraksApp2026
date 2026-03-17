@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
 import 'package:tracks_app/core/services/dojah_kyc_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -10,11 +11,19 @@ class NationalIdVerificationPage extends StatefulWidget {
   const NationalIdVerificationPage({super.key});
 
   @override
-  State<NationalIdVerificationPage> createState() => _NationalIdVerificationPageState();
+  State<NationalIdVerificationPage> createState() =>
+      _NationalIdVerificationPageState();
 }
 
-class _NationalIdVerificationPageState extends State<NationalIdVerificationPage> {
+class _NationalIdVerificationPageState
+    extends State<NationalIdVerificationPage> {
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsHelper.trackPageView('/kyc_verification');
+  }
 
   Future<void> _startVerification() async {
     final authState = context.read<AuthBloc>().state;
@@ -32,6 +41,8 @@ class _NationalIdVerificationPageState extends State<NationalIdVerificationPage>
       userId: userId,
       email: email,
     );
+
+    AnalyticsHelper.trackKycStarted();
 
     setState(() {
       _isLoading = false;
@@ -71,7 +82,9 @@ class _NationalIdVerificationPageState extends State<NationalIdVerificationPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Verification was cancelled or failed to launch. Please check if Dojah Widget ID is configured.'),
+            content: Text(
+              'Verification was cancelled or failed to launch. Please check if Dojah Widget ID is configured.',
+            ),
             backgroundColor: Colors.orange,
           ),
         );
@@ -121,7 +134,9 @@ class _NationalIdVerificationPageState extends State<NationalIdVerificationPage>
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

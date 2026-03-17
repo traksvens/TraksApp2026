@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tracks_app/core/services/location_service.dart';
 import 'package:tracks_app/core/services/places_service.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
 import 'package:tracks_app/data/models/address_model.dart';
 import 'package:tracks_app/data/models/post_model.dart';
 import 'package:tracks_app/presentation/blocs/post/post_bloc.dart';
@@ -180,6 +181,11 @@ class _CreatePostPageState extends State<CreatePostPage>
 
     if (mounted) {
       context.read<PostBloc>().add(CreatePost(post: post, file: _selectedFile));
+      AnalyticsHelper.trackPostCreated(
+        post.id,
+        severity: _severity,
+        category: _incidentType,
+      );
     }
   }
 

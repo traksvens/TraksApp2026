@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/models/sos_contact_model.dart';
+import '../../core/services/analytics_service.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/sos/sos_cubit.dart';
@@ -30,9 +31,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
-  final _latController = TextEditingController();
-  final _lngController = TextEditingController();
-
 
   String get _currentUserId {
     final authState = context.read<AuthBloc>().state;
@@ -42,6 +40,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
   @override
   void initState() {
     super.initState();
+    AnalyticsHelper.trackPageView('/sos_customization');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<SosCubit>().loadSosData(_currentUserId);
@@ -55,8 +54,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
     _lastNameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
-    _latController.dispose();
-    _lngController.dispose();
     super.dispose();
   }
 
@@ -68,8 +65,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
         phoneNumber: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         userId: _currentUserId,
-        lat: double.tryParse(_latController.text),
-        lng: double.tryParse(_lngController.text),
       );
 
       context.read<SosCubit>().addEmergencyContact(_currentUserId, contact);
@@ -78,8 +73,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
       _lastNameController.clear();
       _phoneController.clear();
       _emailController.clear();
-      _latController.clear();
-      _lngController.clear();
       FocusScope.of(context).unfocus();
     }
   }
@@ -113,9 +106,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surface.withOpacity(
-                              0.5,
-                            ),
+                            color: theme.colorScheme.surface.withOpacity(0.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -203,41 +194,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
     );
   }
 
-  Widget _buildCoordinateField(
-    ThemeData theme,
-    TextEditingController controller,
-    String label,
-    IconData icon,
-  ) {
-    return Expanded(
-      child: TextFormField(
-        controller: controller,
-        style: theme.textTheme.bodyMedium,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.5),
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: theme.iconTheme.color?.withOpacity(0.5),
-          ),
-          filled: true,
-          fillColor: theme.colorScheme.surface.withOpacity(0.5),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildAddContactForm(ThemeData theme) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -284,23 +240,6 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                   _emailController,
                   "Email",
                   Icons.email_outlined,
-                ),
-                Row(
-                  children: [
-                    _buildCoordinateField(
-                      theme,
-                      _latController,
-                      "Lat (Opt)",
-                      Icons.location_on_outlined,
-                    ),
-                    const SizedBox(width: 12),
-                    _buildCoordinateField(
-                      theme,
-                      _lngController,
-                      "Lng (Opt)",
-                      Icons.location_on_outlined,
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -420,8 +359,7 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
               color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.emergency_share,
-                color: theme.colorScheme.error),
+            child: Icon(Icons.emergency_share, color: theme.colorScheme.error),
           ),
           const SizedBox(width: 16),
           Expanded(

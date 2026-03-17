@@ -5,11 +5,13 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import '../widgets/traks_logo.dart';
 import '../widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracks_app/presentation/blocs/post/post_bloc.dart';
 import 'package:tracks_app/presentation/blocs/post/post_state.dart';
 import 'package:tracks_app/data/models/post_model.dart';
 import 'package:tracks_app/presentation/blocs/post/post_event.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
 
 import 'package:tracks_app/presentation/map/map_page.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
@@ -21,7 +23,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracks_app/presentation/subscription/subscription_page.dart';
 import 'package:tracks_app/presentation/blocs/sos/sos_cubit.dart';
-import 'package:tracks_app/data/models/sos_model.dart';
 import 'package:tracks_app/presentation/blocs/location/location_cubit.dart';
 import 'package:tracks_app/presentation/blocs/location/location_state.dart';
 import 'package:tracks_app/presentation/subscription/national_id_verification_page.dart';
@@ -35,6 +36,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+
+  void _trackPageView(int index) {
+    switch (index) {
+      case 0:
+        AnalyticsHelper.trackPageView('/home');
+        break;
+      case 1:
+        AnalyticsHelper.trackPageView('/map');
+        break;
+      case 2:
+        AnalyticsHelper.trackPageView('/profile');
+        break;
+      case 3:
+        AnalyticsHelper.trackPageView('/subscription');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +111,8 @@ class _HomePageState extends State<HomePage> {
         (!isPaid
             ? const SubscriptionPage()
             : (kycStatus == 'pending'
-                ? const _PendingVerificationPage()
-                : const NationalIdVerificationPage())),
+                  ? const _PendingVerificationPage()
+                  : const NationalIdVerificationPage())),
     ];
 
     return MultiBlocListener(
@@ -127,10 +145,10 @@ class _HomePageState extends State<HomePage> {
                 locationState.lastKnownLat != null &&
                 locationState.lastKnownLng != null) {
               context.read<SosCubit>().updateSosLocation(
-                    sosState.activeIncidentId!,
-                    locationState.lastKnownLat!,
-                    locationState.lastKnownLng!,
-                  );
+                sosState.activeIncidentId!,
+                locationState.lastKnownLat!,
+                locationState.lastKnownLng!,
+              );
             }
           },
         ),
@@ -173,7 +191,10 @@ class _HomePageState extends State<HomePage> {
                     top: MediaQuery.paddingOf(context).top + 10,
                     left: 20,
                     right: 20,
-                    child: _buildActiveSosBanner(theme, state.activeIncidentId!),
+                    child: _buildActiveSosBanner(
+                      theme,
+                      state.activeIncidentId!,
+                    ),
                   );
                 }
                 return const SizedBox.shrink();
@@ -181,8 +202,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        floatingActionButton:
-            _currentIndex == 0 ? _buildSosFab(context, theme) : null,
+        floatingActionButton: _currentIndex == 0
+            ? _buildSosFab(context, theme)
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: _buildModernNavbar(theme, isVerified),
       ),
@@ -295,21 +317,25 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface,
-        title: const Text("Resolve SOS",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Resolve SOS",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-                "Are you safe? Resolving will stop the emergency broadcast."),
+              "Are you safe? Resolving will stop the emergency broadcast.",
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: noteController,
               decoration: InputDecoration(
                 labelText: "Optional Note (e.g. False alarm)",
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -322,10 +348,10 @@ class _HomePageState extends State<HomePage> {
           ElevatedButton(
             onPressed: () {
               context.read<SosCubit>().resolveSos(
-                    incidentId,
-                    'RESOLVED',
-                    note: noteController.text,
-                  );
+                incidentId,
+                'RESOLVED',
+                note: noteController.text,
+              );
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -347,14 +373,17 @@ class _HomePageState extends State<HomePage> {
         filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: AlertDialog(
           backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
           title: Row(
             children: [
               Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
               const SizedBox(width: 12),
-              const Text("Confirm SOS",
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              const Text(
+                "Confirm SOS",
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
             ],
           ),
           content: const Text(
@@ -364,10 +393,12 @@ class _HomePageState extends State<HomePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel",
-                  style: TextStyle(
-                      color:
-                          theme.colorScheme.onSurface.withOpacity(0.6))),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -378,10 +409,13 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: theme.colorScheme.error,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: const Text("SEND ALERT",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                "SEND ALERT",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -389,37 +423,46 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _handleSosBroadcast(BuildContext context) {
+  Future<void> _handleSosBroadcast(BuildContext context) async {
     final authState = context.read<AuthBloc>().state;
     final locationState = context.read<LocationCubit>().state;
 
     if (authState is Authenticated && locationState.lastKnownLat != null) {
-      final sosData = SosModel(
-        userId: authState.user.uid,
-        reporterName: authState.user.displayName ?? 'User',
-        location: {
-          'latitude': locationState.lastKnownLat!,
-          'longitude': locationState.lastKnownLng!,
-          'accuracy': 0.0, // Default for now
-        },
-        alert_type: 'MANUAL_TRIGGER',
-        message: 'SOS Alert from ${authState.user.displayName ?? authState.user.email?.split('@').first}',
-        status: 'Active',
-      );
-      context.read<SosCubit>().broadcastSos(sosData);
+      final userId = authState.user.uid;
+      final url = 'https://traks-api-945904604038.us-central1.run.app/sos/send?userId=$userId';
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            "Emergency SOS Broadcasted!",
-            style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+      try {
+        await Dio().post(url);
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              "Emergency SOS Broadcasted!",
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-      );
+        );
+      } catch (e) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              "Failed to broadcast SOS. Please try again.",
+              style: TextStyle(fontFamily: 'Inter'),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -429,8 +472,9 @@ class _HomePageState extends State<HomePage> {
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       );
     }
@@ -503,7 +547,10 @@ class _HomePageState extends State<HomePage> {
   }) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () {
+        setState(() => _currentIndex = index);
+        _trackPageView(index);
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),

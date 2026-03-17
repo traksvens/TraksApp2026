@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
 
@@ -22,6 +23,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.85, initialPage: 1);
+    AnalyticsHelper.trackPageView('/subscription');
   }
 
   @override

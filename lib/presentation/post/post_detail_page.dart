@@ -6,6 +6,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../data/models/post_model.dart';
 import '../../data/models/replies_model.dart';
 import '../../data/models/rating_request.dart';
+import '../../core/services/analytics_service.dart';
 import '../blocs/post/post_bloc.dart';
 import '../blocs/post/post_event.dart';
 import '../blocs/post/post_state.dart';
@@ -32,6 +33,11 @@ class _PostDetailPageState extends State<PostDetailPage>
   void initState() {
     super.initState();
     context.read<PostBloc>().add(FetchReplies(widget.post.id));
+    AnalyticsHelper.trackPostViewed(
+      widget.post.id,
+      authorId: widget.post.userId,
+    );
+    AnalyticsHelper.trackPageView('/post_detail');
   }
 
   @override
@@ -65,9 +71,8 @@ class _PostDetailPageState extends State<PostDetailPage>
 
     if (content.isNotEmpty) {
       context.read<PostBloc>().add(
-            CreateReply(
-                postId: widget.post.id, userId: userId, content: content),
-          );
+        CreateReply(postId: widget.post.id, userId: userId, content: content),
+      );
       _commentController.clear();
       FocusScope.of(context).unfocus();
     }
@@ -87,11 +92,11 @@ class _PostDetailPageState extends State<PostDetailPage>
     }
 
     context.read<PostBloc>().add(
-          RatePostEvent(
-            postId: widget.post.id,
-            request: RatingRequest(userId: userId, rating: type),
-          ),
-        );
+      RatePostEvent(
+        postId: widget.post.id,
+        request: RatingRequest(userId: userId, rating: type),
+      ),
+    );
 
     // Feedback
     ScaffoldMessenger.of(context).showSnackBar(
@@ -183,9 +188,9 @@ class _PostDetailPageState extends State<PostDetailPage>
                                           "User ${currentPost.userId.length > 6 ? currentPost.userId.substring(0, 6) : currentPost.userId}",
                                           style: theme.textTheme.titleMedium
                                               ?.copyWith(
-                                            fontWeight: FontWeight.w800,
-                                            letterSpacing: -0.5,
-                                          ),
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.5,
+                                              ),
                                         ),
                                         const SizedBox(width: 4),
                                         Icon(
@@ -197,11 +202,11 @@ class _PostDetailPageState extends State<PostDetailPage>
                                     ),
                                     Text(
                                       "@user_${currentPost.userId.length > 4 ? currentPost.userId.substring(0, 4) : currentPost.userId}",
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        color: theme.hintColor,
-                                        height: 1.1,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: theme.hintColor,
+                                            height: 1.1,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -259,21 +264,21 @@ class _PostDetailPageState extends State<PostDetailPage>
                                     ),
                                     errorWidget: (context, url, error) =>
                                         Container(
-                                      height: 100,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: colorScheme
-                                            .surfaceContainerHighest
-                                            .withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(
-                                          20,
+                                          height: 100,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: colorScheme
+                                                .surfaceContainerHighest
+                                                .withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.broken_image_outlined,
+                                            color: theme.hintColor,
+                                          ),
                                         ),
-                                      ),
-                                      child: Icon(
-                                        Icons.broken_image_outlined,
-                                        color: theme.hintColor,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ),
@@ -294,7 +299,9 @@ class _PostDetailPageState extends State<PostDetailPage>
                           const SizedBox(height: 16),
                           Divider(
                             height: 1,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.1,
+                            ),
                           ),
 
                           // Interaction Bar
@@ -855,7 +862,11 @@ class _AnimatedSendButtonState extends State<_AnimatedSendButton> {
         child: CircleAvatar(
           radius: 22,
           backgroundColor: theme.colorScheme.primary,
-          child: Icon(Icons.send_rounded, color: theme.colorScheme.onSurface, size: 20),
+          child: Icon(
+            Icons.send_rounded,
+            color: theme.colorScheme.onSurface,
+            size: 20,
+          ),
         ),
       ),
     );

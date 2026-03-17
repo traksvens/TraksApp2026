@@ -267,13 +267,6 @@ class ProfilePage extends StatelessWidget {
                               const SizedBox(height: 12),
                               _buildSettingTile(
                                 theme: theme,
-                                icon: Icons.notifications_none_rounded,
-                                title: "Notifications",
-                                subtitle: "Manage alerts & push configurations",
-                              ),
-                              const SizedBox(height: 12),
-                              _buildSettingTile(
-                                theme: theme,
                                 icon: Icons.shield_outlined,
                                 title: "Privacy & Security",
                                 subtitle: "Biometrics, Password, Sessions",

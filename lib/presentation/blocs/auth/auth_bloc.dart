@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../repository/auth_repository.dart';
+import '../../../core/services/analytics_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -9,8 +10,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription? _userSubscription;
 
   AuthBloc({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(AuthInitial()) {
+    : _authRepository = authRepository,
+      super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
@@ -50,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.email,
         event.password,
       );
+      AnalyticsHelper.trackLogin('email');
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -66,6 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.password,
         event.displayName,
       );
+      AnalyticsHelper.trackSignUp('email');
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -78,6 +81,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       await _authRepository.signInWithGoogle();
+      AnalyticsHelper.trackLogin('google');
     } catch (e, stackTrace) {
       print('=== GOOGLE SIGN IN ERROR ===');
       print(e);
@@ -93,7 +97,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       await _authRepository.signOut();
-      // We don't emit Unauthenticated here because the listener will catch it
+      AnalyticsHelper.trackLogout();
+      AnalyticsHelper.setUserId(null);
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -101,6 +106,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onUserAuthenticated(UserAuthenticated event, Emitter<AuthState> emit) {
     emit(Authenticated(event.user));
+    AnalyticsHelper.setUserId(event.user.uid);
+    AnalyticsHelper.trackPageView('/home');
   }
 
   void _onUserUnauthenticated(

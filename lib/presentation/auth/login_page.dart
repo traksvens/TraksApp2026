@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tracks_app/core/theme/app_colors.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _isSignUp = widget.isSignUp;
+    AnalyticsHelper.trackPageView(_isSignUp ? '/signup' : '/login');
   }
 
   @override
@@ -41,19 +43,19 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       if (_isSignUp) {
         context.read<AuthBloc>().add(
-              SignUpRequested(
-                email: _emailController.text.trim(),
-                password: _passwordController.text.trim(),
-                displayName: _nameController.text.trim(),
-              ),
-            );
+          SignUpRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            displayName: _nameController.text.trim(),
+          ),
+        );
       } else {
         context.read<AuthBloc>().add(
-              SignInRequested(
-                email: _emailController.text.trim(),
-                password: _passwordController.text.trim(),
-              ),
-            );
+          SignInRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          ),
+        );
       }
     }
   }
@@ -91,7 +93,10 @@ class _LoginPageState extends State<LoginPage> {
           automaticallyImplyLeading: false,
           leading: Navigator.canPop(context)
               ? IconButton(
-                  icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: theme.colorScheme.onSurface,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 )
               : null,
@@ -107,8 +112,9 @@ class _LoginPageState extends State<LoginPage> {
                 height: 400,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: theme.colorScheme.primary
-                      .withValues(alpha: 0.5), // Greenish glow
+                  color: theme.colorScheme.primary.withValues(
+                    alpha: 0.5,
+                  ), // Greenish glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -125,8 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: theme.colorScheme.secondary
-                      .withValues(alpha: 0.4), // Yellow-green glow
+                  color: theme.colorScheme.secondary.withValues(
+                    alpha: 0.4,
+                  ), // Yellow-green glow
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
@@ -148,7 +155,9 @@ class _LoginPageState extends State<LoginPage> {
                       // Logo mimicking the small 'cp' logo
                       Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.0),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.0,
+                          ),
                         ),
                         padding: const EdgeInsets.only(top: 12, bottom: 12),
                         child: Icon(
@@ -237,7 +246,8 @@ class _LoginPageState extends State<LoginPage> {
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -257,7 +267,8 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.1),
                                       thickness: 1,
                                     ),
                                   ),
@@ -269,8 +280,8 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icons.g_mobiledata,
                                 onPressed: () {
                                   context.read<AuthBloc>().add(
-                                        GoogleSignInRequested(),
-                                      );
+                                    GoogleSignInRequested(),
+                                  );
                                 },
                               ),
                             ],
@@ -358,19 +369,27 @@ class _LoginPageState extends State<LoginPage> {
           obscureText: isPassword ? _obscurePassword : false,
           keyboardType: keyboardType,
           style: GoogleFonts.inter(
-              color: theme.colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.w500),
+            color: theme.colorScheme.onSurface,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
           cursorColor: theme.colorScheme.onSurface,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                fontSize: 16,
-                fontWeight: FontWeight.w500),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
             filled: true,
-            fillColor: theme.colorScheme.surfaceContainerHighest
-                .withValues(alpha: 0.6), // Dark squircle specific to the canopi card
-            prefixIcon:
-                Icon(icon, color: theme.colorScheme.onSurface.withValues(alpha: 0.6), size: 22),
+            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.6,
+            ), // Dark squircle specific to the canopi card
+            prefixIcon: Icon(
+              icon,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              size: 22,
+            ),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
@@ -392,23 +411,31 @@ class _LoginPageState extends State<LoginPage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide:
-                  BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.05), width: 1),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                width: 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide:
-                  BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.2), width: 1.5),
+              borderSide: BorderSide(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide:
-                  const BorderSide(color: AppColors.alertHigh, width: 1),
+              borderSide: const BorderSide(
+                color: AppColors.alertHigh,
+                width: 1,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24),
-              borderSide:
-                  const BorderSide(color: AppColors.alertHigh, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.alertHigh,
+                width: 1.5,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,

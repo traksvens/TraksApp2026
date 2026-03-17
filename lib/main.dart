@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracks_app/core/theme/app_theme.dart';
 import 'package:tracks_app/core/theme/theme_controller.dart';
+import 'package:tracks_app/core/services/analytics_service.dart';
+import 'package:tracks_app/core/services/analytics_navigation_observer.dart';
 import 'package:tracks_app/injection_container.dart' as di;
 import 'package:tracks_app/presentation/blocs/post/post_bloc.dart';
 import 'package:tracks_app/presentation/blocs/post/post_event.dart';
@@ -75,6 +77,8 @@ class _AppMainState extends State<AppMain> {
 
   @override
   Widget build(BuildContext context) {
+    final navigationObserver = AnalyticsNavigationObserver();
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -96,6 +100,7 @@ class _AppMainState extends State<AppMain> {
             themeMode: themeState.mode,
             home: const SplashScreen(),
             debugShowCheckedModeBanner: false,
+            navigatorObservers: [navigationObserver],
           );
         },
       ),
@@ -107,6 +112,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await AnalyticsHelper.trackPageView('/splash');
+  await AnalyticsHelper.logAppOpen();
+
   await di.init();
 
   HydratedBloc.storage = await HydratedStorage.build(
