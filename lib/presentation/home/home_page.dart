@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
         bool isPaid = false;
         String? kycStatus;
         if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data() as Map<String, dynamic>?;
+          final data = snapshot.data!.data();
           isVerified =
               data?['isVerified'] == true || data?['verified'] == 'True';
           isPaid = data?['tier'] == 'premium' || data?['tier'] == 'reporter';
@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      theme.colorScheme.primary.withOpacity(0.15),
+                      theme.colorScheme.primary.withValues(alpha: 0.15),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 1.0],
@@ -212,6 +212,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSosFab(BuildContext context, ThemeData theme) {
+    const bloodRed = Color(0xFF8B0000);
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.paddingOf(context).bottom + 30,
@@ -230,15 +231,12 @@ class _HomePageState extends State<HomePage> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    theme.colorScheme.error,
-                    theme.colorScheme.error.withOpacity(0.8),
-                  ],
+                  colors: [bloodRed, bloodRed.withValues(alpha: 0.8)],
                 ),
                 borderRadius: BorderRadius.circular(24), // Sqircle-like shape
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.error.withOpacity(0.4),
+                    color: bloodRed.withValues(alpha: 0.4),
                     blurRadius: 20,
                     spreadRadius: 2,
                     offset: const Offset(0, 8),
@@ -265,7 +263,7 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.error.withOpacity(0.3),
+            color: theme.colorScheme.error.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -289,7 +287,7 @@ class _HomePageState extends State<HomePage> {
           TextButton(
             onPressed: () => _showResolveSosDialog(context, incidentId),
             style: TextButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.2),
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -396,7 +394,7 @@ class _HomePageState extends State<HomePage> {
               child: Text(
                 "Cancel",
                 style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ),
@@ -429,7 +427,8 @@ class _HomePageState extends State<HomePage> {
 
     if (authState is Authenticated && locationState.lastKnownLat != null) {
       final userId = authState.user.uid;
-      final url = 'https://traks-api-945904604038.us-central1.run.app/sos/send?userId=$userId';
+      final url =
+          'https://traks-api-945904604038.us-central1.run.app/sos/send?userId=$userId';
 
       try {
         await Dio().post(url);
@@ -438,7 +437,10 @@ class _HomePageState extends State<HomePage> {
           SnackBar(
             content: const Text(
               "Emergency SOS Broadcasted!",
-              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+              ),
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
