@@ -427,8 +427,10 @@ class _HomePageState extends State<HomePage> {
 
     if (authState is Authenticated && locationState.lastKnownLat != null) {
       final userId = authState.user.uid;
+      final lat = locationState.lastKnownLat;
+      final lng = locationState.lastKnownLng;
       final url =
-          'https://traks-api-945904604038.us-central1.run.app/sos/send?userId=$userId';
+          'https://traks-api-945904604038.us-central1.run.app/sos/send?userId=$userId&lat=$lat&lng=$lng';
 
       try {
         await Dio().post(url);
