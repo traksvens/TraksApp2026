@@ -22,8 +22,6 @@ class _SplashScreenState extends State<SplashScreen> {
       if (uri.queryParameters['status'] == 'success') {
         final userId = uri.queryParameters['userId'];
         if (userId != null && userId.isNotEmpty) {
-          // Verification is now handled securely by the React frontend
-          // before the redirect occurs.
           debugPrint(
             "Payment success redirect received for user: $userId on Web",
           );
@@ -45,10 +43,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if dark mode is active to set background color
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final backgroundColor = isDarkMode ? const Color(0xFF050505) : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black;
+    final logoAsset = isDarkMode 
+        ? 'assets/images/logo-light.png' 
+        : 'assets/images/logo-dark.png';
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -56,30 +56,42 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Use AnimatedTextKit for the "TRAKS" text
-            // We use 'TRAKS' as the logo text.
+            // Themed Logo Image
+            Hero(
+              tag: 'app_logo',
+              child: Image.asset(
+                logoAsset,
+                height: 80,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Minimal Animated Text
             DefaultTextStyle(
               style: TextStyle(
-                fontSize: 60.0,
-                fontWeight: FontWeight.w900,
-                color: textColor,
-                letterSpacing: -2.0,
-                fontFamily:
-                    'Roboto', // Or usage generic font if custom not loaded
+                fontSize: 24.0,
+                fontWeight: FontWeight.w800,
+                color: textColor.withValues(alpha: 0.8),
+                letterSpacing: 4.0,
+                fontFamily: 'Inter',
               ),
               child: AnimatedTextKit(
                 animatedTexts: [
                   FadeAnimatedText(
-                    'TRAKS',
+                    'TRACKS',
                     duration: const Duration(milliseconds: 2000),
-                    fadeInEnd: 0.4,
-                    fadeOutBegin: 0.9,
                   ),
                 ],
                 isRepeatingAnimation: false,
                 onFinished: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => const AuthWrapper(),
+                      transitionsBuilder: (_, animation, __, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      transitionDuration: const Duration(milliseconds: 800),
+                    ),
                   );
                 },
               ),

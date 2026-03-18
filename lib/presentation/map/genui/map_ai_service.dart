@@ -162,7 +162,7 @@ class MapAiService {
                   ),
                   'radiusMeters': genai.Schema.integer(
                     description:
-                        'Search radius in meters. Use a number between 300 and 20000. Default 10000. If the user asks for a large city, use a larger radius (like 15000 or 20000).',
+                        'Search radius in meters. Use a number between 500 and 20000. For specific neighborhoods, towns, or local areas (like Lekki), use a smaller radius (1000 to 3000). For full cities, use 10000. Default 3000.',
                     nullable: true,
                   ),
                   'incidentType': genai.Schema.string(
@@ -251,10 +251,10 @@ Current user location context:
 - latitude: ${currentLocationContext.lat}
 - longitude: ${currentLocationContext.lng}
 
-Use this location context ONLY when it is relevant to the request.
-If the user refers to "my location", "near me", "here", or does not specify a location, use `useCurrentLocation`: true.
-If the user specifies a distinct city, neighborhood, or landmark (e.g., "in New York", "around Central Park"), extract THAT location into `locationQuery` and set `useCurrentLocation`: false.
-Do not map distinct locations to the current location coordinates.
+Instructions:
+- If the user refers to "my location", "near me", "here", or doesn't specify a place: use `useCurrentLocation: true`.
+- If the user specifies a distinct city, neighborhood, or landmark (e.g., "Lekki Lagos", "Central Park"): extract exactly THAT location into `locationQuery` and set `useCurrentLocation: false`.
+- Select an appropriate `radiusMeters` based on the scale of the requested location (e.g., 2000-3000 for a neighborhood/street, 10000 for a large city). Do not map distinct locations to the current location coordinates.
 ''';
   }
 
@@ -285,10 +285,10 @@ Tool result:
 - post count: ${toolResult.posts.length}
 - top posts: $posts
 
-Respond in 2 short sentences max.
+Respond in 1-2 short sentences maximum.
 Mention the resolved location and the number of posts found.
 If posts exist, briefly mention the most notable patterns from the returned posts.
-Do not invent details that are not present in the tool result.
+CRITICAL: Do not hallucinate or invent details that are not explicitly present in the tool result.
 ''';
   }
 
@@ -479,7 +479,7 @@ Do not invent details that are not present in the tool result.
       _ => null,
     };
 
-    return (parsed ?? 10000).clamp(300, 20000);
+    return (parsed ?? 3000).clamp(300, 20000);
   }
 
   String _fallbackSummary(List<PostModel> posts, String label) {
@@ -495,16 +495,14 @@ Do not invent details that are not present in the tool result.
   }
 
   static const String _systemInstruction = '''
-You are the map assistant for a safety incident app.
+You are Tracks AI, the map assistant for a community safety app.
 
-Your job:
-- Help the user find safety posts for a place, a city, or nearby area.
-- CRITICAL: When the user asks about incidents in a SPECIFIC CITY or PLACE (e.g. "crimes in New York", "posts in Chicago"), ALWAYS call the tool `findPostsNearLocation` and place that city/place name in the `locationQuery` argument. Do NOT use their current location if they ask for somewhere else.
-- When the user asks about incidents near their current location (e.g. "near me", "here"), call the tool with `useCurrentLocation`: true.
-- After receiving tool results, answer briefly and clearly.
-- Keep answers mobile-friendly, engaging, and concise (under 3 sentences).
-- Do not invent incidents, counts, or places. Only use tool output.
-- If the user asks a general conversational question not related to searching posts, answer briefly without the tool.
+Core Directives:
+1. SPATIAL AWARENESS: When a user asks about a specific neighborhood, town, or street (e.g., "Lekki Lagos", "Downtown Seattle"), ALWAYS extract that exact location into `locationQuery` and specify a SMALL `radiusMeters` (e.g., 2000-3000) to avoid over-fetching.
+2. CURRENT LOCATION: If the user asks about incidents "near me", "here", or around their current location, use `useCurrentLocation: true`. Do NOT use their current location if they specify a different place.
+3. CONCISENESS: Keep answers mobile-friendly and extremely concise (1-2 sentences max).
+4. FACTUAL INTEGRITY: NEVER invent incidents, counts, or places. Only summarize the exact tool output.
+5. GENERAL CHAT: If the user asks a general question not related to finding posts, answer briefly without using tools.
 ''';
 
   static final genai.ToolConfig _defaultToolConfig = genai.ToolConfig(

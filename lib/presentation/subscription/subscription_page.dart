@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tracks_app/core/services/analytics_service.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_bloc.dart';
 import 'package:tracks_app/presentation/blocs/auth/auth_state.dart';
+import 'package:tracks_app/core/theme/app_colors.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
@@ -22,7 +24,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.85, initialPage: 1);
+    _pageController = PageController(viewportFraction: 0.82, initialPage: 1);
     AnalyticsHelper.trackPageView('/subscription');
   }
 
@@ -57,7 +59,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     final tierParam = tierName == 'premium' ? 'premium' : 'reporter';
     final baseUrl = dotenv.get(
       'PAYMENT_UI_BASE_URL',
-      fallback: 'https://traks-payment-ui.vercel.app/',
+      fallback: 'https://billing.traksvens.name.ng/',
     );
 
     final paymentUrl =
@@ -69,90 +71,69 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Premium Navy & White Theme Colors replaced with Canopi Dark Theme
-    final Color canopiBg = theme.scaffoldBackgroundColor;
-    final Color canopiText = theme.colorScheme.onSurface;
-    const Color canopiSubtitle = Color(0xFFA0A0A0);
-    final Color canopiGreen = theme.colorScheme.primary;
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: canopiBg,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: canopiText,
-            size: 20,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
-          "Plans & Upgrades",
-          style: TextStyle(
-            fontFamily: 'Inter',
-            color: canopiText,
+          "Membership",
+          style: GoogleFonts.inter(
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w700,
-            fontSize: 18,
-            letterSpacing: -0.5,
+            fontSize: 16,
+            letterSpacing: 1.0,
           ),
         ),
       ),
       body: Stack(
         children: [
-          // Ambient Radial Glow Backdrop Settings
+          // Background Glows
           Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    canopiGreen.withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 1.0],
-                ),
-              ),
-            ),
+            top: -150,
+            left: -100,
+            child: _GlowCircle(color: colorScheme.primary.withValues(alpha: 0.08), size: 400),
           ),
+          Positioned(
+            bottom: -100,
+            right: -50,
+            child: _GlowCircle(color: colorScheme.secondary.withValues(alpha: 0.05), size: 350),
+          ),
+
           SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                // Header
+                // Hero Header
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Column(
                     children: [
                       Text(
-                        "Choose Your Experience",
+                        "Elevate Your Impact",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: canopiText,
+                        style: GoogleFonts.inter(
+                          color: colorScheme.onSurface,
                           fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -1.2,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1.0,
                           height: 1.1,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        "Unlock premium features and professional reporting tools built for clarity and impact.",
+                        "Choose the level of influence you want within the Tracks community.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: canopiSubtitle,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          height: 1.4,
+                        style: GoogleFonts.inter(
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontSize: 15,
+                          height: 1.5,
                         ),
                       ),
                     ],
@@ -160,7 +141,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Carousel
+                // Subscription Carousel
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -170,43 +151,38 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                         _currentPage = page;
                       });
                     },
-                    itemCount: _getSubscriptionTiers(theme).length,
+                    itemCount: _getTiers(theme).length,
                     itemBuilder: (context, index) {
-                      final tier = _getSubscriptionTiers(theme)[index];
-                      final isActive = _currentPage == index;
-
-                      return _buildTierCard(
-                        context: context,
+                      final tier = _getTiers(theme)[index];
+                      final isCurrent = _currentPage == index;
+                      return _SubscriptionCard(
                         tier: tier,
-                        isActive: isActive,
+                        isCurrent: isCurrent,
+                        onTap: () => _onTierSelected(tier.id, context),
                       );
                     },
                   ),
                 ),
 
                 // Indicators
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_getSubscriptionTiers(theme).length, (
-                    index,
-                  ) {
-                    final isActive = _currentPage == index;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      height: 6,
-                      width: isActive ? 24 : 6,
-                      decoration: BoxDecoration(
-                        color: isActive
-                            ? canopiGreen
-                            : theme.colorScheme.onSurface.withValues(
-                                alpha: 0.2,
-                              ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    );
-                  }),
+                const SizedBox(height: 24),
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(_getTiers(theme).length, (index) {
+                      final active = _currentPage == index;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 4,
+                        width: active ? 20 : 4,
+                        decoration: BoxDecoration(
+                          color: active ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
                 const SizedBox(height: 40),
               ],
@@ -216,239 +192,225 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       ),
     );
   }
+}
 
-  Widget _buildTierCard({
-    required BuildContext context,
-    required _TierModel tier,
-    required bool isActive,
-  }) {
+class _GlowCircle extends StatelessWidget {
+  final Color color;
+  final double size;
+  const _GlowCircle({required this.color, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
+        child: Container(color: Colors.transparent),
+      ),
+    );
+  }
+}
+
+class _SubscriptionCard extends StatelessWidget {
+  final _TierModel tier;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
+  const _SubscriptionCard({
+    required this.tier,
+    required this.isCurrent,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final Color canopiText = theme.colorScheme.onSurface;
-    const Color canopiSubtitle = Color(0xFFA0A0A0);
-
-    final scale = isActive ? 1.0 : 0.92;
-    final opacity = isActive ? 1.0 : 0.6;
+    final colorScheme = theme.colorScheme;
+    final scale = isCurrent ? 1.0 : 0.9;
+    final opacity = isCurrent ? 1.0 : 0.4;
 
     return AnimatedScale(
       scale: scale,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOutQuart,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutExpo,
       child: AnimatedOpacity(
         opacity: opacity,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOutQuart,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32), // Squircle matching home
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              decoration: BoxDecoration(
-                color: Color(
-                  0xFF1A1D1C,
-                ).withValues(alpha: 0.6), // Frosted glass dark
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: isActive
-                      ? tier.gradientColors.last.withValues(alpha: 0.5)
-                      : theme.colorScheme.onSurface.withValues(alpha: 0.08),
-                  width: 1,
+        duration: const Duration(milliseconds: 500),
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: isCurrent ? colorScheme.onSurface.withValues(alpha: 0.1) : Colors.transparent,
+              width: 1,
+            ),
+            boxShadow: [
+              if (isCurrent)
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: theme.brightness == Brightness.dark ? 0.5 : 0.1),
+                  blurRadius: 40,
+                  offset: const Offset(0, 20),
                 ),
-                boxShadow: isActive
-                    ? [
-                        BoxShadow(
-                          color: tier.gradientColors.first.withValues(
-                            alpha: 0.15,
-                          ),
-                          blurRadius: 25,
-                          spreadRadius: 0,
-                          offset: const Offset(0, 10),
-                        ),
-                      ]
-                    : [],
-              ),
-              child: Stack(
-                children: [
-                  // Top Accent Line
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(32),
+            child: Stack(
+              children: [
+                if (isCurrent)
                   Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
+                    top: -50,
+                    right: -50,
                     child: Container(
-                      height: 4,
+                      width: 150,
+                      height: 150,
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
-                        ),
-                        gradient: LinearGradient(colors: tier.gradientColors),
+                        shape: BoxShape.circle,
+                        color: tier.accentColor.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(28.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        // Icon and Name
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Icon(tier.icon, color: canopiText, size: 28),
+                Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(tier.icon, color: tier.accentColor, size: 32),
+                          if (tier.id == 'premium')
+                            _Badge(text: "Popular", color: tier.accentColor),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        tier.name,
+                        style: GoogleFonts.inter(
+                          color: colorScheme.onSurface,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
                         ),
-                        const SizedBox(height: 24),
-                        Text(
-                          tier.name,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                            color: canopiText,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            tier.price == 0 ? "Free" : "₦${tier.price}",
+                            style: GoogleFonts.inter(
+                              color: colorScheme.onSurface,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -1,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
+                          if (tier.price > 0)
                             Text(
-                              tier.price == 0 ? "Free" : "₦${tier.price}",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 38,
-                                fontWeight: FontWeight.w900,
-                                color: canopiText,
-                                letterSpacing: -1.0,
-                                fontFeatures: const [
-                                  FontFeature.tabularFigures(),
-                                ],
+                              " / life",
+                              style: GoogleFonts.inter(
+                                color: colorScheme.onSurface.withValues(alpha: 0.4),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            if (tier.price > 0)
-                              Text(
-                                " / lifetime",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: canopiSubtitle,
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      
+                      // Features
+                      Expanded(
+                        child: ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: tier.features.length,
+                          separatorBuilder: (context, index) => const SizedBox(height: 16),
+                          itemBuilder: (context, i) {
+                            return Row(
+                              children: [
+                                Icon(Icons.done_rounded, color: tier.accentColor, size: 18),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    tier.features[i],
+                                    style: GoogleFonts.inter(
+                                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                          ],
+                              ],
+                            );
+                          },
                         ),
-                        const SizedBox(height: 32),
-
-                        // Features List
-                        Expanded(
-                          child: ListView.separated(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: tier.features.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 16),
-                            itemBuilder: (context, index) {
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 2),
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: const Color(
-                                        0xFF22C55E,
-                                      ).withValues(alpha: 0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.check_rounded,
-                                      size: 14,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      tier.features[index],
-                                      style: TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.4,
-                                        color: canopiSubtitle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-                        // Action Button
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
+                      ),
+                      
+                      // CTA
+                      const SizedBox(height: 24),
+                      if (tier.id != 'freemium')
+                        SizedBox(
                           width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              32,
-                            ), // Pill shape 32px
-                            color: isActive
-                                ? (tier.id == 'freemium'
-                                      ? theme
-                                            .colorScheme
-                                            .surfaceContainerHighest
-                                      : theme.colorScheme.primary)
-                                : const Color(
-                                    0xFF232325,
-                                  ).withValues(alpha: 0.5),
-                            boxShadow: isActive && tier.id != 'freemium'
-                                ? [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF22C55E,
-                                      ).withValues(alpha: 0.2),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ]
-                                : [],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(32),
-                              onTap: () => _onTierSelected(tier.id, context),
-                              child: Center(
-                                child: Text(
-                                  tier.buttonText,
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    color: isActive && tier.id != 'freemium'
-                                        ? theme.scaffoldBackgroundColor
-                                        : theme.colorScheme.onSurface,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.2,
-                                  ),
-                                ),
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: onTap,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isCurrent ? tier.accentColor : colorScheme.onSurface.withValues(alpha: 0.1),
+                              foregroundColor: isCurrent ? (tier.accentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white) : colorScheme.onSurface,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              tier.buttonText,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15,
                               ),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String text;
+  final Color color;
+  const _Badge({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Text(
+        text.toUpperCase(),
+        style: GoogleFonts.inter(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -461,7 +423,7 @@ class _TierModel {
   final int price;
   final String buttonText;
   final List<String> features;
-  final List<Color> gradientColors;
+  final Color accentColor;
   final IconData icon;
 
   _TierModel({
@@ -470,55 +432,53 @@ class _TierModel {
     required this.price,
     required this.buttonText,
     required this.features,
-    required this.gradientColors,
+    required this.accentColor,
     required this.icon,
   });
 }
 
-List<_TierModel> _getSubscriptionTiers(ThemeData theme) {
+List<_TierModel> _getTiers(ThemeData theme) {
+  final colorScheme = theme.colorScheme;
   return [
     _TierModel(
       id: 'freemium',
       name: 'Freemium',
       price: 0,
       buttonText: 'Current Plan',
-      gradientColors: [const Color(0xFF94A3B8), const Color(0xFF64748B)],
+      accentColor: colorScheme.onSurface.withValues(alpha: 0.3),
       icon: Icons.person_outline_rounded,
       features: [
-        'Basic profile features',
-        'Standard access to Traks resources',
-        'Limited community interaction',
-        'Standard support',
+        'Standard incident access',
+        'Basic reporting tools',
+        'Community participation',
       ],
     ),
     _TierModel(
       id: 'premium',
       name: 'Premium',
       price: 3000,
-      buttonText: 'Get Premium',
-      gradientColors: [theme.colorScheme.primary, const Color(0xFF16A34A)],
+      buttonText: 'Upgrade Now',
+      accentColor: AppColors.success,
       icon: Icons.workspace_premium_rounded,
       features: [
-        'Blue Verified Checkmark',
-        'Ad-Free Experience',
-        'Priority Customer Support',
-        'Enhanced Profile Visibility',
-        'Exclusive Access to Premium Content',
+        'Verified checkmark',
+        'Ad-free experience',
+        'Priority support',
+        'Enhanced visibility',
       ],
     ),
     _TierModel(
       id: 'reporter',
       name: 'Reporter',
       price: 7000,
-      buttonText: 'Become a Reporter',
-      gradientColors: [theme.colorScheme.tertiary, const Color(0xFFCA8A04)],
+      buttonText: 'Go Pro',
+      accentColor: const Color(0xFFEAB308), // Gold
       icon: Icons.campaign_rounded,
       features: [
+        'Official Reporter status',
+        'Verified News alerts',
+        'Advanced analytics',
         'Everything in Premium',
-        'Official Reporter Identity Status',
-        'Direct Data Export Capabilities',
-        'Post Verified News and Alerts',
-        'Access to Advanced Analytics',
       ],
     ),
   ];

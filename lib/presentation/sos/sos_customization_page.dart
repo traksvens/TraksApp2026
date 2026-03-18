@@ -170,12 +170,15 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
     ThemeData theme,
     TextEditingController controller,
     String label,
-    IconData icon,
-  ) {
+    IconData icon, {
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         style: theme.textTheme.bodyMedium,
         decoration: InputDecoration(
           labelText: label,
@@ -197,8 +200,8 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
             borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
           ),
         ),
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Required' : null,
+        validator: validator ??
+            (value) => value == null || value.isEmpty ? 'Required' : null,
       ),
     );
   }
@@ -243,12 +246,31 @@ class _SosCustomizationViewState extends State<_SosCustomizationView> {
                   _phoneController,
                   "Phone Number",
                   Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Required';
+                    final phoneRegex = RegExp(r'^\+?[0-9\s\-()]{7,15}$');
+                    if (!phoneRegex.hasMatch(value)) {
+                      return 'Enter a valid phone number';
+                    }
+                    return null;
+                  },
                 ),
                 _buildTextField(
                   theme,
                   _emailController,
                   "Email",
                   Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Required';
+                    final emailRegex =
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
